@@ -54,6 +54,7 @@ export function initials(name: string) {
 export function friendlyError(error: { message?: string; code?: string } | null | undefined, fallback = "Algo deu errado. Tente novamente.") {
   if (!error) return fallback;
   if (error.code === "42501") return translateDbMessage(error.message) ?? (error.message?.includes("row-level security") ? "Você não tem permissão para fazer isso." : error.message ?? fallback);
+  if (error.code === "57014") return "O servidor demorou demais para responder. Tente de novo em instantes.";
   if (error.code === "23505") return "Isso já existe.";
   if (error.code === "23503") return "Este item ainda está sendo usado em outro lugar e não pode ser removido.";
   if (error.code === "23514") return "Alguns valores não são válidos.";

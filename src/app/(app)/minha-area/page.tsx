@@ -3,6 +3,7 @@ import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { todayIn, zonedToUtc } from "@/lib/dates";
 import { MyArea } from "@/components/team/my-area";
+import { lockedAreas } from "@/lib/billing";
 
 export const metadata = { title: "Minha área" };
 
@@ -42,6 +43,7 @@ export default async function MyAreaPage() {
       restaurantId={ws.restaurant.id}
       userId={ws.user.id}
       requireSelfie={ws.settings.require_selfie !== false}
+      clockLocked={lockedAreas(ws.restaurant.plan).includes("/ponto")}
       weekStartUtc={weekStartUtc}
       dayStartUtc={dayStart}
       today={mine(todayPerf) ?? null}

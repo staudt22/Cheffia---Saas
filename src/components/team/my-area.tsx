@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Check, ClipboardList, Clock, LogIn, LogOut, Receipt, ShoppingBag, Timer, UtensilsCrossed } from "lucide-react";
+import { Camera, Check, ClipboardList, Lock, Clock, LogIn, LogOut, Receipt, ShoppingBag, Timer, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,8 +24,8 @@ function minutesBetween(a: string, b: string | null, now: number) {
   return Math.max(0, ((b ? new Date(b).getTime() : now) - new Date(a).getTime()) / 60000);
 }
 
-export function MyArea({ name, roleName, restaurantName, restaurantId, userId, requireSelfie, entries, weekStartUtc, dayStartUtc, today, week, myTabs, myOrders, showSales, currency, locale, timezone }: {
-  name: string; roleName: string; restaurantName: string; restaurantId: string; userId: string; requireSelfie: boolean; entries: Entry[]; weekStartUtc: string; dayStartUtc: string;
+export function MyArea({ name, roleName, restaurantName, restaurantId, userId, requireSelfie, clockLocked, entries, weekStartUtc, dayStartUtc, today, week, myTabs, myOrders, showSales, currency, locale, timezone }: {
+  name: string; roleName: string; restaurantName: string; restaurantId: string; userId: string; requireSelfie: boolean; clockLocked?: boolean; entries: Entry[]; weekStartUtc: string; dayStartUtc: string;
   today: Record<string, unknown> | null; week: Record<string, unknown> | null;
   myTabs: { id: string; number: number; label: string; opened_at: string }[];
   myOrders: { id: string; number: number; status: string; total: number; table_label: string | null; created_at: string }[];
@@ -74,6 +74,14 @@ export function MyArea({ name, roleName, restaurantName, restaurantId, userId, r
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.1fr_1fr]">
         {/* Time clock */}
+        {clockLocked ? (
+          <Card className="flex flex-col items-center justify-center gap-3 p-8 text-center">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-soft text-brand"><Lock className="size-6" /></span>
+            <p className="text-lg font-semibold">Ponto eletrônico</p>
+            <p className="max-w-sm text-sm text-ink-2">A equipe bate o ponto com selfie na entrada e na saída, e você vê as horas de todos. Disponível nos planos pagos.</p>
+            <Button asChild variant="primary"><Link href="/upgrade?area=%2Fponto">Liberar o ponto</Link></Button>
+          </Card>
+        ) : (
         <Card className={cn("p-6 sm:p-8", open && "glow-ring")}>
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -121,6 +129,7 @@ export function MyArea({ name, roleName, restaurantName, restaurantId, userId, r
             </div>
           </div>
         </Card>
+        )}
         <Dialog open={selfieOpen} onOpenChange={(o) => !pending && setSelfieOpen(o)}>
           {selfieOpen && <SelfieCapture kind={open ? "out" : "in"} busy={pending} onConfirm={(b) => register(b)} onCancel={() => setSelfieOpen(false)} />}
         </Dialog>

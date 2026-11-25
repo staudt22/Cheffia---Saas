@@ -32,7 +32,7 @@ export function Topbar({ restaurant, memberships, permissions, user, roleLabel }
               <div className="min-w-0 flex-1"><WorkspaceSwitcher restaurant={restaurant} memberships={memberships} /></div>
               <D.Close className="rounded-md p-1.5 text-ink-3 hover:bg-surface-3" aria-label="Fechar menu"><X className="size-4" /></D.Close>
             </div>
-            <div className="flex-1 overflow-y-auto p-2"><NavLinks permissions={permissions} onNavigate={() => setOpen(false)} /></div>
+            <div className="flex-1 overflow-y-auto p-2"><NavLinks permissions={permissions} locked={restaurant.locked} onNavigate={() => setOpen(false)} /></div>
           </D.Content>
         </D.Portal>
       </D.Root>

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { CheffeDataLogo } from "@/components/app/logo";
 import { Button } from "@/components/ui/button";
-import { PricingCards } from "@/components/marketing/pricing-cards";
-import { SALES_CONTACT, planName, trialStatus } from "@/lib/billing";
+import { PlanComparison, PricingCards } from "@/components/marketing/pricing-cards";
+import { StartTrialButton } from "@/components/billing/start-trial-button";
+import { SALES_CONTACT, TRIAL_DAYS, planName, trialStatus } from "@/lib/billing";
 import { getUser, getWorkspace } from "@/lib/workspace";
 
 export const metadata = { title: "Planos" };
@@ -16,34 +17,33 @@ export default async function SubscriptionPage() {
   const r = ws.restaurant;
   const t = trialStatus(r);
   const isOwner = ws.role === "owner";
+  const canTrial = isOwner && r.plan === "free" && !r.trial_used && !r.is_demo;
 
   return (
     <div className="app-glow min-h-dvh">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <CheffeDataLogo />
-        {!t.expired && <Button asChild variant="ghost"><Link href="/dashboard"><ArrowLeft /> Voltar ao painel</Link></Button>}
+        <Button asChild variant="ghost"><Link href="/dashboard"><ArrowLeft /> Voltar ao painel</Link></Button>
       </header>
       <main className="mx-auto max-w-6xl px-5 pb-16 pt-6">
         <div className="mx-auto max-w-2xl text-center">
-          {t.expired ? (
-            <>
-              <span className="inline-flex items-center gap-2 rounded-full bg-warn-soft px-3 py-1 text-sm font-medium text-warn"><Clock className="size-4" /> Seu teste grátis terminou</span>
-              <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Escolha um plano para continuar usando o CheffeData</h1>
-              <p className="mt-3 text-ink-2">Todos os dados de <strong className="text-ink">{r.name}</strong> estão guardados — pedidos, cardápio, estoque e finanças. Assim que o plano for ativado, tudo volta exatamente como estava.</p>
-            </>
-          ) : (
-            <>
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Planos do CheffeData</h1>
-              <p className="mt-3 text-ink-2">
-                Plano atual de <strong className="text-ink">{r.name}</strong>: <strong className="text-ink">{planName(r.plan)}</strong>
-                {t.onTrial && <> — faltam <strong className="text-brand">{t.daysLeft} {t.daysLeft === 1 ? "dia" : "dias"}</strong> de teste.</>}
-              </p>
-            </>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Planos do CheffeData</h1>
+          <p className="mt-3 text-ink-2">
+            Plano atual de <strong className="text-ink">{r.name}</strong>: <strong className="text-ink">{planName(r.plan)}</strong>
+            {t.onTrial && <> — faltam <strong className="text-brand">{t.daysLeft} {t.daysLeft === 1 ? "dia" : "dias"}</strong> de teste.</>}
+          </p>
+          {canTrial && (
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <StartTrialButton label={`Testar tudo grátis por ${TRIAL_DAYS} dias`} />
+              <p className="text-xs text-ink-3">Sem cartão. Depois do teste você volta para o Grátis, sem perder nada.</p>
+            </div>
           )}
         </div>
 
         <div className="mt-12">
-          <PricingCards currentPlan={r.plan} cta={(key) => SALES_CONTACT && isOwner ? (
+          <PricingCards currentPlan={r.plan} cta={(key) => key === "free" ? (
+            <Button asChild variant="ghost" size="lg" className="w-full"><Link href="/dashboard">{r.plan === "free" ? "Continuar no Grátis" : "Voltar ao painel"}</Link></Button>
+          ) : SALES_CONTACT && isOwner ? (
             <Button asChild variant={key === "profissional" ? "primary" : "secondary"} size="lg" className="w-full">
               <a href={SALES_CONTACT} target="_blank" rel="noopener noreferrer"><MessageCircle /> Quero este plano</a>
             </Button>
@@ -53,6 +53,8 @@ export default async function SubscriptionPage() {
             </p>
           )} />
         </div>
+
+        <div className="mt-12"><PlanComparison /></div>
 
         <p className="mx-auto mt-8 max-w-xl text-center text-sm text-ink-3">
           {SALES_CONTACT

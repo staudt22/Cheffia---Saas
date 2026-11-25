@@ -1,10 +1,15 @@
 import "server-only";
+import { effectivePlan, lockedAreas } from "@/lib/billing";
+
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildPermissionMap, homePath, roleLabel, type PermissionMap } from "@/lib/permissions";
 import type { AppRole, Restaurant, RestaurantSettings, Section } from "@/lib/types";
+
+/** Sections whose whole page belongs to a paid plan. */
+const SECTION_AREA: Partial<Record<Section, string>> = { finances: "/finances", inventory: "/inventory", suppliers: "/suppliers", team: "/team", analytics: "/analytics", assistant: "/assistant", integrations: "/integrations" };
 
 export const ACTIVE_RESTAURANT_COOKIE = "cheffedata_rid";
 
@@ -17,7 +22,7 @@ export interface Workspace {
   roleName: string;
   customRoleId: string | null;
   permissions: PermissionMap;
-  memberships: { restaurant_id: string; role: AppRole; name: string; logo_url: string | null }[];
+  memberships: { restaurant_id: string; role: AppRole; name: string; logo_url: string | null; is_demo: boolean }[];
 }
 
 export const getUser = cache(async () => {
@@ -36,7 +41,7 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
     supabase.from("profiles").select("full_name, last_restaurant_id").eq("id", user.id).maybeSingle(),
     supabase
       .from("restaurant_members")
-      .select("restaurant_id, role, custom_role_id, restaurants(name, logo_url), custom_roles(name)")
+      .select("restaurant_id, role, custom_role_id, restaurants(name, logo_url, is_demo), custom_roles(name)")
       .eq("user_id", user.id)
       .eq("status", "active")
       .order("created_at"),
@@ -59,15 +64,16 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
   const role = active.role as AppRole;
   return {
     user: { id: user.id, email: user.email ?? "", fullName: profile?.full_name ?? user.email ?? "" },
-    restaurant: restaurant as Restaurant,
+    // `plan` is the plan in force now (an expired trial counts as the free plan).
+    restaurant: { ...(restaurant as Restaurant), plan: effectivePlan(restaurant as Restaurant) },
     settings: settings as RestaurantSettings,
     role,
     roleName: (active.custom_roles as unknown as { name: string } | null)?.name ?? roleLabel(role),
     customRoleId: (active.custom_role_id as string | null) ?? null,
     permissions: buildPermissionMap(role, perms ?? []),
     memberships: memberships.map((m) => {
-      const r = m.restaurants as unknown as { name: string; logo_url: string | null } | null;
-      return { restaurant_id: m.restaurant_id, role: m.role as AppRole, name: r?.name ?? "Restaurante", logo_url: r?.logo_url ?? null };
+      const r = m.restaurants as unknown as { name: string; logo_url: string | null; is_demo: boolean } | null;
+      return { restaurant_id: m.restaurant_id, role: m.role as AppRole, name: r?.name ?? "Restaurante", logo_url: r?.logo_url ?? null, is_demo: !!r?.is_demo };
     }),
   };
 });
@@ -78,6 +84,8 @@ export async function requireWorkspace(section?: Section, action: "view" | "edit
   if (!user) redirect("/login");
   const ws = await getWorkspace();
   if (!ws) redirect("/onboarding");
+  const area = section ? SECTION_AREA[section] : undefined;
+  if (area && lockedAreas(ws.restaurant.plan).includes(area)) redirect(`/upgrade?area=${encodeURIComponent(area)}`);
   if (section && !ws.permissions[section][action]) {
     const home = homePath(ws.permissions);
     redirect(home === "/dashboard" ? `/dashboard?denied=${section}` : home + (home.includes("?") ? "&" : "?") + `denied=${section}`);

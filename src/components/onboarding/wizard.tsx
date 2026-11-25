@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Copy, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, Check, Copy, Lock, Plus, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CheffeDataLogo } from "@/components/app/logo";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import {
   createRestaurantAction, inviteMembersAction, setOnboardingStepAction,
 } from "@/app/onboarding/actions";
 import { DASHBOARD_PRESETS, type PresetKey } from "@/lib/dashboard/widgets";
+import { effectivePlan, TRIAL_DAYS } from "@/lib/billing";
+import { StartTrialButton } from "@/components/billing/start-trial-button";
 import { INTEGRATION_PROVIDERS } from "@/lib/integrations/registry";
 import { BRAND_PRESETS, isValidHex } from "@/lib/theme";
 import { CurrencyOptions, DateFormatOptions, TimezoneOptions } from "@/components/ui/region-options";
@@ -56,6 +58,15 @@ export function OnboardingWizard({
   const [step, setStep] = useState(initialStep);
   const [pending, startTransition] = useTransition();
   const [rid, setRid] = useState(restaurant?.id ?? null);
+  // New restaurants start on the free plan; stock and team need a paid plan or the trial.
+  const [paid, setPaid] = useState(restaurant ? effectivePlan(restaurant) !== "free" : false);
+  const paidOnly = (what: string) => (
+    <div className="mb-4 flex flex-col gap-3 rounded-xl bg-brand-soft/60 p-4 ring-1 ring-brand/25 sm:flex-row sm:items-center">
+      <Lock className="size-5 shrink-0 text-brand" />
+      <p className="flex-1 text-sm text-ink-2"><strong className="text-ink">{what} faz parte dos planos pagos.</strong> Teste tudo por {TRIAL_DAYS} dias, sem cartão — ou pule este passo e continue no plano Grátis.</p>
+      <StartTrialButton label="Testar 7 dias grátis" onDone={() => setPaid(true)} />
+    </div>
+  );
 
   // Restaurant draft shared across steps
   const [profile, setProfile] = useState({
@@ -288,7 +299,7 @@ export function OnboardingWizard({
       const valid = stock.filter((s) => s.name.trim());
       content = (
         <StepShell title="O que tem no seu estoque?" description="Cadastre os ingredientes principais. O CheffeData avisa quando algum ficar abaixo do mínimo."
-          footer={<>{back(6)}<div className="flex gap-2">{skip(8)}<Button variant="primary" size="lg" loading={pending} disabled={!valid.length}
+          footer={<>{back(6)}<div className="flex gap-2">{skip(8)}<Button variant="primary" size="lg" loading={pending} disabled={!valid.length || !paid}
             onClick={() => run(async () => {
               const res = await addInventoryItemsAction(valid.map((s) => ({
                 name: s.name, unit: s.unit, quantity: Number(s.quantity || 0), min_quantity: Number(s.min_quantity || 0), unit_cost: Number(s.unit_cost || 0),
@@ -296,6 +307,7 @@ export function OnboardingWizard({
               if (res.ok) toast.success(`${res.data?.count} itens adicionados ao estoque`);
               return res;
             }, 8)}>Salvar e continuar</Button></div></>}>
+          {!paid && paidOnly("O estoque")}
           <div className="flex flex-col gap-2">
             <div className="hidden grid-cols-[1fr_90px_120px_90px_100px_36px] gap-2 px-1 text-xs font-medium text-ink-3 sm:grid"><span>Ingrediente</span><span>Tem hoje</span><span>Unidade</span><span>Mínimo</span><span>Custo (R$)</span></div>
             {stock.map((s, i) => {
@@ -326,12 +338,13 @@ export function OnboardingWizard({
         <StepShell title="Convide sua equipe" description="Cada pessoa recebe um cargo. Você decide o que cada cargo pode ver em Configurações → Cargos."
           footer={<>{back(7)}<div className="flex gap-2">{inviteLinks.length ? (
             <Button variant="primary" size="lg" onClick={() => go(9)}>Continuar</Button>
-          ) : (<>{skip(9)}<Button variant="primary" size="lg" loading={pending} disabled={!valid.length}
+          ) : (<>{skip(9)}<Button variant="primary" size="lg" loading={pending} disabled={!valid.length || !paid}
             onClick={() => run(async () => {
               const res = await inviteMembersAction(valid);
               if (res.ok && res.data) setInviteLinks(res.data.links);
               return res;
             })}>Criar convites</Button></>)}</div></>}>
+          {!paid && !inviteLinks.length && paidOnly("Convidar a equipe")}
           {inviteLinks.length ? (
             <div className="flex flex-col gap-2">
               <p className="text-sm text-ink-2">Mande o link para cada pessoa (por WhatsApp, por exemplo). O envio automático por e-mail ainda não está ativo. Os links valem por 14 dias.</p>

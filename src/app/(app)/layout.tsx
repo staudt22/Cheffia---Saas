@@ -5,16 +5,15 @@ import { requireWorkspace } from "@/lib/workspace";
 import { brandVars } from "@/lib/theme";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { trialStatus } from "@/lib/billing";
+import { lockedAreas, trialStatus } from "@/lib/billing";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ws = await requireWorkspace();
   if (!ws.restaurant.onboarding_completed_at && ws.role === "owner") redirect("/onboarding");
   const r = ws.restaurant;
   const trial = trialStatus(r);
-  if (trial.expired) redirect("/assinatura");
-  const shell = { id: r.id, name: r.name, logo_url: r.logo_url, is_demo: r.is_demo };
-  const memberships = ws.memberships.map((m) => ({ restaurant_id: m.restaurant_id, name: m.name, logo_url: m.logo_url }));
+  const shell = { id: r.id, name: r.name, logo_url: r.logo_url, is_demo: r.is_demo, plan: r.plan, locked: lockedAreas(r.plan) };
+  const memberships = ws.memberships.map((m) => ({ restaurant_id: m.restaurant_id, name: m.name, logo_url: m.logo_url, is_demo: m.is_demo }));
 
   const vars = brandVars(r.brand_color, r.accent_color);
   // Also set on :root so dialogs and menus rendered in portals use the restaurant's colours.
@@ -34,6 +33,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-line bg-brand-soft/60 px-4 py-1.5 text-xs text-ink-2">
             <span>Teste grátis: <strong className="text-brand">{trial.daysLeft} {trial.daysLeft === 1 ? "dia restante" : "dias restantes"}</strong></span>
             <Link href="/assinatura" className="font-medium text-brand underline-offset-4 hover:underline">Ver planos</Link>
+          </div>
+        )}
+        {r.plan === "free" && !r.is_demo && (
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-line bg-surface-2 px-4 py-1.5 text-xs text-ink-2">
+            <span>Você está no <strong className="text-ink">plano Grátis</strong> — algumas áreas estão bloqueadas</span>
+            <Link href="/assinatura" className="font-medium text-brand underline-offset-4 hover:underline">Liberar tudo</Link>
           </div>
         )}
         <Topbar restaurant={shell} memberships={memberships} permissions={ws.permissions} user={ws.user} roleLabel={ws.roleName} />

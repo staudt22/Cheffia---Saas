@@ -41,6 +41,14 @@ export async function createDemoWorkspaceAction(input: { name?: string; timezone
   await supabase.from("restaurants").update({ timezone: tz, restaurant_type: "Hamburgueria" }).eq("id", id);
   const { error: seedError } = await supabase.rpc("seed_demo_restaurant", { p_restaurant: id });
   if (seedError) return { ok: false, error: friendlyError(seedError, "Não foi possível criar os dados de exemplo.") };
+  // 45 days of order history, in small chunks so no single call hits the database time limit.
+  for (let from = 45; from >= 1; from -= 5) {
+    const { error: histError } = await supabase.rpc("seed_demo_history", { p_restaurant: id, p_from: from, p_to: Math.max(1, from - 4) });
+    if (histError) {
+      if (histError.message?.includes("seed_demo_history")) break; // database update 5 not applied yet: keep the basic demo
+      return { ok: false, error: friendlyError(histError, "Não foi possível criar o histórico de exemplo.") };
+    }
+  }
   await setActiveCookie(id as string);
   revalidatePath("/", "layout");
   return { ok: true };

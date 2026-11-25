@@ -36,9 +36,24 @@ select pg_temp.check((select count(*) = 5 from public.profiles), 'profiles creat
 -- ---------------------------------------------------------------- workspaces
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 select public.create_restaurant('Ana''s Bistro') as r1 \gset
+-- free plan
+select pg_temp.check((select plan = 'free' and trial_ends_at is null and not trial_used from public.restaurants where id = :'r1'), 'new restaurants start on the free plan');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.expenses (restaurant_id, description, amount, category, date) values (%L, 'x', 10, 'other', current_date)$q$, :'r1')), 'free plan cannot use finances');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.inventory_items (restaurant_id, name) values (%L, 'x')$q$, :'r1')), 'free plan cannot use inventory');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.invitations (restaurant_id, email, role) values (%L, 'y@one.test', 'employee')$q$, :'r1')), 'free plan has only the owner');
+insert into public.menu_items (restaurant_id, name, price) select :'r1', 'Item ' || g, 10 from generate_series(1, 15) g;
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.menu_items (restaurant_id, name, price) values (%L, 'Item 16', 10)$q$, :'r1')), 'free plan allows up to 15 menu items');
+delete from public.menu_items where restaurant_id = :'r1';
+select pg_temp.check(public.start_trial(:'r1') > now() + interval '6 days', 'owner starts the 7-day trial');
+select pg_temp.check((select plan = 'trial' and trial_used from public.restaurants where id = :'r1'), 'trial is active and marked as used');
+select pg_temp.check(pg_temp.rejects(format($q$select public.start_trial(%L)$q$, :'r1')), 'the trial can only be started once');
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 select public.create_restaurant('Ben Burgers Demo', true) as r2 \gset
 select public.seed_demo_restaurant(:'r2');
+select public.seed_demo_history(:'r2', 45, 31);
+select public.seed_demo_history(:'r2', 30, 16);
+select public.seed_demo_history(:'r2', 15, 1);
+select pg_temp.check((select plan from public.restaurants where id = :'r2') = 'rede', 'demo restaurants have everything unlocked');
 
 select pg_temp.check((select count(*) from public.orders) > 500, 'demo seed created order history');
 select pg_temp.check((select count(*) from public.orders where is_simulated) > 0, 'delivery-platform demo orders are flagged simulated');
@@ -177,7 +192,7 @@ reset role;
 
 -- ------------------------------------------------------------ trial & plans
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
-select pg_temp.check((select trial_ends_at::date = (created_at + interval '7 days')::date and plan = 'trial' from public.restaurants where id = :'r1'), 'new restaurants start a 7-day trial');
+select pg_temp.check((select trial_ends_at::date = (now() + interval '7 days')::date and plan = 'trial' from public.restaurants where id = :'r1'), 'trial ends in 7 days');
 select pg_temp.check(pg_temp.rejects(format($q$update public.restaurants set plan = 'rede' where id = %L$q$, :'r1')), 'owners cannot change their own plan');
 select pg_temp.check(pg_temp.rejects(format($q$update public.restaurants set trial_ends_at = now() + interval '1 year' where id = %L$q$, :'r1')), 'owners cannot extend their own trial');
 select pg_temp.check((select currency = 'BRL' and locale = 'pt-BR' from public.restaurants where id = :'r1'), 'new restaurants default to BRL / pt-BR');
@@ -252,6 +267,14 @@ select pg_temp.check((select count(*) from public.tabs) = 0, 'comandas are isola
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 select pg_temp.check((select count(*) from public.team_hours(:'r1', now() - interval '1 day', now() + interval '1 minute') where entries >= 1) >= 1, 'owner sees team hours');
 
+-- expired trial behaves like the free plan
+reset role;
+update public.restaurants set trial_ends_at = now() - interval '1 minute' where id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check(public.effective_plan(:'r1') = 'free' and not public.can(:'r1', 'finances', 'edit') and public.can(:'r1', 'orders', 'edit'), 'an expired trial falls back to the free plan');
+reset role;
+update public.restaurants set trial_ends_at = now() + interval '7 days' where id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 -- plan gates
 reset role;
 update public.restaurants set plan = 'essencial' where id = :'r1';

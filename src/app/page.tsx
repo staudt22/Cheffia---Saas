@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CheffeDataLogo } from "@/components/app/logo";
 import { Button } from "@/components/ui/button";
-import { PricingCards } from "@/components/marketing/pricing-cards";
+import { PlanComparison, PricingCards } from "@/components/marketing/pricing-cards";
 import { BrowserFrame, PhoneFrame } from "@/components/marketing/frames";
 import { LiveDashboard } from "@/components/marketing/live-dashboard";
 import { OrderFlow } from "@/components/marketing/order-flow";
@@ -71,12 +71,13 @@ const SHOWCASE = [
 const STEPS = [
   { n: "1", title: "Crie sua conta", text: "Leva menos de um minuto. Não pedimos cartão de crédito.", icon: Sparkles },
   { n: "2", title: "Configure em 10 passos", text: "Nome, logo, cores, cardápio e estoque — com dicas em cada etapa. Pode pular o que quiser.", icon: ClipboardList },
-  { n: "3", title: `Use ${TRIAL_DAYS} dias de graça`, text: "Tudo liberado. No fim do teste, você escolhe o plano que faz sentido.", icon: CircleCheck },
+  { n: "3", title: "Grátis ou completo", text: `Fique no plano Grátis pelo tempo que quiser, ou libere tudo por ${TRIAL_DAYS} dias sem cartão.`, icon: CircleCheck },
 ];
 
 const FAQ = [
-  { q: "Preciso cadastrar cartão para testar?", a: `Não. O teste de ${TRIAL_DAYS} dias é totalmente grátis e sem cartão. Você só escolhe um plano se quiser continuar.` },
-  { q: "O que acontece quando o teste acaba?", a: "Seus dados ficam guardados. Para continuar usando, é só escolher um dos planos." },
+  { q: "Preciso cadastrar cartão?", a: `Não. O plano Grátis é para sempre, e o teste completo de ${TRIAL_DAYS} dias também é sem cartão.` },
+  { q: "O que o plano Grátis inclui?", a: "O painel do restaurante, pedidos com tela da cozinha e um cardápio com até 15 itens, só para você. Comandas, finanças, estoque, equipe, ponto, assistente e integrações ficam nos planos pagos." },
+  { q: "O que acontece quando o teste acaba?", a: "Você volta para o plano Grátis automaticamente e seus dados continuam guardados. Quando assinar, tudo volta a ficar liberado." },
   { q: "Sou ruim com tecnologia. Vou conseguir usar?", a: "Sim. O CheffeData foi feito para quem vive o restaurante, não para quem é de TI. Cada número tem uma explicação, e a configuração inicial te guia passo a passo." },
   { q: "Funciona no celular e no tablet?", a: "Sim. Funciona no navegador do computador, do tablet e do celular — a tela da cozinha foi feita para toque." },
   { q: "Já integra com iFood e outros apps?", a: "Ainda não: as integrações com apps de delivery estão em desenvolvimento e dependem da aprovação de cada plataforma. Enquanto isso, você lança esses pedidos em poucos toques e eles seguem o mesmo caminho até a cozinha." },
@@ -98,7 +99,7 @@ export default async function Home() {
             <a href="#recursos" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink md:block">Recursos</a>
             <Link href="/demo" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink sm:block">Demo</Link>
             <a href="#como-funciona" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink lg:block">Como funciona</a>
-            <a href="#planos" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink md:block">Planos</a>
+            <a href="#planos" className="hidden rounded-md px-3 py-2 text-sm font-medium text-brand hover:text-ink md:block">Planos e preços</a>
             <a href="#duvidas" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink lg:block">Dúvidas</a>
             <Button asChild variant="ghost"><Link href="/login">Entrar</Link></Button>
             <Button asChild variant="primary"><Link href="/signup">Testar grátis</Link></Button>
@@ -112,7 +113,7 @@ export default async function Home() {
           <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] bg-[radial-gradient(50%_60%_at_50%_0%,rgba(52,211,153,0.16),transparent_70%)]" aria-hidden />
           <div className="mx-auto max-w-4xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-sm font-medium text-brand ring-1 ring-brand/30">
-              <Sparkles className="size-4" /> {TRIAL_DAYS} dias grátis · sem cartão de crédito
+              <Sparkles className="size-4" /> Plano grátis para sempre · teste tudo por {TRIAL_DAYS} dias
             </span>
             <h1 className="mt-6 text-[40px] font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-[76px]">
               Todos os pedidos.<br />Toda a operação.<br /><span className="text-gradient">Um único sistema.</span>
@@ -121,7 +122,7 @@ export default async function Home() {
               Salão, balcão e delivery caem numa fila só, vão direto para a cozinha e, quando ficam prontos, o caixa e o estoque se atualizam sozinhos.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild size="xl" variant="primary"><Link href="/signup">Começar meu teste grátis <ArrowRight /></Link></Button>
+              <Button asChild size="xl" variant="primary"><Link href="/signup">Criar conta grátis <ArrowRight /></Link></Button>
               <Button asChild size="xl" variant="secondary"><Link href="/demo"><MousePointerClick /> Experimentar a demo — sem cadastro</Link></Button>
             </div>
             <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-ink-3">
@@ -130,6 +131,9 @@ export default async function Home() {
               <li className="flex items-center gap-1.5"><CircleCheck className="size-4 text-good" /> 100% em português</li>
               <li className="flex items-center gap-1.5"><CircleCheck className="size-4 text-good" /> Cancele quando quiser</li>
             </ul>
+            <a href="#planos" className="mt-5 inline-flex items-center gap-2 rounded-full bg-surface-2 px-4 py-2 text-sm text-ink-2 ring-1 ring-line transition hover:text-ink hover:ring-brand/40">
+              Grátis para sempre · planos completos a partir de <strong className="text-ink">R$ {PLANS.find((p) => p.price > 0)!.price}/mês</strong> <ArrowRight className="size-4" />
+            </a>
           </div>
 
           <div className="relative mx-auto mt-12 max-w-6xl pb-6">
@@ -147,6 +151,32 @@ export default async function Home() {
             <p className="mt-4 text-ink-2">Os pedidos do salão, das comandas e do balcão já funcionam hoje. As integrações com apps de delivery estão em desenvolvimento e dependem da aprovação de cada plataforma.</p>
           </div>
           <div className="mt-12"><OrderFlow /></div>
+        </section>
+
+        {/* ------------------------------------------------------------ pricing */}
+        <section id="planos" className="scroll-mt-20 border-y border-line/70 bg-surface/30 py-20">
+          <div className="mx-auto max-w-7xl px-5">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-wider text-brand">Planos</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">Comece grátis. Cresça quando quiser.</h2>
+              <p className="mt-4 text-lg text-ink-2">Use o plano Grátis pelo tempo que quiser, ou teste todas as funções por {TRIAL_DAYS} dias sem cartão. Sem fidelidade — cancele quando quiser.</p>
+            </div>
+            <div className="mt-14">
+              <PricingCards cta={(key) => key === "free" ? (
+                <Button asChild variant="secondary" size="lg" className="w-full"><Link href="/signup">Criar conta grátis</Link></Button>
+              ) : (
+                <Button asChild variant={key === "profissional" ? "primary" : "secondary"} size="lg" className="w-full">
+                  <Link href={`/signup?plano=${key}`}>Testar {TRIAL_DAYS} dias grátis</Link>
+                </Button>
+              )} />
+            </div>
+            <div className="mt-10"><PlanComparison /></div>
+            <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-ink-3">
+              <span className="flex items-center gap-1.5"><ShieldCheck className="size-4 text-brand" /> Dados protegidos</span>
+              <span className="flex items-center gap-1.5"><Smartphone className="size-4 text-brand" /> Funciona em qualquer aparelho</span>
+              <span className="flex items-center gap-1.5"><CircleCheck className="size-4 text-brand" /> Sem taxa de instalação</span>
+            </div>
+          </div>
         </section>
 
         {/* ------------------------------------------------------------ for whom */}
@@ -253,27 +283,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ------------------------------------------------------------ pricing */}
-        <section id="planos" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-brand">Planos</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Preço justo, sem surpresa</h2>
-            <p className="mt-4 text-ink-2">Teste qualquer plano por {TRIAL_DAYS} dias, de graça. Sem fidelidade — cancele quando quiser.</p>
-          </div>
-          <div className="mt-14">
-            <PricingCards cta={(key) => (
-              <Button asChild variant={key === "profissional" ? "primary" : "secondary"} size="lg" className="w-full">
-                <Link href={`/signup?plano=${key}`}>Testar {TRIAL_DAYS} dias grátis</Link>
-              </Button>
-            )} />
-          </div>
-          <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-ink-3">
-            <span className="flex items-center gap-1.5"><ShieldCheck className="size-4 text-brand" /> Dados protegidos</span>
-            <span className="flex items-center gap-1.5"><Smartphone className="size-4 text-brand" /> Funciona em qualquer aparelho</span>
-            <span className="flex items-center gap-1.5"><CircleCheck className="size-4 text-brand" /> Sem taxa de instalação</span>
-          </div>
-        </section>
-
         {/* ------------------------------------------------------------ faq */}
         <section id="duvidas" className="mx-auto max-w-3xl scroll-mt-20 px-5 py-12">
           <h2 className="text-center text-3xl font-semibold tracking-tight sm:text-4xl">Dúvidas frequentes</h2>
@@ -294,8 +303,8 @@ export default async function Home() {
           <div className="surface-gradient relative overflow-hidden rounded-3xl px-6 py-14 text-center sm:px-12">
             <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-white/20 blur-3xl" aria-hidden />
             <h2 className="relative text-3xl font-semibold tracking-tight sm:text-4xl">Seu restaurante merece mais do que um caderno.</h2>
-            <p className="relative mx-auto mt-4 max-w-lg text-lg opacity-80">Crie sua conta agora e use tudo por {TRIAL_DAYS} dias, sem pagar nada. Planos a partir de R$ {PLANS[0]!.price}/mês.</p>
-            <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row"><Button asChild size="xl" className="relative bg-[#04140c] text-white shadow-none hover:bg-[#04140c]/90"><Link href="/signup">Começar meu teste grátis <ArrowRight /></Link></Button><Button asChild size="xl" variant="ghost" className="relative text-[#04140c] hover:bg-white/20"><Link href="/demo">Ver a demo</Link></Button></div>
+            <p className="relative mx-auto mt-4 max-w-lg text-lg opacity-80">Crie sua conta grátis agora e teste tudo por {TRIAL_DAYS} dias, sem cartão. Planos completos a partir de R$ {PLANS.find((p) => p.price > 0)!.price}/mês.</p>
+            <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row"><Button asChild size="xl" className="relative bg-[#04140c] text-white shadow-none hover:bg-[#04140c]/90"><Link href="/signup">Criar conta grátis <ArrowRight /></Link></Button><Button asChild size="xl" variant="ghost" className="relative text-[#04140c] hover:bg-white/20"><Link href="/demo">Ver a demo</Link></Button></div>
           </div>
         </section>
       </main>

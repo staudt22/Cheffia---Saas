@@ -7,6 +7,7 @@ import { Dashboard } from "@/components/dashboard/dashboard";
 import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 import type { DashboardLayout } from "@/lib/types";
+import { PlanWelcomeDialog } from "@/components/billing/plan-welcome-dialog";
 
 export const metadata = { title: "Visão geral" };
 
@@ -24,8 +25,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   const today = new Intl.DateTimeFormat(r.locale, { weekday: "long", month: "long", day: "numeric", timeZone: r.timezone }).format(new Date());
 
+  const showPlanOffer = params.welcome === "1" && r.plan === "free" && !r.is_demo && ws.role === "owner";
+
   return (
     <div>
+      {showPlanOffer && <PlanWelcomeDialog canTrial={!r.trial_used} />}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm text-ink-3">{today}</p>

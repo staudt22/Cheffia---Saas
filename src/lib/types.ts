@@ -36,6 +36,8 @@ export interface Restaurant {
   onboarding_completed_at: string | null;
   plan: string;
   trial_ends_at: string | null;
+  /** Missing until database update 5 is applied. */
+  trial_used?: boolean;
 }
 
 export interface RestaurantSettings {

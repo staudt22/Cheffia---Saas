@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { lockedAreas } from "@/lib/billing";
 import { requireWorkspace } from "@/lib/workspace";
 import { createClient } from "@/lib/supabase/server";
 import { isoHoursAgo } from "@/lib/dates";
@@ -10,6 +12,7 @@ const TAB_SELECT = "id, number, label, customer_name, guests, status, subtotal, 
 
 export default async function ComandasPage() {
   const ws = await requireWorkspace("orders");
+  if (lockedAreas(ws.restaurant.plan).includes("/comandas")) redirect("/upgrade?area=%2Fcomandas");
   const supabase = await createClient();
   const rid = ws.restaurant.id;
   const [{ data: open }, { data: closed }, { data: menu }, { data: categories }, { data: members }] = await Promise.all([

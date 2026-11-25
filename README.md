@@ -70,7 +70,7 @@ Staff clock in and out from **Minha área**. By default each punch requires a se
 
 ## Plans and trial
 
-New restaurants start on `plan = 'trial'` with `trial_ends_at = now() + 7 days`. Restaurant users can't change `plan`, `trial_ends_at` or `is_demo` (a trigger blocks it); activate a paid plan from the Supabase SQL editor or a future billing webhook:
+New restaurants start on the **free** plan (`plan = 'free'`): dashboard, orders/kitchen and up to 15 menu items, owner only; every other area is read-only in the database (`can()` refuses edits) and locked in the app. The owner can start a one-time 7-day trial (`start_trial`), and an expired trial falls back to free (`effective_plan`). Demo restaurants are always `rede` (everything unlocked) and their 45-day history is created in chunks (`seed_demo_history`) to stay under Supabase's statement timeout. Restaurant users can't change `plan`, `trial_ends_at` or `is_demo` (a trigger blocks it); activate a paid plan from the Supabase SQL editor or a future billing webhook:
 
 ```sql
 update restaurants set plan = 'profissional' where id = '<restaurant id>';
@@ -78,14 +78,15 @@ update restaurants set plan = 'profissional' where id = '<restaurant id>';
 update restaurants set trial_ends_at = now() + interval '7 days' where id = '<restaurant id>';
 ```
 
-| | Essencial | Profissional | Rede |
-| --- | --- | --- | --- |
-| Restaurantes | 1 | 1 | até 5 |
-| Usuários | 3 | 15 | ilimitados |
-| Apps de delivery integrados | 1 (enforced by a DB trigger) | ilimitados | ilimitados |
-| Comandas, ponto, KDS, finanças, estoque, cardápio | ✅ | ✅ | ✅ |
-| Desempenho por garçom, cargos personalizados | — | ✅ | ✅ |
-| Painel “Todas as unidades” (comparação entre restaurantes) | — | — | ✅ |
+| | Grátis | Essencial | Profissional | Rede |
+| --- | --- | --- | --- | --- |
+| Restaurantes | 1 | 1 | 1 | até 5 |
+| Usuários | 1 | 3 | 15 | ilimitados |
+| Apps de delivery integrados | — | 1 (enforced by a DB trigger) | ilimitados | ilimitados |
+| Pedidos, KDS, cardápio | ✅ (15 itens) | ✅ | ✅ | ✅ |
+| Comandas, ponto, finanças, estoque | — | ✅ | ✅ | ✅ |
+| Desempenho por garçom, cargos personalizados, assistente IA | — | — | ✅ | ✅ |
+| Painel “Todas as unidades” (comparação entre restaurantes) | — | — | — | ✅ |
 
 The trial unlocks everything.
 

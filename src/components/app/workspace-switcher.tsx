@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, FlaskConical, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { createDemoWorkspaceAction } from "@/app/onboarding/actions";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { RestaurantAvatar } from "@/components/app/restaurant-avatar";
 import { switchRestaurant } from "@/lib/actions/restaurant";
@@ -37,6 +39,18 @@ export function WorkspaceSwitcher({ restaurant, memberships, collapsed }: { rest
         ))}
         <DropdownSeparator />
         <DropdownItem onSelect={() => router.push("/onboarding?new=1")}><Plus /> Adicionar restaurante</DropdownItem>
+        {!memberships.some((m) => m.is_demo) && (
+          <DropdownItem onSelect={() => {
+            const t = toast.loading("Criando o restaurante de exemplo… leva alguns segundos.");
+            start(async () => {
+              const r = await createDemoWorkspaceAction({ timezone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+              toast.dismiss(t);
+              if (!r.ok) return void toast.error(r.error);
+              toast.success("Restaurante de exemplo pronto, com tudo liberado!");
+              router.push("/dashboard"); router.refresh();
+            });
+          }}><FlaskConical /> Criar restaurante de exemplo</DropdownItem>
+        )}
       </DropdownContent>
     </Dropdown>
   );
