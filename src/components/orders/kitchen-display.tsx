@@ -14,10 +14,10 @@ import { cn } from "@/lib/utils";
 import type { Order, OrderStatus } from "@/lib/types";
 
 const COLUMNS: { status: OrderStatus; title: string; accent: string }[] = [
-  { status: "new", title: "New", accent: "bg-info" },
-  { status: "accepted", title: "Accepted", accent: "bg-accent" },
-  { status: "preparing", title: "Preparing", accent: "bg-warn" },
-  { status: "ready", title: "Ready", accent: "bg-good" },
+  { status: "new", title: "Novos", accent: "bg-info" },
+  { status: "accepted", title: "Aceitos", accent: "bg-accent" },
+  { status: "preparing", title: "Em preparo", accent: "bg-warn" },
+  { status: "ready", title: "Prontos", accent: "bg-good" },
 ];
 
 function useNow(interval = 15000) {
@@ -74,27 +74,27 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
     start(async () => {
       const r = await updateOrderStatusAction(order.id, status);
       if (!r.ok) { toast.error(r.error); setOptimistic((s) => { const n = { ...s }; delete n[order.id]; return n; }); }
-      else if (status === "completed") toast.success(`#${order.number} completed`, { action: { label: "Undo", onClick: () => start(async () => { await updateOrderStatusAction(order.id, "ready"); }) } });
+      else if (status === "completed") toast.success(`#${order.number} concluído`, { action: { label: "Desfazer", onClick: () => start(async () => { await updateOrderStatusAction(order.id, "ready"); }) } });
     });
   }
 
   return (
     <div className="-mx-4 -my-6 flex min-h-[calc(100dvh-56px)] flex-col bg-bg/40 lg:-mx-8 lg:-my-8">
       <div className="flex flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-3 lg:px-6">
-        <Button asChild variant="ghost" size="sm"><Link href="/orders"><ArrowLeft /> Orders</Link></Button>
-        <h1 className="text-lg font-semibold">Kitchen display</h1>
+        <Button asChild variant="ghost" size="sm"><Link href="/orders"><ArrowLeft /> Pedidos</Link></Button>
+        <h1 className="text-lg font-semibold">Tela da cozinha</h1>
         <span className={cn("flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium", live ? "bg-good-soft text-good" : "bg-surface-3 text-ink-3")}>
-          <span className={cn("size-1.5 rounded-full", live ? "bg-good animate-pulse-soft" : "bg-ink-3")} />{live ? "Live" : "Auto-refresh"}
+          <span className={cn("size-1.5 rounded-full", live ? "bg-good animate-pulse-soft" : "bg-ink-3")} />{live ? "Ao vivo" : "Atualização automática"}
         </span>
         <div className="ml-auto flex items-center gap-2">
           {lastCompleted && canEdit && (
-            <Button size="sm" variant="ghost" onClick={() => start(async () => { const r = await updateOrderStatusAction(lastCompleted.id, "ready"); if (!r.ok) toast.error(r.error); })}><Undo2 /> Recall #{lastCompleted.number}</Button>
+            <Button size="sm" variant="ghost" onClick={() => start(async () => { const r = await updateOrderStatusAction(lastCompleted.id, "ready"); if (!r.ok) toast.error(r.error); })}><Undo2 /> Voltar o #{lastCompleted.number}</Button>
           )}
           <Button size="sm" variant="secondary" onClick={() => { const v = !sound; setSound(v); try { localStorage.setItem("forkly.kds.sound", v ? "on" : "off"); } catch {} if (v) chime(); }} aria-pressed={sound}>
-            {sound ? <Bell /> : <BellOff />} Sound {sound ? "on" : "off"}
+            {sound ? <Bell /> : <BellOff />} Som {sound ? "ligado" : "desligado"}
           </Button>
           <Button size="sm" variant="secondary" onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {})}>
-            {full ? <Minimize /> : <Maximize />} {full ? "Exit" : "Full screen"}
+            {full ? <Minimize /> : <Maximize />} {full ? "Sair da tela cheia" : "Tela cheia"}
           </Button>
         </div>
       </div>
@@ -102,14 +102,14 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
         {COLUMNS.map((col) => {
           const list = view.filter((o) => o.status === col.status);
           return (
-            <section key={col.status} className="flex min-h-48 flex-col rounded-xl bg-surface-3/70" aria-label={`${col.title} orders`}>
+            <section key={col.status} className="flex min-h-48 flex-col rounded-xl bg-surface-3/70" aria-label={`Pedidos ${col.title.toLowerCase()}`}>
               <header className="flex items-center gap-2 px-3 py-2.5">
                 <span className={cn("size-2 rounded-full", col.accent)} />
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-2">{col.title}</h2>
                 <span className="ml-auto rounded-full bg-surface px-2 text-xs font-semibold tabular">{list.length}</span>
               </header>
               <div className="flex flex-1 flex-col gap-2.5 px-2 pb-2">
-                {list.length === 0 && <p className="py-8 text-center text-sm text-ink-3">No orders</p>}
+                {list.length === 0 && <p className="py-8 text-center text-sm text-ink-3">Nenhum pedido</p>}
                 {list.map((o) => {
                   const mins = Math.floor((now - new Date(o.created_at).getTime()) / 60000);
                   const late = o.estimated_prep_minutes ? mins > o.estimated_prep_minutes : mins > 20;
@@ -122,8 +122,8 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
                           <p className="mt-0.5 text-xs text-ink-3">{formatTime(o.created_at, locale, timezone)} · {FULFILLMENT_LABEL[o.fulfillment]}{o.table_label ? ` · ${o.table_label}` : ""}</p>
                         </div>
                         <div className="text-right">
-                          <p className={cn("text-lg font-semibold tabular leading-6", late && o.status !== "ready" ? "text-bad" : "text-ink")}>{mins}m</p>
-                          {o.estimated_prep_minutes && <p className="text-[11px] text-ink-3">est. {o.estimated_prep_minutes}m</p>}
+                          <p className={cn("text-lg font-semibold tabular leading-6", late && o.status !== "ready" ? "text-bad" : "text-ink")}>{mins}min</p>
+                          {o.estimated_prep_minutes && <p className="text-[11px] text-ink-3">prev. {o.estimated_prep_minutes}min</p>}
                         </div>
                       </div>
                       <div className="px-3 py-2">
@@ -145,8 +145,8 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
                       {canEdit && meta.next && (
                         <div className="flex gap-2 px-2 pb-2">
                           {o.status === "new" && (rejecting === o.id
-                            ? <Button variant="danger" size="lg" onClick={() => { setRejecting(null); move(o, "cancelled"); }} onBlur={() => setRejecting(null)}>Confirm reject</Button>
-                            : <Button variant="ghost" size="lg" className="text-bad" onClick={() => setRejecting(o.id)}>Reject</Button>)}
+                            ? <Button variant="danger" size="lg" onClick={() => { setRejecting(null); move(o, "cancelled"); }} onBlur={() => setRejecting(null)}>Confirmar recusa</Button>
+                            : <Button variant="ghost" size="lg" className="text-bad" onClick={() => setRejecting(o.id)}>Recusar</Button>)}
                           <Button size="lg" variant="primary" className="flex-1 text-[15px]" onClick={() => move(o, meta.next!)}>{meta.action}</Button>
                         </div>
                       )}

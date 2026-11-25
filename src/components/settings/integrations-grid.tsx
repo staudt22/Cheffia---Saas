@@ -14,11 +14,11 @@ import type { Availability, ProviderInfo } from "@/lib/integrations/types";
 type P = ProviderInfo & { availability: Availability; status: string; lastSync: string | null; lastError: string | null };
 
 const FLOW = [
-  "You click Connect and Forkly explains what will be shared.",
-  "You sign in to the platform and approve access.",
-  "The platform sends you back to Forkly.",
-  "Forkly confirms the connection and stores the access token encrypted, server-side only.",
-  "Orders start syncing into your queue and kitchen display.",
+  "Você clica em Conectar e o Forkly explica o que será compartilhado.",
+  "Você entra na plataforma e autoriza o acesso.",
+  "A plataforma te devolve para o Forkly.",
+  "O Forkly confirma a conexão e guarda o acesso com segurança, só no servidor.",
+  "Os pedidos começam a chegar na sua fila e na tela da cozinha.",
 ];
 
 export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreateOrders, locale, timezone }: { providers: P[]; simulatedCount: number; canEdit: boolean; canCreateOrders: boolean; locale: string; timezone: string }) {
@@ -29,7 +29,7 @@ export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreate
     <>
       <div className="mb-5 flex gap-3 rounded-lg bg-info-soft px-4 py-3 text-sm text-info">
         <Info className="mt-0.5 size-4 shrink-0" />
-        <p>Live connections need partner approval and app credentials from each platform, so none are active yet. Delivery platforms offer a <strong>demo mode</strong> that creates orders clearly marked “Simulated” — they never mix with real platform orders.{simulatedCount > 0 && ` You have ${simulatedCount} simulated order${simulatedCount === 1 ? "" : "s"}.`}</p>
+        <p>Para conectar de verdade, cada plataforma precisa aprovar o Forkly como parceiro — por isso nenhuma está ativa ainda. Os apps de delivery têm um <strong>modo demonstração</strong>, que cria pedidos marcados como “Simulado” e nunca se misturam com pedidos reais.{simulatedCount > 0 && ` Você tem ${simulatedCount} ${simulatedCount === 1 ? "pedido simulado" : "pedidos simulados"}.`}</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {providers.map((p) => {
@@ -42,24 +42,24 @@ export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreate
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-ink-3">{p.category}</p>
                 </div>
-                {p.status === "connected" ? <Badge tone="good">Connected</Badge>
-                  : p.status === "error" ? <Badge tone="bad">Error</Badge>
-                  : demo ? <Badge tone="accent"><FlaskConical /> Demo mode</Badge>
-                  : p.availability === "needs_credentials" ? <Badge tone="warn">Needs credentials</Badge>
-                  : <Badge tone="outline">Coming soon</Badge>}
+                {p.status === "connected" ? <Badge tone="good">Conectado</Badge>
+                  : p.status === "error" ? <Badge tone="bad">Erro</Badge>
+                  : demo ? <Badge tone="accent"><FlaskConical /> Modo demonstração</Badge>
+                  : p.availability === "needs_credentials" ? <Badge tone="warn">Falta configurar</Badge>
+                  : <Badge tone="outline">Em breve</Badge>}
               </div>
               <p className="mt-3 flex-1 text-sm text-ink-2">{p.description}</p>
               {p.lastError && <p className="mt-2 rounded-md bg-bad-soft px-2 py-1 text-xs text-bad">{p.lastError}</p>}
-              <p className="mt-3 text-xs text-ink-3">Last sync: {p.lastSync ? new Date(p.lastSync).toLocaleString(locale, { timeZone: timezone, dateStyle: "medium", timeStyle: "short" }) : "never"}</p>
+              <p className="mt-3 text-xs text-ink-3">Última sincronização: {p.lastSync ? new Date(p.lastSync).toLocaleString(locale, { timeZone: timezone, dateStyle: "medium", timeStyle: "short" }) : "nunca"}</p>
               <div className="mt-3 flex flex-wrap gap-2 border-t border-line pt-3">
-                <Button size="sm" variant="ghost" onClick={() => setAbout(p)}><Plug /> How it works</Button>
+                <Button size="sm" variant="ghost" onClick={() => setAbout(p)}><Plug /> Como funciona</Button>
                 {p.supportsDemo && canEdit && (demo ? (
                   <>
-                    {canCreateOrders && <Button size="sm" onClick={() => start(async () => { const r = await simulateOrderAction(p.key); if (!r.ok) toast.error(r.error); else toast.success(r.message); })} loading={pending}><Send /> Send test order</Button>}
-                    <Button size="sm" variant="ghost" onClick={() => start(async () => { const r = await setDemoModeAction(p.key, false); if (!r.ok) toast.error(r.error); })}>Turn off demo</Button>
+                    {canCreateOrders && <Button size="sm" onClick={() => start(async () => { const r = await simulateOrderAction(p.key); if (!r.ok) toast.error(r.error); else toast.success(r.message); })} loading={pending}><Send /> Enviar pedido de teste</Button>}
+                    <Button size="sm" variant="ghost" onClick={() => start(async () => { const r = await setDemoModeAction(p.key, false); if (!r.ok) toast.error(r.error); })}>Desligar demonstração</Button>
                   </>
                 ) : (
-                  <Button size="sm" onClick={() => start(async () => { const r = await setDemoModeAction(p.key, true); if (!r.ok) toast.error(r.error); else toast.success(`${p.name} demo mode on`); })}><FlaskConical /> Try demo mode</Button>
+                  <Button size="sm" onClick={() => start(async () => { const r = await setDemoModeAction(p.key, true); if (!r.ok) toast.error(r.error); else toast.success(`Modo demonstração do ${p.name} ligado`); })}><FlaskConical /> Testar em modo demonstração</Button>
                 ))}
               </div>
             </Card>
@@ -69,18 +69,18 @@ export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreate
 
       <Dialog open={!!about} onOpenChange={(o) => !o && setAbout(null)}>
         {about && (
-          <DialogContent title={`Connecting ${about.name}`} description={about.availability === "coming_soon" ? "This connector is not built yet." : "Ready once credentials are configured."}>
+          <DialogContent title={`Como conectar o ${about.name}`} description={about.availability === "coming_soon" ? "Esta conexão ainda está sendo construída." : "Fica pronta quando as credenciais forem configuradas."}>
             <ol className="flex flex-col gap-2.5">
               {FLOW.map((s, i) => (
                 <li key={i} className="flex gap-3 text-sm"><span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold">{i + 1}</span><span className="pt-0.5">{s}</span></li>
               ))}
             </ol>
             <div className="mt-5 rounded-lg bg-surface-2 p-3 text-sm">
-              <p className="font-medium">What&apos;s needed</p>
-              <p className="mt-1 text-ink-2">An approved {about.name} partner/developer account and these server environment variables:</p>
+              <p className="font-medium">O que é preciso</p>
+              <p className="mt-1 text-ink-2">Uma conta de parceiro/desenvolvedor aprovada no {about.name} e estas variáveis no servidor:</p>
               <p className="mt-2 flex flex-wrap gap-1.5">{about.requiredEnv.map((e) => <code key={e} className="rounded bg-surface-3 px-1.5 py-0.5 text-xs">{e}</code>)}</p>
             </div>
-            <a href={about.partnerUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:underline">{about.name} developer programme <ExternalLink className="size-3.5" /></a>
+            <a href={about.partnerUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:underline">Programa de parceiros do {about.name} <ExternalLink className="size-3.5" /></a>
           </DialogContent>
         )}
       </Dialog>

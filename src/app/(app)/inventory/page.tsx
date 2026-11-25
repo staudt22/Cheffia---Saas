@@ -4,7 +4,7 @@ import { todayIn } from "@/lib/dates";
 import { InventoryView } from "@/components/inventory/inventory-view";
 import type { InventoryItem, Supplier } from "@/lib/types";
 
-export const metadata = { title: "Inventory" };
+export const metadata = { title: "Estoque" };
 
 export default async function InventoryPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const ws = await requireWorkspace("inventory");

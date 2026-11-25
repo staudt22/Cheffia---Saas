@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getUser, getWorkspace } from "@/lib/workspace";
 import { OnboardingWizard } from "@/components/onboarding/wizard";
 
-export const metadata = { title: "Set up your restaurant" };
+export const metadata = { title: "Configure seu restaurante" };
 
 export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ demo?: string; new?: string }> }) {
   const user = await getUser();

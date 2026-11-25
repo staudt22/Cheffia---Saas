@@ -18,15 +18,15 @@ export function ImageUpload({
   const [busy, setBusy] = useState(false);
 
   async function upload(file: File) {
-    if (!TYPES.includes(file.type)) return toast.error("Use a PNG, JPG, WebP or SVG image.");
-    if (file.size > MAX_BYTES) return toast.error("Images must be under 5 MB.");
+    if (!TYPES.includes(file.type)) return toast.error("Use uma imagem PNG, JPG, WebP ou SVG.");
+    if (file.size > MAX_BYTES) return toast.error("A imagem precisa ter até 5 MB.");
     setBusy(true);
     const supabase = createClient();
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "png";
     const path = `${restaurantId}/${kind}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("branding").upload(path, file, { upsert: false, contentType: file.type });
     setBusy(false);
-    if (error) return toast.error("Upload failed. Please try again.");
+    if (error) return toast.error("Não foi possível enviar. Tente novamente.");
     onChange(supabase.storage.from("branding").getPublicUrl(path).data.publicUrl);
   }
 
@@ -39,7 +39,7 @@ export function ImageUpload({
           "group relative flex shrink-0 items-center justify-center overflow-hidden border border-dashed border-line-strong bg-surface-2 text-ink-3 transition-colors hover:border-brand hover:text-brand",
           kind === "logo" ? "size-20 rounded-xl" : "h-20 w-36 rounded-lg",
         )}
-        aria-label={`Upload ${kind}`}
+        aria-label={kind === "logo" ? "Enviar logo" : "Enviar capa"}
       >
         {value ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -51,10 +51,10 @@ export function ImageUpload({
       </button>
       <div className="flex flex-col gap-1.5">
         <div className="flex gap-2">
-          <Button type="button" size="sm" onClick={() => input.current?.click()} loading={busy}>{value ? "Replace" : "Upload"}</Button>
-          {value && <Button type="button" size="sm" variant="ghost" onClick={() => onChange(null)}><Trash2 /> Remove</Button>}
+          <Button type="button" size="sm" onClick={() => input.current?.click()} loading={busy}>{value ? "Trocar" : "Enviar"}</Button>
+          {value && <Button type="button" size="sm" variant="ghost" onClick={() => onChange(null)}><Trash2 /> Remover</Button>}
         </div>
-        <p className="text-xs text-ink-3">PNG, JPG, WebP or SVG · up to 5 MB{kind === "logo" ? " · square works best" : ""}</p>
+        <p className="text-xs text-ink-3">PNG, JPG, WebP ou SVG · até 5 MB{kind === "logo" ? " · quadrado fica melhor" : ""}</p>
       </div>
       <input ref={input} type="file" accept={TYPES.join(",")} className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }} />
     </div>

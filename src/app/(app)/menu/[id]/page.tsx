@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RecipeBuilder } from "@/components/menu/recipe-builder";
 import type { InventoryItem, InventoryUnit, MenuItem } from "@/lib/types";
 
-export const metadata = { title: "Recipe" };
+export const metadata = { title: "Ficha técnica" };
 
 export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -4,7 +4,7 @@ import { KitchenDisplay } from "@/components/orders/kitchen-display";
 import { isoHoursAgo } from "@/lib/dates";
 import type { Order } from "@/lib/types";
 
-export const metadata = { title: "Kitchen display" };
+export const metadata = { title: "Tela da cozinha" };
 
 export default async function KitchenPage() {
   const ws = await requireWorkspace("orders");

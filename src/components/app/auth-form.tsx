@@ -13,13 +13,13 @@ import { Field, Input } from "@/components/ui/input";
 
 const signInSchema = z.object({
   fullName: z.string().optional(),
-  email: z.email("Enter a valid email"),
-  password: z.string().min(1, "Enter your password"),
+  email: z.email("Informe um e-mail válido"),
+  password: z.string().min(1, "Informe sua senha"),
 });
 const signUpSchema = z.object({
-  fullName: z.string().trim().min(2, "Tell us your name").optional(),
-  email: z.email("Enter a valid email"),
-  password: z.string().min(8, "Use at least 8 characters"),
+  fullName: z.string().trim().min(2, "Conte pra gente o seu nome").optional(),
+  email: z.email("Informe um e-mail válido"),
+  password: z.string().min(8, "Use pelo menos 8 caracteres"),
 });
 
 type Mode = "signin" | "signup";
@@ -47,7 +47,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const supabase = createClient();
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
-      if (error) return setError(error.message === "Invalid login credentials" ? "That email and password don't match." : error.message);
+      if (error) return setError(error.message === "Invalid login credentials" ? "E-mail ou senha incorretos." : error.message === "Email not confirmed" ? "Confirme seu e-mail pelo link que enviamos antes de entrar." : error.message);
       router.replace(next);
       router.refresh();
       return;
@@ -60,7 +60,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
-    if (error) return setError(error.message);
+    if (error) return setError(/already registered/i.test(error.message) ? "Este e-mail já tem conta. Use “Entrar”." : /password/i.test(error.message) ? "Senha fraca. Use pelo menos 8 caracteres." : error.message);
     if (data.session) {
       router.replace(next);
       router.refresh();
@@ -73,40 +73,40 @@ export function AuthForm({ mode }: { mode: Mode }) {
     return (
       <div className="animate-slide-up">
         <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-brand-soft text-brand"><MailCheck className="size-5" /></div>
-        <h1 className="text-2xl font-semibold tracking-tight">Check your inbox</h1>
-        <p className="mt-2 text-sm text-ink-2">We sent a confirmation link to <strong>{sentTo}</strong>. Open it to finish creating your account.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Confira seu e-mail</h1>
+        <p className="mt-2 text-sm text-ink-2">Enviamos um link de confirmação para <strong>{sentTo}</strong>. Abra o link para terminar de criar sua conta. Não chegou? Veja a caixa de spam.</p>
       </div>
     );
   }
 
   return (
     <div className="animate-slide-up">
-      <h1 className="text-2xl font-semibold tracking-tight">{mode === "signin" ? "Welcome back" : isDemo ? "Explore Forkly" : "Create your account"}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{mode === "signin" ? "Que bom te ver de novo" : isDemo ? "Conheça o Forkly" : "Crie sua conta grátis"}</h1>
       <p className="mt-1.5 text-sm text-ink-3">
-        {mode === "signin" ? "Sign in to your restaurant workspace." : isDemo ? "Create an account and we'll set up a demo restaurant with sample data." : "Step 1 of 10 — it takes about five minutes."}
+        {mode === "signin" ? "Entre para acessar o seu restaurante." : isDemo ? "Crie uma conta e montamos um restaurante de exemplo, cheio de dados para você explorar." : "7 dias grátis, sem cartão. Passo 1 de 10 — leva uns 5 minutos."}
       </p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>
         {mode === "signup" && (
-          <Field label="Your name" htmlFor="fullName" error={formState.errors.fullName?.message}>
+          <Field label="Seu nome" htmlFor="fullName" error={formState.errors.fullName?.message}>
             <Input id="fullName" autoComplete="name" aria-invalid={!!formState.errors.fullName} {...register("fullName")} />
           </Field>
         )}
-        <Field label="Email" htmlFor="email" error={formState.errors.email?.message}>
+        <Field label="E-mail" htmlFor="email" error={formState.errors.email?.message}>
           <Input id="email" type="email" autoComplete="email" aria-invalid={!!formState.errors.email} {...register("email")} />
         </Field>
-        <Field label="Password" htmlFor="password" error={formState.errors.password?.message}>
+        <Field label="Senha" htmlFor="password" error={formState.errors.password?.message}>
           <Input id="password" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} aria-invalid={!!formState.errors.password} {...register("password")} />
         </Field>
         {error && <p role="alert" className="rounded-md bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}
         <Button type="submit" variant="primary" size="lg" loading={formState.isSubmitting} className="mt-2">
-          {mode === "signin" ? "Sign in" : "Create account"}
+          {mode === "signin" ? "Entrar" : "Criar conta grátis"}
         </Button>
       </form>
       <p className="mt-6 text-sm text-ink-3">
         {mode === "signin" ? (
-          <>New to Forkly? <Link className="font-medium text-ink underline-offset-4 hover:underline" href={`/signup${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}>Create an account</Link></>
+          <>Ainda não tem conta? <Link className="font-medium text-ink underline-offset-4 hover:underline" href={`/signup${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}>Criar conta grátis</Link></>
         ) : (
-          <>Already have an account? <Link className="font-medium text-ink underline-offset-4 hover:underline" href={`/login${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}>Sign in</Link></>
+          <>Já tem conta? <Link className="font-medium text-ink underline-offset-4 hover:underline" href={`/login${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}>Entrar</Link></>
         )}
       </p>
     </div>

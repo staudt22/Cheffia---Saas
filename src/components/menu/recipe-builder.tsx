@@ -49,56 +49,56 @@ export function RecipeBuilder({ item, recipe, inventory, autoDeduct, currency, l
         ingredients: lines.filter((l) => l.inventory_item_id && Number(l.quantity) > 0).map((l) => ({ ...l, quantity: Number(l.quantity) })),
       });
       if (!r.ok) return void toast.error(r.error);
-      toast.success("Recipe saved");
+      toast.success("Ficha técnica salva");
     });
   }
 
   return (
     <div>
-      <Link href="/menu" className="mb-3 inline-flex items-center gap-1 text-sm text-ink-3 hover:text-ink"><ArrowLeft className="size-4" /> Menu</Link>
+      <Link href="/menu" className="mb-3 inline-flex items-center gap-1 text-sm text-ink-3 hover:text-ink"><ArrowLeft className="size-4" /> Cardápio</Link>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">{item.name}</h1>
-          <p className="mt-1 text-sm text-ink-3">Recipe builder · sells for {money(item.price)}</p>
+          <p className="mt-1 text-sm text-ink-3">Ficha técnica · vendido por {money(item.price)}</p>
         </div>
-        {canEdit && <Button variant="primary" loading={pending} onClick={save}>Save recipe</Button>}
+        {canEdit && <Button variant="primary" loading={pending} onClick={save}>Salvar ficha técnica</Button>}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <Card>
-          <CardHeader title="Ingredients" description="Quantities per portion. Costs use the current price of each inventory item." />
+          <CardHeader title="Ingredientes" description="Quantidade usada em uma porção. O custo usa o preço atual de cada item do estoque." />
           <div className="p-4">
             {!canSeeInventory ? (
-              <p className="text-sm text-ink-3">Your role can&apos;t view inventory, so ingredients can&apos;t be edited here.</p>
+              <p className="text-sm text-ink-3">Seu cargo não tem acesso ao estoque, então não dá para editar os ingredientes aqui.</p>
             ) : !inventory.length ? (
-              <EmptyState className="py-6" title="No inventory items yet" description="Recipes are built from your inventory so costs and stock stay in sync." action={<Button asChild variant="primary"><Link href="/inventory?new=1">Add inventory</Link></Button>} />
+              <EmptyState className="py-6" title="Nenhum item no estoque ainda" description="A ficha técnica usa os itens do estoque, assim custo e estoque ficam sempre certos." action={<Button asChild variant="primary"><Link href="/inventory?new=1">Cadastrar no estoque</Link></Button>} />
             ) : (
               <>
                 {costed.length > 0 && (
-                  <div className="mb-2 hidden grid-cols-[1fr_100px_90px_90px_36px] gap-2 px-1 text-xs font-medium text-ink-3 sm:grid"><span>Ingredient</span><span>Quantity</span><span>Unit</span><span className="text-right">Cost</span></div>
+                  <div className="mb-2 hidden grid-cols-[1fr_100px_90px_90px_36px] gap-2 px-1 text-xs font-medium text-ink-3 sm:grid"><span>Ingrediente</span><span>Quantidade</span><span>Unidade</span><span className="text-right">Custo</span></div>
                 )}
                 <ul className="flex flex-col gap-2">
                   {costed.map((l, idx) => (
                     <li key={idx} className="grid grid-cols-[1fr_90px_80px_36px] items-center gap-2 sm:grid-cols-[1fr_100px_90px_90px_36px]">
-                      <Select value={l.inventory_item_id} disabled={!canEdit} aria-label="Ingredient" onChange={(e) => {
+                      <Select value={l.inventory_item_id} disabled={!canEdit} aria-label="Ingrediente" onChange={(e) => {
                         const inv = byId.get(e.target.value);
                         setLines(lines.map((x, j) => (j === idx ? { ...x, inventory_item_id: e.target.value, unit: inv ? defaultRecipeUnit(inv.unit) : x.unit } : x)));
                       }}>
                         {[l.inv, ...unused].filter(Boolean).map((i) => <option key={i!.id} value={i!.id}>{i!.name}</option>)}
                       </Select>
-                      <Input type="number" min={0} step="any" value={l.quantity} disabled={!canEdit} aria-label="Quantity" onChange={(e) => setLines(lines.map((x, j) => (j === idx ? { ...x, quantity: e.target.value } : x)))} />
-                      <Select value={l.unit} disabled={!canEdit} aria-label="Unit" onChange={(e) => setLines(lines.map((x, j) => (j === idx ? { ...x, unit: e.target.value as InventoryUnit } : x)))}>
+                      <Input type="number" min={0} step="any" value={l.quantity} disabled={!canEdit} aria-label="Quantidade" onChange={(e) => setLines(lines.map((x, j) => (j === idx ? { ...x, quantity: e.target.value } : x)))} />
+                      <Select value={l.unit} disabled={!canEdit} aria-label="Unidade" onChange={(e) => setLines(lines.map((x, j) => (j === idx ? { ...x, unit: e.target.value as InventoryUnit } : x)))}>
                         {(l.inv ? compatibleUnits(l.inv.unit) : [l.unit]).map((u) => <option key={u} value={u}>{u}</option>)}
                       </Select>
-                      <span className={cn("hidden text-right text-sm tabular sm:block", l.mismatch && "text-bad")}>{l.mismatch ? <AlertTriangle className="ml-auto size-4" aria-label="Unit mismatch" /> : money(l.cost)}</span>
-                      {canEdit && <Button variant="ghost" size="icon" aria-label="Remove ingredient" onClick={() => setLines(lines.filter((_, j) => j !== idx))}><Trash2 /></Button>}
+                      <span className={cn("hidden text-right text-sm tabular sm:block", l.mismatch && "text-bad")}>{l.mismatch ? <AlertTriangle className="ml-auto size-4" aria-label="Unidade incompatível" /> : money(l.cost)}</span>
+                      {canEdit && <Button variant="ghost" size="icon" aria-label="Remover ingrediente" onClick={() => setLines(lines.filter((_, j) => j !== idx))}><Trash2 /></Button>}
                     </li>
                   ))}
                 </ul>
                 {canEdit && unused.length > 0 && (
-                  <Button variant="ghost" className="mt-2" onClick={() => setLines([...lines, { inventory_item_id: unused[0]!.id, quantity: "", unit: defaultRecipeUnit(unused[0]!.unit) }])}><Plus /> Add ingredient</Button>
+                  <Button variant="ghost" className="mt-2" onClick={() => setLines([...lines, { inventory_item_id: unused[0]!.id, quantity: "", unit: defaultRecipeUnit(unused[0]!.unit) }])}><Plus /> Adicionar ingrediente</Button>
                 )}
-                {!lines.length && <p className="py-4 text-sm text-ink-3">No ingredients yet. Add them to see food cost and margin.</p>}
+                {!lines.length && <p className="py-4 text-sm text-ink-3">Nenhum ingrediente ainda. Adicione para ver o custo e a margem.</p>}
               </>
             )}
           </div>
@@ -106,26 +106,26 @@ export function RecipeBuilder({ item, recipe, inventory, autoDeduct, currency, l
 
         <div className="flex flex-col gap-4">
           <Card className="p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-3">Cost per portion</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-ink-3">Custo por porção</p>
             <dl className="mt-3 flex flex-col gap-2 text-sm">
-              <div className="flex justify-between"><dt className="text-ink-2">Estimated food cost</dt><dd className="font-medium tabular">{money(total)}</dd></div>
-              <div className="flex justify-between"><dt className="text-ink-2">Selling price</dt><dd className="tabular">{money(item.price)}</dd></div>
-              <div className="flex justify-between border-t border-line pt-2"><dt className="text-ink-2">Gross profit</dt><dd className={cn("font-semibold tabular", profit < 0 && "text-bad")}>{money(profit)}</dd></div>
-              <div className="flex justify-between"><dt className="text-ink-2">Margin</dt><dd className={cn("font-semibold tabular", margin != null && margin < 0.6 ? "text-warn" : "text-good")}>{formatPercent(margin, locale, 1)}</dd></div>
-              <div className="flex justify-between text-xs text-ink-3"><dt>Food cost %</dt><dd className="tabular">{item.price > 0 ? formatPercent(total / item.price, locale, 1) : "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-ink-2">Custo dos ingredientes</dt><dd className="font-medium tabular">{money(total)}</dd></div>
+              <div className="flex justify-between"><dt className="text-ink-2">Preço de venda</dt><dd className="tabular">{money(item.price)}</dd></div>
+              <div className="flex justify-between border-t border-line pt-2"><dt className="text-ink-2">Lucro bruto</dt><dd className={cn("font-semibold tabular", profit < 0 && "text-bad")}>{money(profit)}</dd></div>
+              <div className="flex justify-between"><dt className="text-ink-2">Margem</dt><dd className={cn("font-semibold tabular", margin != null && margin < 0.6 ? "text-warn" : "text-good")}>{formatPercent(margin, locale, 1)}</dd></div>
+              <div className="flex justify-between text-xs text-ink-3"><dt>Custo sobre o preço (CMV)</dt><dd className="tabular">{item.price > 0 ? formatPercent(total / item.price, locale, 1) : "—"}</dd></div>
             </dl>
-            {margin != null && margin < 0.6 && lines.length > 0 && <p className="mt-3 rounded-md bg-warn-soft px-2.5 py-2 text-xs text-warn">Food cost is above 40% of the price. Most restaurants aim for 28–35%.</p>}
+            {margin != null && margin < 0.6 && lines.length > 0 && <p className="mt-3 rounded-md bg-warn-soft px-2.5 py-2 text-xs text-warn">O custo passou de 40% do preço. A maioria dos restaurantes busca entre 28% e 35%.</p>}
           </Card>
           <Card className="flex flex-col gap-4 p-4">
-            <Field label="Preparation time (minutes)" htmlFor="prep" hint="Used as the estimated time on the kitchen display.">
+            <Field label="Tempo de preparo (minutos)" htmlFor="prep" hint="Aparece como tempo previsto na tela da cozinha.">
               <Input id="prep" type="number" min={0} max={600} value={prep} disabled={!canEdit} onChange={(e) => setPrep(e.target.value)} />
             </Field>
             <label className="flex items-start justify-between gap-3">
-              <span><span className="block text-sm font-medium">Deduct stock on completion</span>
-                <span className="block text-xs text-ink-3">{autoDeduct ? "Ingredients are removed from inventory when an order with this item is completed." : "Automatic deduction is turned off in Settings."}</span></span>
+              <span><span className="block text-sm font-medium">Baixar do estoque ao concluir</span>
+                <span className="block text-xs text-ink-3">{autoDeduct ? "Quando um pedido com este item for concluído, os ingredientes saem do estoque sozinhos." : "A baixa automática está desligada em Configurações."}</span></span>
               <Switch checked={deduct} disabled={!canEdit} onCheckedChange={setDeduct} />
             </label>
-            <Field label="Instructions" htmlFor="instr"><Textarea id="instr" rows={4} value={instructions} disabled={!canEdit} onChange={(e) => setInstructions(e.target.value)} placeholder="Steps, plating notes…" /></Field>
+            <Field label="Modo de preparo" htmlFor="instr"><Textarea id="instr" rows={4} value={instructions} disabled={!canEdit} onChange={(e) => setInstructions(e.target.value)} placeholder="Passo a passo, montagem do prato…" /></Field>
           </Card>
         </div>
       </div>

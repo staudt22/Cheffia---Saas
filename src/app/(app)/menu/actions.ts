@@ -15,10 +15,10 @@ export async function saveMenuItemAction(id: string | null, input: unknown): Pro
   const ctx = await actionContext("menu", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = menuItemSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the item details." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira os dados do item." };
   const rid = ctx.ws.restaurant.id;
   if (parsed.data.photo_url && !parsed.data.photo_url.startsWith(`${env.supabaseUrl}/storage/v1/object/public/menu-photos/${rid}/`)) {
-    return { ok: false, error: "Photos must be uploaded through Forkly." };
+    return { ok: false, error: "As fotos precisam ser enviadas pelo Forkly." };
   }
   const row = { ...parsed.data, restaurant_id: rid };
   const q = id
@@ -33,7 +33,7 @@ export async function saveMenuItemAction(id: string | null, input: unknown): Pro
 export async function setAvailabilityAction(id: string, available: boolean): Promise<ActionResult> {
   const ctx = await actionContext("menu", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!uuid.safeParse(id).success) return { ok: false, error: "Invalid item" };
+  if (!uuid.safeParse(id).success) return { ok: false, error: "Item inválido" };
   const { error } = await ctx.supabase.from("menu_items").update({ is_available: available }).eq("id", id).eq("restaurant_id", ctx.ws.restaurant.id);
   if (error) return { ok: false, error: friendlyError(error) };
   refresh();
@@ -43,14 +43,14 @@ export async function setAvailabilityAction(id: string, available: boolean): Pro
 export async function deleteMenuItemAction(id: string): Promise<ActionResult> {
   const ctx = await actionContext("menu", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!uuid.safeParse(id).success) return { ok: false, error: "Invalid item" };
+  if (!uuid.safeParse(id).success) return { ok: false, error: "Item inválido" };
   const { error } = await ctx.supabase.from("menu_items").delete().eq("id", id).eq("restaurant_id", ctx.ws.restaurant.id);
   if (error) return { ok: false, error: friendlyError(error) };
   refresh();
   return { ok: true };
 }
 
-const categoryName = z.string().trim().min(1, "Name the category").max(60);
+const categoryName = z.string().trim().min(1, "Dê um nome à categoria").max(60);
 
 export async function saveCategoryAction(id: string | null, name: string): Promise<ActionResult> {
   const ctx = await actionContext("menu", "edit");
@@ -65,7 +65,7 @@ export async function saveCategoryAction(id: string | null, name: string): Promi
     const { count } = await ctx.supabase.from("menu_categories").select("id", { count: "exact", head: true }).eq("restaurant_id", rid);
     ({ error } = await ctx.supabase.from("menu_categories").insert({ restaurant_id: rid, name: parsed.data, position: count ?? 0 }));
   }
-  if (error) return { ok: false, error: error.code === "23505" ? "A category with that name already exists." : friendlyError(error) };
+  if (error) return { ok: false, error: error.code === "23505" ? "Já existe uma categoria com esse nome." : friendlyError(error) };
   refresh();
   return { ok: true };
 }
@@ -85,17 +85,17 @@ const recipeSchema = z.object({
   deduct_on_completion: z.boolean(),
   ingredients: z.array(z.object({
     inventory_item_id: uuid,
-    quantity: z.coerce.number().positive("Quantities must be greater than zero").max(1e6),
+    quantity: z.coerce.number().positive("As quantidades precisam ser maiores que zero").max(1e6),
     unit: z.enum(UNITS),
-  })).max(60).refine((list) => new Set(list.map((i) => i.inventory_item_id)).size === list.length, "Each ingredient can only appear once"),
+  })).max(60).refine((list) => new Set(list.map((i) => i.inventory_item_id)).size === list.length, "Cada ingrediente só pode aparecer uma vez"),
 });
 
 export async function saveRecipeAction(menuItemId: string, input: unknown): Promise<ActionResult> {
   const ctx = await actionContext("menu", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!uuid.safeParse(menuItemId).success) return { ok: false, error: "Invalid item" };
+  if (!uuid.safeParse(menuItemId).success) return { ok: false, error: "Item inválido" };
   const parsed = recipeSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the recipe." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira a ficha técnica." };
   const rid = ctx.ws.restaurant.id;
   const { ingredients, ...recipe } = parsed.data;
 

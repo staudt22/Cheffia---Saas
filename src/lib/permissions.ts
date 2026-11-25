@@ -1,25 +1,25 @@
 import type { AppRole, Section } from "@/lib/types";
 
 export const SECTIONS: { key: Section; label: string; description: string }[] = [
-  { key: "overview", label: "Overview", description: "Main dashboard" },
-  { key: "orders", label: "Orders", description: "Orders and kitchen display" },
-  { key: "finances", label: "Finances", description: "Revenue, expenses and transactions" },
-  { key: "inventory", label: "Inventory", description: "Stock, movements and alerts" },
-  { key: "menu", label: "Menu", description: "Products, prices and recipes" },
-  { key: "suppliers", label: "Suppliers", description: "Suppliers and purchase orders" },
-  { key: "team", label: "Team", description: "Employees, invitations and shifts" },
-  { key: "analytics", label: "Analytics", description: "Reports and trends" },
-  { key: "assistant", label: "AI Assistant", description: "Ask questions about your data" },
-  { key: "integrations", label: "Integrations", description: "External platforms" },
-  { key: "settings", label: "Settings", description: "Restaurant identity and preferences" },
+  { key: "overview", label: "Visão geral", description: "Painel principal" },
+  { key: "orders", label: "Pedidos", description: "Pedidos e tela da cozinha" },
+  { key: "finances", label: "Finanças", description: "Receitas, despesas e lançamentos" },
+  { key: "inventory", label: "Estoque", description: "Itens, movimentações e alertas" },
+  { key: "menu", label: "Cardápio", description: "Produtos, preços e fichas técnicas" },
+  { key: "suppliers", label: "Fornecedores", description: "Fornecedores e pedidos de compra" },
+  { key: "team", label: "Equipe", description: "Funcionários, convites e escalas" },
+  { key: "analytics", label: "Relatórios", description: "Relatórios e tendências" },
+  { key: "assistant", label: "Assistente IA", description: "Pergunte sobre os seus números" },
+  { key: "integrations", label: "Integrações", description: "Plataformas externas" },
+  { key: "settings", label: "Configurações", description: "Identidade e preferências do restaurante" },
 ];
 
 export const ROLES: { key: AppRole; label: string; description: string }[] = [
-  { key: "owner", label: "Owner", description: "Full access to everything, including billing and permissions" },
-  { key: "manager", label: "Manager", description: "Runs daily operations" },
-  { key: "employee", label: "Employee", description: "Takes and updates orders" },
-  { key: "accountant", label: "Accountant", description: "Works with finances and reports" },
-  { key: "kitchen", label: "Kitchen staff", description: "Uses the kitchen display" },
+  { key: "owner", label: "Dono", description: "Acesso total, incluindo plano e permissões" },
+  { key: "manager", label: "Gerente", description: "Cuida da operação do dia a dia" },
+  { key: "employee", label: "Funcionário", description: "Lança e atualiza pedidos" },
+  { key: "accountant", label: "Contador", description: "Trabalha com finanças e relatórios" },
+  { key: "kitchen", label: "Cozinha", description: "Usa a tela da cozinha" },
 ];
 
 export const roleLabel = (role: AppRole) => ROLES.find((r) => r.key === role)?.label ?? role;

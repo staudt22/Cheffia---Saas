@@ -20,10 +20,10 @@ export async function saveExpenseAction(id: string | null, input: unknown): Prom
   const ctx = await actionContext("finances", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = expenseSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the expense." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira a despesa." };
   const rid = ctx.ws.restaurant.id;
   const e = parsed.data;
-  if (e.receipt_path && !e.receipt_path.startsWith(`${rid}/`)) return { ok: false, error: "Invalid receipt" };
+  if (e.receipt_path && !e.receipt_path.startsWith(`${rid}/`)) return { ok: false, error: "Comprovante inválido" };
   const row = {
     ...e,
     supplier_id: e.supplier_id || null,
@@ -33,7 +33,7 @@ export async function saveExpenseAction(id: string | null, input: unknown): Prom
   let error;
   if (id) {
     const { data: existing } = await ctx.supabase.from("expenses").select("is_recurring, recurrence, next_due_on, date").eq("id", id).eq("restaurant_id", rid).maybeSingle();
-    if (!existing) return { ok: false, error: "Expense not found" };
+    if (!existing) return { ok: false, error: "Despesa não encontrada" };
     const scheduleChanged = e.is_recurring && (!existing.is_recurring || existing.recurrence !== e.recurrence || existing.date !== e.date);
     ({ error } = await ctx.supabase.from("expenses").update({
       ...row,
@@ -51,7 +51,7 @@ export async function saveExpenseAction(id: string | null, input: unknown): Prom
 export async function deleteExpenseAction(id: string): Promise<ActionResult> {
   const ctx = await actionContext("finances", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!uuid.safeParse(id).success) return { ok: false, error: "Invalid expense" };
+  if (!uuid.safeParse(id).success) return { ok: false, error: "Despesa inválida" };
   const rid = ctx.ws.restaurant.id;
   const { data } = await ctx.supabase.from("expenses").select("receipt_path").eq("id", id).eq("restaurant_id", rid).maybeSingle();
   const { error } = await ctx.supabase.from("expenses").delete().eq("id", id).eq("restaurant_id", rid);
@@ -74,7 +74,7 @@ export async function saveRevenueAction(id: string | null, input: unknown): Prom
   const ctx = await actionContext("finances", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = revenueSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the revenue entry." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira a receita." };
   const rid = ctx.ws.restaurant.id;
   const row = { ...parsed.data, restaurant_id: rid };
   const { error } = id
@@ -88,10 +88,10 @@ export async function saveRevenueAction(id: string | null, input: unknown): Prom
 export async function deleteRevenueAction(id: string): Promise<ActionResult> {
   const ctx = await actionContext("finances", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!uuid.safeParse(id).success) return { ok: false, error: "Invalid entry" };
+  if (!uuid.safeParse(id).success) return { ok: false, error: "Lançamento inválido" };
   const { data, error } = await ctx.supabase.from("revenue_records").delete().eq("id", id).eq("restaurant_id", ctx.ws.restaurant.id).is("order_id", null).select("id");
   if (error) return { ok: false, error: friendlyError(error) };
-  if (!data?.length) return { ok: false, error: "Order revenue is managed from the order itself — cancel the order instead." };
+  if (!data?.length) return { ok: false, error: "A receita de pedidos é controlada pelo próprio pedido — cancele o pedido, se for o caso." };
   refresh();
   return { ok: true };
 }
@@ -99,8 +99,8 @@ export async function deleteRevenueAction(id: string): Promise<ActionResult> {
 export async function receiptUrlAction(path: string): Promise<ActionResult<{ url: string }>> {
   const ctx = await actionContext("finances", "view");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!path.startsWith(`${ctx.ws.restaurant.id}/`)) return { ok: false, error: "Receipt not found" };
+  if (!path.startsWith(`${ctx.ws.restaurant.id}/`)) return { ok: false, error: "Comprovante não encontrado" };
   const { data, error } = await ctx.supabase.storage.from("receipts").createSignedUrl(path, 60 * 5);
-  if (error || !data) return { ok: false, error: "Receipt not found" };
+  if (error || !data) return { ok: false, error: "Comprovante não encontrado" };
   return { ok: true, data: { url: data.signedUrl } };
 }

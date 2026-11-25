@@ -27,7 +27,7 @@ function ChartTooltip({ active, payload, label, money }: { active?: boolean; pay
           <span className="font-medium text-ink tabular">{money(p.value)}</span>
         </p>
       ))}
-      {orders != null && payload.length === 1 && <p className="mt-0.5 text-ink-3">{orders} orders</p>}
+      {orders != null && payload.length === 1 && <p className="mt-0.5 text-ink-3">{orders} {orders === 1 ? "pedido" : "pedidos"}</p>}
     </div>
   );
 }
@@ -46,12 +46,12 @@ export function RevenueChart({ data, kind, currency, locale, height = 240 }: { d
       {kind === "bar" ? (
         <BarChart {...common} barCategoryGap="22%">
           {grid}{x}{y}{tip}
-          <Bar dataKey="revenue" name="Revenue" fill="var(--brand)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={32} />
+          <Bar dataKey="revenue" name="Faturamento" fill="var(--brand)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={32} />
         </BarChart>
       ) : kind === "line" ? (
         <LineChart {...common}>
           {grid}{x}{y}{tip}
-          <Line dataKey="revenue" name="Revenue" stroke="var(--brand)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="revenue" name="Faturamento" stroke="var(--brand)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </LineChart>
       ) : (
         <AreaChart {...common}>
@@ -62,7 +62,7 @@ export function RevenueChart({ data, kind, currency, locale, height = 240 }: { d
             </linearGradient>
           </defs>
           {grid}{x}{y}{tip}
-          <Area dataKey="revenue" animationDuration={500} name="Revenue" stroke="var(--brand)" strokeWidth={2} fill="url(#rev-fill)" activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Area dataKey="revenue" animationDuration={500} name="Faturamento" stroke="var(--brand)" strokeWidth={2} fill="url(#rev-fill)" activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </AreaChart>
       )}
     </ResponsiveContainer>
@@ -83,8 +83,8 @@ export function RevenueExpenseChart({ data, kind, currency, locale, height = 260
           <YAxis {...axisProps} width={64} tickFormatter={m.axis} />
           <Tooltip cursor={{ fill: "var(--surface-3)" }} content={<ChartTooltip money={m.full} />} />
           {legend}
-          <Bar dataKey="revenue" name="Revenue" fill="var(--series-1)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={18} />
-          <Bar dataKey="expenses" animationDuration={500} name="Expenses" fill="var(--series-2)" radius={[4, 4, 0, 0]} maxBarSize={18} />
+          <Bar dataKey="revenue" name="Faturamento" fill="var(--series-1)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={18} />
+          <Bar dataKey="expenses" animationDuration={500} name="Despesas" fill="var(--series-2)" radius={[4, 4, 0, 0]} maxBarSize={18} />
         </BarChart>
       ) : (
         <LineChart {...common}>
@@ -93,8 +93,8 @@ export function RevenueExpenseChart({ data, kind, currency, locale, height = 260
           <YAxis {...axisProps} width={64} tickFormatter={m.axis} />
           <Tooltip cursor={{ stroke: "var(--line-strong)" }} content={<ChartTooltip money={m.full} />} />
           {legend}
-          <Line dataKey="revenue" name="Revenue" stroke="var(--series-1)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
-          <Line dataKey="expenses" animationDuration={500} name="Expenses" stroke="var(--series-2)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="revenue" name="Faturamento" stroke="var(--series-1)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="expenses" animationDuration={500} name="Despesas" stroke="var(--series-2)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </LineChart>
       )}
     </ResponsiveContainer>

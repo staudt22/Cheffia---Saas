@@ -6,15 +6,15 @@ import { initials } from "@/lib/utils";
 export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; logoUrl: string | null; brand: string; accent: string }) {
   const vars = brandVars(brand, accent) as React.CSSProperties;
   const nav = [
-    { icon: LayoutDashboard, label: "Overview", active: true },
-    { icon: ChefHat, label: "Orders" },
-    { icon: Receipt, label: "Finances" },
-    { icon: Package, label: "Inventory" },
-    { icon: BarChart3, label: "Analytics" },
+    { icon: LayoutDashboard, label: "Visão geral", active: true },
+    { icon: ChefHat, label: "Pedidos" },
+    { icon: Receipt, label: "Finanças" },
+    { icon: Package, label: "Estoque" },
+    { icon: BarChart3, label: "Relatórios" },
   ];
   const bars = [38, 52, 44, 61, 58, 72, 66];
   return (
-    <div style={vars} className="app-glow overflow-hidden rounded-xl shadow-card" aria-label="Branding preview">
+    <div style={vars} className="app-glow overflow-hidden rounded-xl shadow-card" aria-label="Prévia da identidade">
       <div className="flex h-64">
         <div className="flex w-36 flex-col gap-0.5 border-r border-line bg-surface p-2.5">
           <div className="mb-2 flex items-center gap-2 px-1">
@@ -24,7 +24,7 @@ export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; l
             ) : (
               <span className="flex size-6 items-center justify-center rounded-md bg-brand text-[10px] font-semibold text-brand-foreground">{initials(name || "R")}</span>
             )}
-            <span className="truncate text-[11px] font-semibold">{name || "Your restaurant"}</span>
+            <span className="truncate text-[11px] font-semibold">{name || "Seu restaurante"}</span>
           </div>
           {nav.map((n) => (
             <div key={n.label} className={`flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[10px] ${n.active ? "bg-brand-soft font-medium text-brand" : "text-ink-3"}`}>
@@ -33,12 +33,12 @@ export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; l
           ))}
         </div>
         <div className="flex-1 p-3">
-          <p className="text-sm font-semibold">Good morning, <span className="text-gradient">{name || "your restaurant"}</span></p>
+          <p className="text-sm font-semibold">Bom dia, <span className="text-gradient">{name || "seu restaurante"}</span></p>
           <div className="mt-2 grid grid-cols-3 gap-1.5">
-            {["Revenue", "Orders", "Profit"].map((k, i) => (
+            {["Faturamento", "Pedidos", "Lucro"].map((k, i) => (
               <div key={k} className={i === 0 ? "surface-gradient rounded-md p-1.5" : "rounded-md bg-surface p-1.5 shadow-card"}>
                 <p className={i === 0 ? "text-[8px] opacity-75" : "text-[8px] text-ink-3"}>{k}</p>
-                <p className="text-[11px] font-semibold tabular">{["$12,480", "486", "$4,210"][i]}</p>
+                <p className="text-[11px] font-semibold tabular">{["R$ 32.480", "486", "R$ 9.210"][i]}</p>
               </div>
             ))}
           </div>
@@ -48,8 +48,8 @@ export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; l
             </div>
           </div>
           <div className="mt-1.5 flex gap-1.5">
-            <span className="rounded-md bg-brand px-2 py-1 text-[9px] font-medium text-brand-foreground">New order</span>
-            <span className="rounded-md bg-accent-soft px-2 py-1 text-[9px] font-medium text-accent">3 alerts</span>
+            <span className="rounded-md bg-brand px-2 py-1 text-[9px] font-medium text-brand-foreground">Novo pedido</span>
+            <span className="rounded-md bg-accent-soft px-2 py-1 text-[9px] font-medium text-accent">3 avisos</span>
           </div>
         </div>
       </div>

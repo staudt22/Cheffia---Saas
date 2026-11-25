@@ -20,7 +20,7 @@ import type { InventoryItem, Supplier } from "@/lib/types";
 export interface MovementRow { id: string; inventory_item_id: string; type: string; quantity_delta: number; unit_cost: number | null; reason: string | null; created_at: string; item: string; unit: string }
 
 export const MOVEMENT_LABEL: Record<string, string> = {
-  purchase: "Purchase", usage: "Usage", waste: "Waste", adjustment: "Adjustment", order_deduction: "Order", po_receipt: "Purchase order", initial: "Opening stock",
+  purchase: "Compra", usage: "Uso", waste: "Desperdício", adjustment: "Ajuste", order_deduction: "Pedido", po_receipt: "Pedido de compra", initial: "Estoque inicial",
 };
 
 export function stockStatus(i: InventoryItem, today: string) {
@@ -32,10 +32,10 @@ export function stockStatus(i: InventoryItem, today: string) {
 }
 
 export function StatusBadge({ status, expires }: { status: ReturnType<typeof stockStatus>; expires?: string | null }) {
-  if (status === "out") return <Badge tone="bad"><PackageX /> Out of stock</Badge>;
-  if (status === "low") return <Badge tone="warn"><AlertTriangle /> Low</Badge>;
-  if (status === "expiring") return <Badge tone="info"><CalendarClock /> Expires {expires}</Badge>;
-  return <Badge tone="good">In stock</Badge>;
+  if (status === "out") return <Badge tone="bad"><PackageX /> Zerado</Badge>;
+  if (status === "low") return <Badge tone="warn"><AlertTriangle /> Baixo</Badge>;
+  if (status === "expiring") return <Badge tone="info"><CalendarClock /> Vence {expires?.split("-").reverse().join("/")}</Badge>;
+  return <Badge tone="good">Em dia</Badge>;
 }
 
 export function InventoryView({ items, suppliers, movements, today, currency, locale, timezone, canEdit, initialFilter, openNew }: {
@@ -64,15 +64,15 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
 
   return (
     <div>
-      <PageHeader title="Inventory" description="Stock levels update automatically from purchases, usage, waste and completed orders."
-        actions={canEdit && <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Add item</Button>} />
+      <PageHeader title="Estoque" description="As quantidades se atualizam sozinhas com compras, uso, desperdício e pedidos concluídos."
+        actions={canEdit && <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Novo item</Button>} />
 
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
-          { label: "Items tracked", value: formatNumber(items.length, locale), icon: Package },
-          { label: "Stock value", value: money(value), icon: ArrowDownToLine },
-          { label: "Low or out", value: formatNumber(low, locale), icon: AlertTriangle, tone: low ? "text-warn" : undefined, onClick: () => { setView("stock"); setFilter("low"); } },
-          { label: "Expiring in 3 days", value: formatNumber(expiring, locale), icon: CalendarClock, tone: expiring ? "text-info" : undefined, onClick: () => { setView("stock"); setFilter("expiring"); } },
+          { label: "Itens cadastrados", value: formatNumber(items.length, locale), icon: Package },
+          { label: "Valor em estoque", value: money(value), icon: ArrowDownToLine },
+          { label: "Baixos ou zerados", value: formatNumber(low, locale), icon: AlertTriangle, tone: low ? "text-warn" : undefined, onClick: () => { setView("stock"); setFilter("low"); } },
+          { label: "Vencem em 3 dias", value: formatNumber(expiring, locale), icon: CalendarClock, tone: expiring ? "text-info" : undefined, onClick: () => { setView("stock"); setFilter("expiring"); } },
         ].map((k) => (
           <button key={k.label} type="button" onClick={k.onClick} disabled={!k.onClick} className="rounded-lg bg-surface p-4 text-left shadow-card transition enabled:hover:shadow-pop disabled:cursor-default">
             <p className="flex items-center gap-1.5 text-[13px] text-ink-3"><k.icon className="size-3.5" /> {k.label}</p>
@@ -82,21 +82,21 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
       </div>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
-        <Segmented size="md" ariaLabel="View" value={view} onChange={setView} options={[{ value: "stock", label: "Stock" }, { value: "history", label: "Movement history" }]} />
+        <Segmented size="md" ariaLabel="Ver" value={view} onChange={setView} options={[{ value: "stock", label: "Itens" }, { value: "history", label: "Movimentações" }]} />
         {view === "stock" && (
           <div className="flex flex-1 flex-wrap gap-2 md:justify-end">
             <div className="relative min-w-48 flex-1 md:max-w-64">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search items" className="pl-9" aria-label="Search inventory" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar itens" className="pl-9" aria-label="Buscar no estoque" />
             </div>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)} className="w-40" aria-label="Category">
-              <option value="">All categories</option>
+            <Select value={category} onChange={(e) => setCategory(e.target.value)} className="w-40" aria-label="Categoria">
+              <option value="">Todas as categorias</option>
               {categories.map((c) => <option key={c}>{c}</option>)}
             </Select>
-            <Select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)} className="w-40" aria-label="Status">
-              <option value="all">All statuses</option>
-              <option value="low">Low or out</option>
-              <option value="expiring">Expiring soon</option>
+            <Select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)} className="w-40" aria-label="Situação">
+              <option value="all">Todas as situações</option>
+              <option value="low">Baixos ou zerados</option>
+              <option value="expiring">Vencendo</option>
             </Select>
           </div>
         )}
@@ -106,7 +106,7 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
         <Card>
           {shown.length ? (
             <Table>
-              <thead><tr><Th>Item</Th><Th>In stock</Th><Th className="hidden md:table-cell">Level</Th><Th className="hidden text-right sm:table-cell">Cost / unit</Th><Th className="hidden text-right lg:table-cell">Value</Th><Th className="hidden lg:table-cell">Location</Th><Th>Status</Th></tr></thead>
+              <thead><tr><Th>Item</Th><Th>Tem hoje</Th><Th className="hidden md:table-cell">Nível</Th><Th className="hidden text-right sm:table-cell">Custo / unid.</Th><Th className="hidden text-right lg:table-cell">Valor</Th><Th className="hidden lg:table-cell">Local</Th><Th>Situação</Th></tr></thead>
               <tbody>
                 {shown.map((i) => {
                   const q = Number(i.quantity), min = Number(i.min_quantity);
@@ -116,10 +116,10 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
                       <Td><p className="font-medium">{i.name}</p><p className="text-xs text-ink-3">{i.category}</p></Td>
                       <Td className="whitespace-nowrap tabular">{formatQuantity(q, i.unit, locale)}</Td>
                       <Td className="hidden w-40 md:table-cell">
-                        <div className="h-1.5 w-full rounded-full bg-surface-3" title={min ? `Minimum ${min} ${i.unit}` : "No minimum set"}>
+                        <div className="h-1.5 w-full rounded-full bg-surface-3" title={min ? `Mínimo ${min} ${i.unit}` : "Sem mínimo definido"}>
                           <div className={cn("h-full rounded-full", i.status === "out" || i.status === "low" ? "bg-warn" : "bg-good")} style={{ width: `${Math.max(pct * 100, q > 0 ? 4 : 0)}%` }} />
                         </div>
-                        {min > 0 && <p className="mt-1 text-[11px] text-ink-3">min {formatNumber(min, locale, 2)}</p>}
+                        {min > 0 && <p className="mt-1 text-[11px] text-ink-3">mín. {formatNumber(min, locale, 2)}</p>}
                       </Td>
                       <Td className="hidden text-right tabular text-ink-2 sm:table-cell">{money(Number(i.unit_cost))}</Td>
                       <Td className="hidden text-right tabular lg:table-cell">{money(Math.max(q, 0) * Number(i.unit_cost))}</Td>
@@ -131,16 +131,16 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
               </tbody>
             </Table>
           ) : (
-            <EmptyState icon={<Package />} title={items.length ? "No items match" : "No inventory yet"}
-              description={items.length ? "Try clearing the filters." : "Add the ingredients and supplies you buy. Recipes use them to calculate food cost."}
-              action={!items.length && canEdit ? <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Add your first item</Button> : undefined} />
+            <EmptyState icon={<Package />} title={items.length ? "Nenhum item encontrado" : "Estoque vazio"}
+              description={items.length ? "Tente limpar os filtros." : "Cadastre os ingredientes e materiais que você compra. As fichas técnicas usam esses itens para calcular o custo."}
+              action={!items.length && canEdit ? <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Cadastrar o primeiro item</Button> : undefined} />
           )}
         </Card>
       ) : (
         <Card>
           {movements.length ? (
             <Table>
-              <thead><tr><Th>When</Th><Th>Item</Th><Th>Type</Th><Th className="text-right">Change</Th><Th className="hidden md:table-cell">Note</Th></tr></thead>
+              <thead><tr><Th>Quando</Th><Th>Item</Th><Th>Tipo</Th><Th className="text-right">Mudança</Th><Th className="hidden md:table-cell">Observação</Th></tr></thead>
               <tbody>
                 {movements.map((m) => (
                   <Tr key={m.id}>
@@ -153,7 +153,7 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
                 ))}
               </tbody>
             </Table>
-          ) : <EmptyState icon={<History />} title="No movements yet" description="Purchases, usage, waste and order deductions are logged here." />}
+          ) : <EmptyState icon={<History />} title="Nenhuma movimentação ainda" description="Compras, uso, desperdício e baixas por pedido ficam registrados aqui." />}
         </Card>
       )}
 

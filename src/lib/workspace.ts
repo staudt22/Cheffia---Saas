@@ -3,7 +3,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { buildPermissionMap, homePath, type PermissionMap } from "@/lib/permissions";
+import { buildPermissionMap, homePath, roleLabel, type PermissionMap } from "@/lib/permissions";
 import type { AppRole, Restaurant, RestaurantSettings, Section } from "@/lib/types";
 
 export const ACTIVE_RESTAURANT_COOKIE = "forkly_rid";
@@ -13,6 +13,9 @@ export interface Workspace {
   restaurant: Restaurant;
   settings: RestaurantSettings;
   role: AppRole;
+  /** Display name of the member's role (custom role name when set). */
+  roleName: string;
+  customRoleId: string | null;
   permissions: PermissionMap;
   memberships: { restaurant_id: string; role: AppRole; name: string; logo_url: string | null }[];
 }
@@ -33,7 +36,7 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
     supabase.from("profiles").select("full_name, last_restaurant_id").eq("id", user.id).maybeSingle(),
     supabase
       .from("restaurant_members")
-      .select("restaurant_id, role, restaurants(name, logo_url)")
+      .select("restaurant_id, role, custom_role_id, restaurants(name, logo_url), custom_roles(name)")
       .eq("user_id", user.id)
       .eq("status", "active")
       .order("created_at"),
@@ -47,7 +50,9 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
   const [{ data: restaurant }, { data: settings }, { data: perms }] = await Promise.all([
     supabase.from("restaurants").select("*").eq("id", active.restaurant_id).single(),
     supabase.from("restaurant_settings").select("*").eq("restaurant_id", active.restaurant_id).single(),
-    supabase.from("role_permissions").select("section, can_view, can_edit").eq("restaurant_id", active.restaurant_id).eq("role", active.role),
+    active.custom_role_id
+      ? supabase.from("custom_role_permissions").select("section, can_view, can_edit").eq("custom_role_id", active.custom_role_id)
+      : supabase.from("role_permissions").select("section, can_view, can_edit").eq("restaurant_id", active.restaurant_id).eq("role", active.role),
   ]);
   if (!restaurant || !settings) return null;
 
@@ -57,10 +62,12 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
     restaurant: restaurant as Restaurant,
     settings: settings as RestaurantSettings,
     role,
+    roleName: (active.custom_roles as unknown as { name: string } | null)?.name ?? roleLabel(role),
+    customRoleId: (active.custom_role_id as string | null) ?? null,
     permissions: buildPermissionMap(role, perms ?? []),
     memberships: memberships.map((m) => {
       const r = m.restaurants as unknown as { name: string; logo_url: string | null } | null;
-      return { restaurant_id: m.restaurant_id, role: m.role as AppRole, name: r?.name ?? "Restaurant", logo_url: r?.logo_url ?? null };
+      return { restaurant_id: m.restaurant_id, role: m.role as AppRole, name: r?.name ?? "Restaurante", logo_url: r?.logo_url ?? null };
     }),
   };
 });
@@ -81,8 +88,8 @@ export async function requireWorkspace(section?: Section, action: "view" | "edit
 /** For server actions: returns the workspace + a client, or an error string. */
 export async function actionContext(section: Section, action: "view" | "edit" = "edit") {
   const ws = await getWorkspace();
-  if (!ws) return { error: "Your session has expired. Please sign in again." } as const;
-  if (!ws.permissions[section][action]) return { error: "You don't have permission to do that." } as const;
+  if (!ws) return { error: "Sua sessão expirou. Entre novamente." } as const;
+  if (!ws.permissions[section][action]) return { error: "Você não tem permissão para fazer isso." } as const;
   const supabase = await createClient();
   return { ws, supabase } as const;
 }

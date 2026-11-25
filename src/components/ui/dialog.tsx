@@ -26,7 +26,7 @@ export function DialogContent({
             <D.Title className="text-base font-semibold text-ink">{title}</D.Title>
             {description ? <D.Description className="mt-0.5 text-sm text-ink-3">{description}</D.Description> : <D.Description className="sr-only">{title}</D.Description>}
           </div>
-          <D.Close className="rounded-md p-1 text-ink-3 hover:bg-surface-3 hover:text-ink" aria-label="Close"><X className="size-4" /></D.Close>
+          <D.Close className="rounded-md p-1 text-ink-3 hover:bg-surface-3 hover:text-ink" aria-label="Fechar"><X className="size-4" /></D.Close>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer && <div className="flex justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}
@@ -46,7 +46,7 @@ export function SheetContent({ title, description, children, footer, className }
             <D.Title className="text-base font-semibold text-ink">{title}</D.Title>
             {description ? <D.Description className="mt-0.5 text-sm text-ink-3">{description}</D.Description> : <D.Description className="sr-only">Details</D.Description>}
           </div>
-          <D.Close className="rounded-md p-1 text-ink-3 hover:bg-surface-3 hover:text-ink" aria-label="Close"><X className="size-4" /></D.Close>
+          <D.Close className="rounded-md p-1 text-ink-3 hover:bg-surface-3 hover:text-ink" aria-label="Fechar"><X className="size-4" /></D.Close>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer && <div className="flex justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}

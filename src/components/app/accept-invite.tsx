@@ -16,7 +16,7 @@ export function AcceptInvite({ token }: { token: string }) {
         if (!r.ok) return setError(r.error);
         router.replace("/dashboard");
         router.refresh();
-      })}>Accept invitation</Button>
+      })}>Aceitar convite</Button>
       {error && <p className="mt-3 text-sm text-bad">{error}</p>}
     </div>
   );

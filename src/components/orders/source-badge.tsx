@@ -10,8 +10,8 @@ export function SourceBadge({ source, simulated, className }: { source: OrderSou
       <span className="size-2 rounded-full" style={{ background: m.color }} aria-hidden />
       {m.label}
       {simulated && (
-        <span className="inline-flex items-center gap-0.5 rounded bg-accent-soft px-1 py-px text-[10px] font-medium text-accent" title="Simulated order — not from a real connected platform">
-          <FlaskConical className="size-2.5" /> Simulated
+        <span className="inline-flex items-center gap-0.5 rounded bg-accent-soft px-1 py-px text-[10px] font-medium text-accent" title="Pedido simulado — não veio de uma plataforma conectada de verdade">
+          <FlaskConical className="size-2.5" /> Simulado
         </span>
       )}
     </span>

@@ -10,7 +10,7 @@ export async function setDemoModeAction(providerKey: string, enabled: boolean): 
   const ctx = await actionContext("integrations", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const p = providerInfo(providerKey);
-  if (!p?.supportsDemo) return { ok: false, error: "Demo mode isn't available for this platform." };
+  if (!p?.supportsDemo) return { ok: false, error: "O modo demonstração não está disponível para esta plataforma." };
   const { error } = await ctx.supabase.from("integrations").upsert(
     { restaurant_id: ctx.ws.restaurant.id, provider: p.key, status: enabled ? "demo" : "disconnected", connected_at: null, last_error: null },
     { onConflict: "restaurant_id,provider" },

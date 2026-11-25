@@ -20,14 +20,14 @@ export function WorkspaceSwitcher({ restaurant, memberships, collapsed }: { rest
           <>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{restaurant.name}</span>
-              <span className="block truncate text-[11px] text-ink-3">{restaurant.is_demo ? "Demo workspace" : "Forkly"}</span>
+              <span className="block truncate text-[11px] text-ink-3">{restaurant.is_demo ? "Demonstração" : "Forkly"}</span>
             </span>
             <ChevronsUpDown className="size-4 shrink-0 text-ink-3" />
           </>
         )}
       </DropdownTrigger>
       <DropdownContent align="start" className="w-60">
-        <DropdownLabel>Workspaces</DropdownLabel>
+        <DropdownLabel>Seus restaurantes</DropdownLabel>
         {memberships.map((m) => (
           <DropdownItem key={m.restaurant_id} onSelect={() => start(async () => { await switchRestaurant(m.restaurant_id); router.push("/dashboard"); router.refresh(); })}>
             <RestaurantAvatar name={m.name} logoUrl={m.logo_url} className="size-5 text-[9px]" />
@@ -36,7 +36,7 @@ export function WorkspaceSwitcher({ restaurant, memberships, collapsed }: { rest
           </DropdownItem>
         ))}
         <DropdownSeparator />
-        <DropdownItem onSelect={() => router.push("/onboarding?new=1")}><Plus /> Add a restaurant</DropdownItem>
+        <DropdownItem onSelect={() => router.push("/onboarding?new=1")}><Plus /> Adicionar restaurante</DropdownItem>
       </DropdownContent>
     </Dropdown>
   );

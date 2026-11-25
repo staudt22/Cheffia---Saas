@@ -9,7 +9,7 @@ import { NewOrderButton } from "@/components/orders/new-order-dialog";
 import { ACTIVE_STATUSES } from "@/lib/orders";
 import type { MenuCategory, MenuItem, Order, OrderSource, OrderStatus } from "@/lib/types";
 
-export const metadata = { title: "Orders" };
+export const metadata = { title: "Pedidos" };
 
 const TABS = ["active", "completed", "cancelled", "all"] as const;
 const SOURCES: OrderSource[] = ["website", "manual", "pos", "ifood", "ubereats", "doordash", "other"];
@@ -57,10 +57,10 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
   return (
     <div>
       <PageHeader
-        title="Orders"
-        description="Every order, from every channel, in one queue."
+        title="Pedidos"
+        description="Todos os pedidos, de todos os canais, numa fila só."
         actions={<>
-          <Button asChild variant="secondary"><Link href="/orders/kitchen"><MonitorPlay /> Kitchen display</Link></Button>
+          <Button asChild variant="secondary"><Link href="/orders/kitchen"><MonitorPlay /> Tela da cozinha</Link></Button>
           {canEdit && <NewOrderButton menu={(menu ?? []) as MenuItem[]} categories={(categories ?? []) as MenuCategory[]} currency={ws.restaurant.currency} locale={ws.restaurant.locale} defaultOpen={params.new === "1"} />}
         </>}
       />

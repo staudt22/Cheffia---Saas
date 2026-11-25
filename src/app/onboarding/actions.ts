@@ -16,9 +16,9 @@ async function setActiveCookie(id: string) {
 }
 
 export async function createRestaurantAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  if (!(await getUser())) return { ok: false, error: "Please sign in again." };
+  if (!(await getUser())) return { ok: false, error: "Entre novamente." };
   const parsed = restaurantProfileSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid values" };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Valores inválidos" };
   const supabase = await createClient();
   const { data: id, error } = await supabase.rpc("create_restaurant", { p_name: parsed.data.name });
   if (error || !id) return { ok: false, error: friendlyError(error) };
@@ -31,16 +31,16 @@ export async function createRestaurantAction(input: unknown): Promise<ActionResu
 }
 
 export async function createDemoWorkspaceAction(input: { name?: string; timezone?: string }): Promise<ActionResult> {
-  if (!(await getUser())) return { ok: false, error: "Please sign in again." };
+  if (!(await getUser())) return { ok: false, error: "Entre novamente." };
   const supabase = await createClient();
-  const name = (input.name?.trim() || "Ember & Oak (Demo)").slice(0, 120);
+  const name = (input.name?.trim() || "Brasa & Cia (Exemplo)").slice(0, 120);
   const { data: id, error } = await supabase.rpc("create_restaurant", { p_name: name, p_is_demo: true });
   if (error || !id) return { ok: false, error: friendlyError(error) };
   let tz = "UTC";
   try { if (input.timezone) { new Intl.DateTimeFormat("en-US", { timeZone: input.timezone }); tz = input.timezone; } } catch {}
-  await supabase.from("restaurants").update({ timezone: tz, restaurant_type: "Burger & grill" }).eq("id", id);
+  await supabase.from("restaurants").update({ timezone: tz, restaurant_type: "Hamburgueria" }).eq("id", id);
   const { error: seedError } = await supabase.rpc("seed_demo_restaurant", { p_restaurant: id });
-  if (seedError) return { ok: false, error: friendlyError(seedError, "The demo data could not be created.") };
+  if (seedError) return { ok: false, error: friendlyError(seedError, "Não foi possível criar os dados de exemplo.") };
   await setActiveCookie(id as string);
   revalidatePath("/", "layout");
   return { ok: true };
@@ -56,7 +56,7 @@ export async function addMenuItemsAction(input: unknown): Promise<ActionResult<{
   const ctx = await actionContext("menu", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = quickMenuSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "Each item needs a name, a price and a category." };
+  if (!parsed.success) return { ok: false, error: "Cada item precisa de nome, preço e categoria." };
   const rid = ctx.ws.restaurant.id;
   const names = [...new Set(parsed.data.map((i) => i.category))];
   const { data: existing } = await ctx.supabase.from("menu_categories").select("id, name").eq("restaurant_id", rid);
@@ -91,7 +91,7 @@ export async function addInventoryItemsAction(input: unknown): Promise<ActionRes
   const ctx = await actionContext("inventory", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = quickInventorySchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "Each item needs a name, unit and valid numbers." };
+  if (!parsed.success) return { ok: false, error: "Cada item precisa de nome, unidade e números válidos." };
   const rid = ctx.ws.restaurant.id;
   const { data, error } = await ctx.supabase
     .from("inventory_items")
@@ -101,7 +101,7 @@ export async function addInventoryItemsAction(input: unknown): Promise<ActionRes
   const movements = parsed.data
     .map((i) => ({ i, row: data.find((d) => d.name === i.name) }))
     .filter(({ i, row }) => row && i.quantity > 0)
-    .map(({ i, row }) => ({ restaurant_id: rid, inventory_item_id: row!.id, type: "initial", quantity_delta: i.quantity, unit_cost: i.unit_cost, reason: "Opening stock" }));
+    .map(({ i, row }) => ({ restaurant_id: rid, inventory_item_id: row!.id, type: "initial", quantity_delta: i.quantity, unit_cost: i.unit_cost, reason: "Estoque inicial" }));
   if (movements.length) {
     const { error: mErr } = await ctx.supabase.from("inventory_movements").insert(movements);
     if (mErr) return { ok: false, error: friendlyError(mErr) };
@@ -114,7 +114,7 @@ export async function inviteMembersAction(input: unknown): Promise<ActionResult<
   const ctx = await actionContext("team", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = z.array(inviteSchema).min(1).max(30).safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the email addresses." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira os e-mails." };
   const { data, error } = await ctx.supabase
     .from("invitations")
     .insert(parsed.data.map((i) => ({ ...i, email: i.email.toLowerCase(), restaurant_id: ctx.ws.restaurant.id, invited_by: ctx.ws.user.id })))
@@ -129,7 +129,7 @@ export async function applyDashboardPresetAction(preset: PresetKey): Promise<Act
   const ctx = await actionContext("overview", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const def = DASHBOARD_PRESETS[preset];
-  if (!def) return { ok: false, error: "Unknown layout" };
+  if (!def) return { ok: false, error: "Modelo desconhecido" };
   const { error } = await ctx.supabase
     .from("dashboard_layouts")
     .update({ widgets: def.widgets, name: def.name })

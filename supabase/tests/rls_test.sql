@@ -167,10 +167,47 @@ select pg_temp.check((select count(*) from public.product_performance(:'r2', cur
 select pg_temp.check((select count(*) from public.inventory_items where quantity <= min_quantity) >= 2, 'demo has low-stock items for alerts');
 select pg_temp.check((select count(*) from public.audit_logs) > 0, 'activity feed populated');
 select id as b_po from public.purchase_orders limit 1 \gset
-select quantity as beef_before from public.inventory_items where name = 'Ground beef' \gset
+select quantity as beef_before from public.inventory_items where name = 'Carne moída' \gset
 select public.receive_purchase_order(:'b_po');
-select pg_temp.check((select quantity from public.inventory_items where name = 'Ground beef') = :beef_before + 30, 'receiving a PO adds stock');
-select pg_temp.check(exists (select 1 from public.expenses where description like 'Purchase from%'), 'receiving a PO records the expense');
+select pg_temp.check((select quantity from public.inventory_items where name = 'Carne moída') = :beef_before + 30, 'receiving a PO adds stock');
+select pg_temp.check(exists (select 1 from public.expenses where description like 'Purchase from%' or description like 'Compra de%'), 'receiving a PO records the expense');
 select pg_temp.check(pg_temp.rejects(format($q$select public.receive_purchase_order(%L)$q$, :'b_po')), 'a PO cannot be received twice');
 
 reset role;
+
+-- ------------------------------------------------------------ trial & plans
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check((select trial_ends_at::date = (created_at + interval '7 days')::date and plan = 'trial' from public.restaurants where id = :'r1'), 'new restaurants start a 7-day trial');
+select pg_temp.check(pg_temp.rejects(format($q$update public.restaurants set plan = 'rede' where id = %L$q$, :'r1')), 'owners cannot change their own plan');
+select pg_temp.check(pg_temp.rejects(format($q$update public.restaurants set trial_ends_at = now() + interval '1 year' where id = %L$q$, :'r1')), 'owners cannot extend their own trial');
+select pg_temp.check((select currency = 'BRL' and locale = 'pt-BR' from public.restaurants where id = :'r1'), 'new restaurants default to BRL / pt-BR');
+reset role;
+update public.restaurants set plan = 'essencial' where id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.invitations (restaurant_id, email, role) values (%L, 'x@one.test', 'employee')$q$, :'r1')), 'Essencial plan limits the team to 3 users');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check(exists (select 1 from public.menu_items where name = 'Burger Clássico' and price = 34.90), 'demo data is in Portuguese with BRL prices');
+select pg_temp.check((select count(*) from public.audit_logs where summary like 'Novo pedido%') > 0, 'activity log is in Portuguese');
+reset role;
+
+-- ------------------------------------------------------------ custom roles
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+insert into public.custom_roles (restaurant_id, name) values (:'r1', 'Caixa') returning id as cr \gset
+insert into public.custom_role_permissions (custom_role_id, restaurant_id, section, can_view, can_edit)
+  values (:'cr', :'r1', 'finances', true, false), (:'cr', :'r1', 'orders', false, false);
+select public.set_member_role(id, 'employee', :'cr') from public.restaurant_members where restaurant_id = :'r1' and user_id = '00000000-0000-0000-0000-00000000000c';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
+select pg_temp.check((select count(*) from public.expenses) = 1 and (select count(*) from public.orders) = 0, 'custom role permissions replace the base role');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.custom_roles (restaurant_id, name) values (%L, 'Hacker')$q$, :'r1')), 'only the owner can create roles');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check((select count(*) from public.custom_roles) = 0, 'custom roles are isolated per restaurant');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+delete from public.custom_roles where id = :'cr';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
+select pg_temp.check((select count(*) from public.orders) = 1, 'deleting a custom role falls back to the base role');
+reset role;
+
+-- ------------------------------------------------------------ deleting a restaurant
+reset role;
+delete from public.restaurants where id = :'r2';
+select pg_temp.check(not exists (select 1 from public.restaurants where id = :'r2'), 'a restaurant with history can be deleted');

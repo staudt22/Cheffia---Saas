@@ -1,5 +1,6 @@
 import "server-only";
 import { addDays, format, parseISO, subMonths, subWeeks } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { createClient } from "@/lib/supabase/server";
 import { todayIn, type DateRange } from "@/lib/dates";
 import { EXPENSE_LABELS } from "@/lib/validation";
@@ -116,7 +117,7 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
 
   const fmtLabel = (iso: string, bucket: string) => {
     const dt = parseISO(iso);
-    return bucket === "hour" ? format(dt, "HH:00") : bucket === "month" ? format(dt, "MMM") : bucket === "week" ? format(dt, "MMM d") : format(dt, "MMM d");
+    return bucket === "hour" ? format(dt, "HH:00") : bucket === "month" ? format(dt, "MMM/yy", { locale: ptBR }) : format(dt, "dd/MM");
   };
   const toSeries = (rows: unknown, bucket: "hour" | "day" | "week" | "month"): SeriesPoint[] => {
     const list = (rows as { bucket: string; revenue: unknown; orders: unknown }[] | null) ?? [];
@@ -145,7 +146,7 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
   const dayFilled: SeriesPoint[] = [];
   for (let dt = parseISO(dayFrom); dt <= parseISO(range.to); dt = addDays(dt, 1)) {
     const key = format(dt, "yyyy-MM-dd");
-    dayFilled.push(dayMap.get(key) ?? { label: format(dt, "MMM d"), date: key, revenue: 0, orders: 0 });
+    dayFilled.push(dayMap.get(key) ?? { label: format(dt, "dd/MM"), date: key, revenue: 0, orders: 0 });
   }
 
   const totals = totalsFrom(cur.data as Record<string, unknown>);
@@ -177,22 +178,22 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
   const outCount = inventoryAlerts.filter((i) => i.kind === "out").length;
   const lowCount = inventoryAlerts.filter((i) => i.kind === "low").length;
   const expCount = inventoryAlerts.filter((i) => i.kind === "expiring").length;
-  if (outCount) alerts.push({ id: "out", severity: "critical", title: `${outCount} item${outCount > 1 ? "s" : ""} out of stock`, detail: inventoryAlerts.filter((i) => i.kind === "out").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=low" });
-  if (lowCount) alerts.push({ id: "low", severity: "warning", title: `${lowCount} item${lowCount > 1 ? "s" : ""} running low`, detail: inventoryAlerts.filter((i) => i.kind === "low").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=low" });
-  if (expCount) alerts.push({ id: "exp", severity: "warning", title: `${expCount} item${expCount > 1 ? "s" : ""} expiring within 3 days`, detail: inventoryAlerts.filter((i) => i.kind === "expiring").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=expiring" });
+  if (outCount) alerts.push({ id: "out", severity: "critical", title: `${outCount} ${outCount > 1 ? "itens zerados" : "item zerado"} no estoque`, detail: inventoryAlerts.filter((i) => i.kind === "out").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=low" });
+  if (lowCount) alerts.push({ id: "low", severity: "warning", title: `${lowCount} ${lowCount > 1 ? "itens acabando" : "item acabando"}`, detail: inventoryAlerts.filter((i) => i.kind === "low").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=low" });
+  if (expCount) alerts.push({ id: "exp", severity: "warning", title: `${expCount} ${expCount > 1 ? "itens vencem" : "item vence"} em até 3 dias`, detail: inventoryAlerts.filter((i) => i.kind === "expiring").slice(0, 3).map((i) => i.name).join(", "), href: "/inventory?filter=expiring" });
 
   const lowMargin = productRows.filter((p) => p.margin != null && p.margin < 0.6 && p.quantity >= 3);
-  if (lowMargin.length) alerts.push({ id: "margin", severity: "warning", title: `${lowMargin.length} product${lowMargin.length > 1 ? "s" : ""} with low margin`, detail: `${lowMargin.slice(0, 3).map((p) => `${p.name} (${Math.round(p.margin! * 100)}%)`).join(", ")} — food cost above 40%`, href: "/menu" });
+  if (lowMargin.length) alerts.push({ id: "margin", severity: "warning", title: `${lowMargin.length} ${lowMargin.length > 1 ? "produtos" : "produto"} com margem baixa`, detail: `${lowMargin.slice(0, 3).map((p) => `${p.name} (${Math.round(p.margin! * 100)}%)`).join(", ")} — custo dos ingredientes acima de 40% do preço`, href: "/menu" });
 
   const noRecipe = ((menuNoRecipe.data as { id: string; name: string; recipes: { recipe_ingredients: { count: number }[] }[] | { recipe_ingredients: { count: number }[] } | null }[] | null) ?? [])
     .filter((m) => {
       const r = Array.isArray(m.recipes) ? m.recipes[0] : m.recipes;
       return !r || !(r.recipe_ingredients?.[0]?.count);
     });
-  if (noRecipe.length) alerts.push({ id: "recipe", severity: "info", title: `${noRecipe.length} menu item${noRecipe.length > 1 ? "s" : ""} without a recipe`, detail: `Margins and stock deductions can't be calculated for ${noRecipe.slice(0, 3).map((m) => m.name).join(", ")}`, href: "/menu" });
+  if (noRecipe.length) alerts.push({ id: "recipe", severity: "info", title: `${noRecipe.length} ${noRecipe.length > 1 ? "itens" : "item"} do cardápio sem ficha técnica`, detail: `Sem ficha técnica não dá para calcular margem nem baixar estoque: ${noRecipe.slice(0, 3).map((m) => m.name).join(", ")}`, href: "/menu" });
 
   for (const r of (recurringDue.data as { id: string; description: string; amount: number; next_due_on: string }[] | null) ?? []) {
-    alerts.push({ id: `bill-${r.id}`, severity: r.next_due_on < today ? "warning" : "info", title: `${r.description} due ${r.next_due_on === today ? "today" : r.next_due_on < today ? "— overdue" : `on ${format(parseISO(r.next_due_on), "MMM d")}`}`, detail: money(n(r.amount)), href: "/finances?tab=recurring" });
+    alerts.push({ id: `bill-${r.id}`, severity: r.next_due_on < today ? "warning" : "info", title: `${r.description} ${r.next_due_on === today ? "vence hoje" : r.next_due_on < today ? "— atrasada" : `vence em ${format(parseISO(r.next_due_on), "dd/MM")}`}`, detail: money(n(r.amount)), href: "/finances?tab=recurring" });
   }
 
   const recentExpenses = (bigExpenses.data as { id: string; description: string; amount: number; category: string; date: string }[] | null) ?? [];
@@ -204,24 +205,24 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
     const others = arr.filter((v) => v !== n(e.amount));
     const avg = others.reduce((s, v) => s + v, 0) / Math.max(others.length, 1);
     if (avg > 0 && n(e.amount) > avg * 2.5 && n(e.amount) > 200) {
-      alerts.push({ id: `unusual-${e.id}`, severity: "warning", title: `Unusual expense: ${e.description}`, detail: `${money(n(e.amount))} — about ${Math.round(n(e.amount) / avg)}× your usual ${EXPENSE_LABELS[e.category as ExpenseCategory]?.toLowerCase() ?? e.category} spend`, href: "/finances" });
+      alerts.push({ id: `unusual-${e.id}`, severity: "warning", title: `Gasto fora do normal: ${e.description}`, detail: `${money(n(e.amount))} — cerca de ${Math.round(n(e.amount) / avg)}× o seu gasto comum com ${EXPENSE_LABELS[e.category as ExpenseCategory]?.toLowerCase() ?? e.category}`, href: "/finances" });
     }
   }
   if (can("finances") && totals.revenue > 0 && recentExpenses.filter((e) => e.date >= d(-30)).length === 0) {
-    alerts.push({ id: "nofin", severity: "info", title: "No expenses recorded in the last 30 days", detail: "Profit can't be estimated accurately until costs are added.", href: "/finances" });
+    alerts.push({ id: "nofin", severity: "info", title: "Nenhuma despesa lançada nos últimos 30 dias", detail: "Sem as despesas, o lucro estimado fica impreciso.", href: "/finances" });
   }
 
   // Insights — computed from data, never invented.
   const insights: DashboardData["insights"] = [];
   const pct = (a: number, b: number) => (b ? Math.round(((a - b) / b) * 100) : null);
   const revChange = pct(totals.revenue, previous.revenue);
-  if (revChange != null && totals.revenue > 0) insights.push({ id: "rev", tone: revChange >= 0 ? "good" : "bad", text: `Revenue is ${revChange >= 0 ? "up" : "down"} ${Math.abs(revChange)}% compared with the previous period (${money(totals.revenue)} vs ${money(previous.revenue)}).` });
+  if (revChange != null && totals.revenue > 0) insights.push({ id: "rev", tone: revChange >= 0 ? "good" : "bad", text: `O faturamento ${revChange >= 0 ? "subiu" : "caiu"} ${Math.abs(revChange)}% em relação ao período anterior (${money(totals.revenue)} contra ${money(previous.revenue)}).` });
   const top = productRows[0];
-  if (top && orderRevenue.current > 0) insights.push({ id: "top", tone: "neutral", text: `${top.name} is your best seller: ${top.quantity} sold, ${Math.round((top.revenue / orderRevenue.current) * 100)}% of order revenue.` });
+  if (top && orderRevenue.current > 0) insights.push({ id: "top", tone: "neutral", text: `${top.name} é o campeão de vendas: ${top.quantity} vendidos, ${Math.round((top.revenue / orderRevenue.current) * 100)}% do faturamento com pedidos.` });
   const ingredients = ((breakdown.data as { category: string; amount: unknown }[] | null) ?? []).find((b) => b.category === "ingredients");
   if (ingredients && totals.revenue > 0) {
     const fc = n(ingredients.amount) / totals.revenue;
-    insights.push({ id: "fc", tone: fc > 0.35 ? "bad" : "good", text: `Ingredient spend is ${Math.round(fc * 100)}% of revenue${fc > 0.35 ? " — above the 28–35% most restaurants aim for." : ", within a healthy range."}` });
+    insights.push({ id: "fc", tone: fc > 0.35 ? "bad" : "good", text: `O gasto com ingredientes é ${Math.round(fc * 100)}% do faturamento${fc > 0.35 ? " — acima dos 28–35% que a maioria dos restaurantes busca." : ", dentro de uma faixa saudável."}` });
   }
   const dailyRows = ((daily.data as { day: string; revenue: unknown }[] | null) ?? []).filter((r) => r.day >= range.from);
   if (dailyRows.length >= 7) {
@@ -229,11 +230,11 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
     for (const r of dailyRows) { const k = parseISO(r.day).getDay(); byDow.set(k, [...(byDow.get(k) ?? []), n(r.revenue)]); }
     const avgs = [...byDow.entries()].map(([k, v]) => ({ k, avg: v.reduce((s, x) => s + x, 0) / v.length }));
     const best = avgs.sort((a, b) => b.avg - a.avg)[0];
-    if (best && best.avg > 0) insights.push({ id: "dow", tone: "neutral", text: `${format(addDays(parseISO("2024-01-07"), best.k), "EEEE")}s are your strongest day, averaging ${money(best.avg)}.` });
+    if (best && best.avg > 0) insights.push({ id: "dow", tone: "neutral", text: `${["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"][best.k]} é o seu dia mais forte, com média de ${money(best.avg)}.` });
   }
   if (totals.revenue > 0 || totals.expenses > 0) {
     const margin = totals.revenue ? (totals.revenue - totals.expenses) / totals.revenue : null;
-    if (margin != null) insights.push({ id: "pm", tone: margin >= 0.1 ? "good" : "bad", text: `Estimated profit margin for the period is ${Math.round(margin * 100)}%.` });
+    if (margin != null) insights.push({ id: "pm", tone: margin >= 0.1 ? "good" : "bad", text: `A margem de lucro estimada do período é ${Math.round(margin * 100)}%.` });
   }
 
   // Order revenue is summarised per day so single orders don't flood the list.
@@ -247,13 +248,13 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
   }
   const rev = [
     ...revRows.filter((x) => x.source !== "order").map((r) => ({ id: `r-${r.id}`, kind: "revenue" as const, description: r.description as string, amount: n(r.amount), date: r.date as string, category: r.source as string, created_at: r.created_at as string })),
-    ...[...orderDays.entries()].map(([date, e]) => ({ id: `orders-${date}`, kind: "revenue" as const, description: `${e.count} completed order${e.count === 1 ? "" : "s"}`, amount: Math.round(e.total * 100) / 100, date, category: "order", created_at: e.created_at })),
+    ...[...orderDays.entries()].map(([date, e]) => ({ id: `orders-${date}`, kind: "revenue" as const, description: `${e.count} ${e.count === 1 ? "pedido concluído" : "pedidos concluídos"}`, amount: Math.round(e.total * 100) / 100, date, category: "order", created_at: e.created_at })),
   ];
   const exp = ((expenseRows.data as Record<string, unknown>[] | null) ?? []).map((e) => ({ id: `e-${e.id}`, kind: "expense" as const, description: e.description as string, amount: n(e.amount), date: e.date as string, category: e.category as string, created_at: e.created_at as string }));
   const transactions = [...rev, ...exp].sort((a, b) => (b.date + b.created_at).localeCompare(a.date + a.created_at)).slice(0, 8).map(({ created_at: _c, ...t }) => { void _c; return t; });
 
   const dailySeries: SeriesPoint[] = ((daily.data as { day: string; revenue: unknown; expenses: unknown; orders: unknown }[] | null) ?? []).map((r) => ({
-    label: format(parseISO(r.day), "MMM d"), date: r.day, revenue: n(r.revenue), expenses: n(r.expenses), orders: n(r.orders),
+    label: format(parseISO(r.day), "dd/MM"), date: r.day, revenue: n(r.revenue), expenses: n(r.expenses), orders: n(r.orders),
   }));
 
   return {

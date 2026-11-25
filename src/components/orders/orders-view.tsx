@@ -18,10 +18,10 @@ import { cn, formatMoney } from "@/lib/utils";
 import type { Order } from "@/lib/types";
 
 const TABS = [
-  { key: "active", label: "In progress" },
-  { key: "completed", label: "Completed" },
-  { key: "cancelled", label: "Cancelled" },
-  { key: "all", label: "All" },
+  { key: "active", label: "Em andamento" },
+  { key: "completed", label: "Concluídos" },
+  { key: "cancelled", label: "Cancelados" },
+  { key: "all", label: "Todos" },
 ];
 
 export function OrdersView({
@@ -72,10 +72,10 @@ export function OrdersView({
         <div className="flex flex-1 gap-2 lg:justify-end">
           <div className="relative flex-1 lg:max-w-72">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Order #, customer, table…" className="pl-9" aria-label="Search orders" />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nº do pedido, cliente, mesa…" className="pl-9" aria-label="Buscar pedidos" />
           </div>
-          <Select value={source ?? ""} onChange={(e) => setParam({ source: e.target.value || undefined })} className="w-40" aria-label="Filter by source">
-            <option value="">All sources</option>
+          <Select value={source ?? ""} onChange={(e) => setParam({ source: e.target.value || undefined })} className="w-40" aria-label="Filtrar por canal">
+            <option value="">Todos os canais</option>
             {Object.entries(SOURCE_META).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </Select>
         </div>
@@ -84,7 +84,7 @@ export function OrdersView({
       <Card className={cn("transition-opacity", pending && "opacity-60")}>
         {orders.length ? (
           <Table>
-            <thead><tr><Th>Order</Th><Th>Received</Th><Th>Customer</Th><Th>Source</Th><Th className="hidden md:table-cell">Items</Th><Th>Status</Th><Th className="text-right">Total</Th></tr></thead>
+            <thead><tr><Th>Pedido</Th><Th>Recebido</Th><Th>Cliente</Th><Th>Canal</Th><Th className="hidden md:table-cell">Itens</Th><Th>Status</Th><Th className="text-right">Total</Th></tr></thead>
             <tbody>
               {orders.map((o) => {
                 const items = o.order_items ?? [];
@@ -108,8 +108,8 @@ export function OrdersView({
         ) : (
           <EmptyState
             icon={<ChefHat />}
-            title={q || source ? "No orders match these filters" : tab === "active" ? "No orders in progress" : "No orders yet"}
-            description={q || source ? "Try a different search or source." : "New orders from every channel will appear here as they come in."}
+            title={q || source ? "Nenhum pedido com esses filtros" : tab === "active" ? "Nenhum pedido em andamento" : "Nenhum pedido ainda"}
+            description={q || source ? "Tente outra busca ou outro canal." : "Os pedidos de todos os canais aparecem aqui assim que chegam."}
           />
         )}
       </Card>

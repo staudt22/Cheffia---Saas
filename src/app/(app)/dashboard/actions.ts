@@ -22,7 +22,7 @@ export async function saveLayoutAction(layoutId: string, input: unknown): Promis
   const ctx = await actionContext("overview", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = layoutSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "This layout contains invalid widgets." };
+  if (!parsed.success) return { ok: false, error: "Este layout tem widgets inválidos." };
   const { error } = await ctx.supabase.from("dashboard_layouts").update(parsed.data).eq("id", layoutId).eq("restaurant_id", ctx.ws.restaurant.id);
   if (error) return { ok: false, error: friendlyError(error) };
   revalidatePath("/dashboard");
@@ -34,7 +34,7 @@ export async function createLayoutAction(name: string, input: unknown): Promise<
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = layoutSchema.safeParse(input);
   const cleanName = name.trim().slice(0, 60);
-  if (!parsed.success || !cleanName) return { ok: false, error: "Give the layout a name." };
+  if (!parsed.success || !cleanName) return { ok: false, error: "Dê um nome ao layout." };
   const rid = ctx.ws.restaurant.id;
   await ctx.supabase.from("dashboard_layouts").update({ is_active: false }).eq("restaurant_id", rid).eq("is_active", true);
   const { data, error } = await ctx.supabase
@@ -51,7 +51,7 @@ export async function activateLayoutAction(layoutId: string): Promise<ActionResu
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const rid = ctx.ws.restaurant.id;
   const { data: target } = await ctx.supabase.from("dashboard_layouts").select("id").eq("id", layoutId).eq("restaurant_id", rid).maybeSingle();
-  if (!target) return { ok: false, error: "Layout not found" };
+  if (!target) return { ok: false, error: "Layout não encontrado" };
   await ctx.supabase.from("dashboard_layouts").update({ is_active: false }).eq("restaurant_id", rid).eq("is_active", true);
   const { error } = await ctx.supabase.from("dashboard_layouts").update({ is_active: true }).eq("id", layoutId);
   if (error) return { ok: false, error: friendlyError(error) };
@@ -64,9 +64,9 @@ export async function deleteLayoutAction(layoutId: string): Promise<ActionResult
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const rid = ctx.ws.restaurant.id;
   const { data: layouts } = await ctx.supabase.from("dashboard_layouts").select("id, is_active").eq("restaurant_id", rid).order("created_at");
-  if (!layouts || layouts.length <= 1) return { ok: false, error: "You need at least one layout." };
+  if (!layouts || layouts.length <= 1) return { ok: false, error: "Você precisa de pelo menos um layout." };
   const target = layouts.find((l) => l.id === layoutId);
-  if (!target) return { ok: false, error: "Layout not found" };
+  if (!target) return { ok: false, error: "Layout não encontrado" };
   const { error } = await ctx.supabase.from("dashboard_layouts").delete().eq("id", layoutId);
   if (error) return { ok: false, error: friendlyError(error) };
   if (target.is_active) {

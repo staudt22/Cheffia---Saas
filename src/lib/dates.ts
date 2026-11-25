@@ -1,12 +1,12 @@
 import { addDays, differenceInCalendarDays, endOfMonth, format, parseISO, startOfMonth, subMonths } from "date-fns";
 
 export const RANGE_PRESETS = [
-  { key: "today", label: "Today" },
-  { key: "yesterday", label: "Yesterday" },
-  { key: "7d", label: "Last 7 days" },
-  { key: "30d", label: "Last 30 days" },
-  { key: "month", label: "This month" },
-  { key: "prev_month", label: "Previous month" },
+  { key: "today", label: "Hoje" },
+  { key: "yesterday", label: "Ontem" },
+  { key: "7d", label: "Últimos 7 dias" },
+  { key: "30d", label: "Últimos 30 dias" },
+  { key: "month", label: "Este mês" },
+  { key: "prev_month", label: "Mês passado" },
 ] as const;
 
 export type RangeKey = (typeof RANGE_PRESETS)[number]["key"] | "custom";
@@ -42,27 +42,27 @@ export function resolveRange(timeZone: string, key?: string, customFrom?: string
 
   switch (k) {
     case "today":
-      from = today; label = "Today"; break;
+      from = today; label = "Hoje"; break;
     case "yesterday":
-      from = addDays(today, -1); to = from; label = "Yesterday"; break;
+      from = addDays(today, -1); to = from; label = "Ontem"; break;
     case "7d":
-      from = addDays(today, -6); label = "Last 7 days"; break;
+      from = addDays(today, -6); label = "Últimos 7 dias"; break;
     case "month":
-      from = startOfMonth(today); label = "This month"; break;
+      from = startOfMonth(today); label = "Este mês"; break;
     case "prev_month":
-      from = startOfMonth(subMonths(today, 1)); to = endOfMonth(from); label = "Previous month"; break;
+      from = startOfMonth(subMonths(today, 1)); to = endOfMonth(from); label = "Mês passado"; break;
     case "custom":
       if (isIsoDate(customFrom) && isIsoDate(customTo) && customFrom! <= customTo!) {
         from = parseISO(customFrom!); to = parseISO(customTo!);
         if (differenceInCalendarDays(to, from) > 366) from = addDays(to, -366);
-        label = `${format(from, "MMM d")} – ${format(to, "MMM d, yyyy")}`;
+        label = `${format(from, "dd/MM")} – ${format(to, "dd/MM/yyyy")}`;
         break;
       }
       k = "30d";
-      from = addDays(today, -29); label = "Last 30 days"; break;
+      from = addDays(today, -29); label = "Últimos 30 dias"; break;
     default:
       k = "30d";
-      from = addDays(today, -29); label = "Last 30 days";
+      from = addDays(today, -29); label = "Últimos 30 dias";
   }
 
   const days = differenceInCalendarDays(to, from) + 1;
@@ -85,17 +85,17 @@ export function greeting(timeZone: string) {
   try {
     hour = Number(new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", hour12: false }).format(new Date())) % 24;
   } catch {}
-  return hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  return hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 }
 
-export function formatDate(value: string | Date, locale = "en-US", timeZone?: string, opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" }) {
+export function formatDate(value: string | Date, locale = "pt-BR", timeZone?: string, opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" }) {
   const d = typeof value === "string" ? (value.length === 10 ? parseISO(value) : new Date(value)) : value;
   // Date-only strings are calendar dates: don't shift them by time zone.
   const tz = typeof value === "string" && value.length === 10 ? undefined : timeZone;
   return new Intl.DateTimeFormat(locale, { ...opts, timeZone: tz }).format(d);
 }
 
-export function formatTime(value: string | Date, locale = "en-US", timeZone?: string) {
+export function formatTime(value: string | Date, locale = "pt-BR", timeZone?: string) {
   return new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit", timeZone }).format(new Date(value));
 }
 

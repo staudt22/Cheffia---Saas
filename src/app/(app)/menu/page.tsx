@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MenuView } from "@/components/menu/menu-view";
 import type { MenuCategory, MenuItem } from "@/lib/types";
 
-export const metadata = { title: "Menu" };
+export const metadata = { title: "Cardápio" };
 
 export default async function MenuPage() {
   const ws = await requireWorkspace("menu");

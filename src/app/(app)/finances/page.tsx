@@ -7,7 +7,7 @@ import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { FinancesView } from "@/components/finances/finances-view";
 import type { Expense, RevenueRecord, Supplier } from "@/lib/types";
 
-export const metadata = { title: "Finances" };
+export const metadata = { title: "Finanças" };
 
 export default async function FinancesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const ws = await requireWorkspace("finances");
@@ -35,7 +35,7 @@ export default async function FinancesPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <PageHeader title="Finances" description="Revenue, expenses and estimated profit." actions={<Suspense><DateRangePicker range={range} /></Suspense>} />
+      <PageHeader title="Finanças" description="O que entrou, o que saiu e quanto sobrou." actions={<Suspense><DateRangePicker range={range} /></Suspense>} />
       <FinancesView
         range={range}
         totals={t(cur.data)}

@@ -8,7 +8,7 @@ import { DateRangePicker } from "@/components/dashboard/date-range-picker";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 import type { DashboardLayout } from "@/lib/types";
 
-export const metadata = { title: "Overview" };
+export const metadata = { title: "Visão geral" };
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const ws = await requireWorkspace("overview");
@@ -37,11 +37,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </div>
       {params.welcome && <WelcomeBanner isDemo={r.is_demo} />}
       {params.denied && (
-        <p className="mb-4 rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">Your role doesn&apos;t have access to that section. Ask the owner to update your permissions.</p>
+        <p className="mb-4 rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">Seu cargo não tem acesso a essa área. Peça ao dono para liberar nas permissões.</p>
       )}
       {!data.hasAnyData && !r.is_demo && (
         <div className="mb-4 rounded-lg bg-brand-soft px-4 py-3 text-sm text-ink-2">
-          <span className="font-medium text-brand">Your numbers will appear here.</span> Create your first order or record an expense — every widget updates automatically.
+          <span className="font-medium text-brand">Seus números vão aparecer aqui.</span> Crie o primeiro pedido ou lance uma despesa — todos os quadros se atualizam sozinhos.
         </div>
       )}
       <Dashboard

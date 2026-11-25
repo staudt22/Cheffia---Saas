@@ -14,52 +14,52 @@ export interface WidgetDef {
   sizes: WidgetInstance["size"][];
   defaultSize: WidgetInstance["size"];
   charts?: ("area" | "bar" | "line")[];
-  group: "Key numbers" | "Charts" | "Operations" | "Insights";
+  group: "Números principais" | "Gráficos" | "Operação" | "Análises";
   help?: string;
 }
 
 export const WIDGETS: WidgetDef[] = [
-  { type: "kpi_revenue", title: "Revenue", description: "Total revenue for the selected period", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_expenses", title: "Expenses", description: "Total expenses for the selected period", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_profit", title: "Estimated profit", description: "Revenue minus expenses", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_orders", title: "Orders", description: "Completed orders in the period", section: "orders", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_aov", title: "Average order value", description: "Order revenue per completed order", section: "orders", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_today_revenue", title: "Today's revenue", description: "Revenue recorded today", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_week_revenue", title: "Weekly revenue", description: "Revenue for the last 7 days", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "kpi_month_revenue", title: "Monthly revenue", description: "Revenue for the current month", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Key numbers" },
-  { type: "revenue_chart", title: "Revenue", description: "Revenue over time — hourly, daily, weekly or monthly", section: "finances", sizes: ["md", "lg", "xl"], defaultSize: "lg", charts: ["area", "bar", "line"], group: "Charts" },
-  { type: "expense_chart", title: "Revenue vs expenses", description: "Daily revenue and expenses side by side", section: "finances", sizes: ["md", "lg", "xl"], defaultSize: "lg", charts: ["line", "bar"], group: "Charts" },
-  { type: "expense_breakdown", title: "Expense breakdown", description: "Where the money goes, by category", section: "finances", sizes: ["md", "lg"], defaultSize: "md", group: "Charts" },
-  { type: "popular_products", title: "Popular products", description: "Best sellers with revenue and estimated margin", section: "orders", sizes: ["md", "lg"], defaultSize: "md", group: "Operations" },
-  { type: "order_activity", title: "Order activity", description: "Orders currently in progress", section: "orders", sizes: ["md", "lg"], defaultSize: "md", group: "Operations" },
-  { type: "inventory_alerts", title: "Inventory alerts", description: "Low stock and expiring items", section: "inventory", sizes: ["md", "lg"], defaultSize: "md", group: "Operations" },
-  { type: "recent_transactions", title: "Recent transactions", description: "Latest revenue and expenses", section: "finances", sizes: ["md", "lg"], defaultSize: "md", group: "Operations" },
-  { type: "upcoming_shifts", title: "Upcoming shifts", description: "Who is working next", section: "team", sizes: ["md", "lg"], defaultSize: "md", group: "Operations" },
-  { type: "alerts", title: "Alerts", description: "Everything that needs your attention", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Insights" },
-  { type: "recent_activity", title: "Recent activity", description: "Latest events across the restaurant", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Insights" },
-  { type: "ai_insights", title: "Insights", description: "Observations computed from your own data", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Insights" },
+  { type: "kpi_revenue", title: "Faturamento", description: "Total que entrou no período escolhido", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_expenses", title: "Despesas", description: "Total gasto no período escolhido", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_profit", title: "Lucro estimado", description: "Faturamento menos despesas", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_orders", title: "Pedidos", description: "Pedidos concluídos no período", section: "orders", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_aov", title: "Ticket médio", description: "Valor médio de cada pedido", section: "orders", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_today_revenue", title: "Faturamento de hoje", description: "O que entrou hoje", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_week_revenue", title: "Faturamento da semana", description: "Últimos 7 dias", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "kpi_month_revenue", title: "Faturamento do mês", description: "Desde o dia 1º", section: "finances", sizes: ["sm", "md"], defaultSize: "sm", group: "Números principais" },
+  { type: "revenue_chart", title: "Gráfico de faturamento", description: "Faturamento por hora, dia, semana ou mês", section: "finances", sizes: ["md", "lg", "xl"], defaultSize: "lg", charts: ["area", "bar", "line"], group: "Gráficos" },
+  { type: "expense_chart", title: "Faturamento x despesas", description: "Entradas e saídas dia a dia", section: "finances", sizes: ["md", "lg", "xl"], defaultSize: "lg", charts: ["line", "bar"], group: "Gráficos" },
+  { type: "expense_breakdown", title: "Para onde vai o dinheiro", description: "Despesas por categoria", section: "finances", sizes: ["md", "lg"], defaultSize: "md", group: "Gráficos" },
+  { type: "popular_products", title: "Mais vendidos", description: "Produtos campeões com faturamento e margem", section: "orders", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
+  { type: "order_activity", title: "Pedidos em andamento", description: "O que está sendo preparado agora", section: "orders", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
+  { type: "inventory_alerts", title: "Alertas de estoque", description: "Itens acabando ou vencendo", section: "inventory", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
+  { type: "recent_transactions", title: "Últimos lançamentos", description: "Entradas e saídas mais recentes", section: "finances", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
+  { type: "upcoming_shifts", title: "Próximos turnos", description: "Quem trabalha a seguir", section: "team", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
+  { type: "alerts", title: "Avisos", description: "Tudo que precisa da sua atenção", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
+  { type: "recent_activity", title: "Atividade recente", description: "O que aconteceu no restaurante", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
+  { type: "ai_insights", title: "Dicas do Forkly", description: "Observações calculadas com os seus números", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
 ];
 
 export const WIDGET_HELP: Record<string, string> = {
-  kpi_revenue: "All money that came in during the period: completed orders plus any revenue you recorded manually (catering, events…).",
-  kpi_expenses: "Everything you recorded as spent in the period: ingredients, rent, salaries, bills and so on.",
-  kpi_profit: "Revenue minus expenses. It's an estimate — it's only as complete as the expenses you record.",
-  kpi_orders: "How many orders were completed in the period. Cancelled orders are not counted.",
-  kpi_aov: "Average order value: order revenue divided by the number of completed orders. Raising it is often easier than finding new customers.",
-  kpi_today_revenue: "Revenue recorded today, compared with the same weekday last week.",
-  kpi_week_revenue: "Revenue for the last 7 days, compared with the 7 days before.",
-  kpi_month_revenue: "Revenue since the 1st of this month, compared with the same days last month.",
-  revenue_chart: "Shows how revenue moves over time. Switch between hourly, daily, weekly and monthly to spot your busiest moments.",
-  expense_chart: "Revenue and expenses day by day. When the pink line is above the blue one, that day cost more than it earned.",
-  expense_breakdown: "Which categories take the biggest share of your spending. Ingredients and staff are usually the largest.",
-  popular_products: "Your best sellers. Margin = how much of the price is left after ingredient cost (needs a recipe). Above 65% is healthy.",
-  order_activity: "Orders that are still being handled: new, accepted, preparing or ready.",
-  inventory_alerts: "Items below the minimum you set, out of stock, or expiring within 3 days.",
-  alerts: "Things that need your attention: stock, unusual spending, bills coming up and missing information.",
-  recent_activity: "A live log of what's happening: new orders, expenses, stock changes and more.",
-  recent_transactions: "The latest money in (green) and money out.",
-  upcoming_shifts: "Who is scheduled to work next.",
-  ai_insights: "Plain-language observations calculated from your own numbers. Nothing here is guessed.",
+  kpi_revenue: "Todo o dinheiro que entrou no período: pedidos concluídos e as receitas que você lançou à mão (eventos, encomendas…).",
+  kpi_expenses: "Tudo o que você lançou como gasto no período: ingredientes, aluguel, salários, contas etc.",
+  kpi_profit: "Faturamento menos despesas. É uma estimativa: fica mais certa quanto mais despesas você lançar.",
+  kpi_orders: "Quantos pedidos foram concluídos no período. Pedidos cancelados não entram na conta.",
+  kpi_aov: "Ticket médio: quanto cada pedido vale, em média. Aumentar o ticket costuma ser mais fácil do que conseguir clientes novos.",
+  kpi_today_revenue: "O que entrou hoje, comparado com o mesmo dia da semana passada.",
+  kpi_week_revenue: "Os últimos 7 dias, comparados com os 7 dias anteriores.",
+  kpi_month_revenue: "Desde o dia 1º deste mês, comparado com os mesmos dias do mês passado.",
+  revenue_chart: "Mostra como o faturamento muda com o tempo. Troque entre hora, dia, semana e mês para descobrir seus horários mais fortes.",
+  expense_chart: "Entradas (azul) e saídas (rosa) dia a dia. Quando a linha rosa passa da azul, o dia gastou mais do que ganhou.",
+  expense_breakdown: "Quais categorias levam a maior parte do seu dinheiro. Ingredientes e equipe costumam ser as maiores.",
+  popular_products: "Seus campeões de venda. Margem = quanto sobra do preço depois do custo dos ingredientes (precisa da ficha técnica). Acima de 65% é saudável.",
+  order_activity: "Pedidos que ainda estão em andamento: novos, aceitos, em preparo ou prontos.",
+  inventory_alerts: "Itens abaixo do mínimo que você definiu, zerados ou vencendo nos próximos 3 dias.",
+  alerts: "O que precisa da sua atenção: estoque, gastos fora do normal, contas chegando e informações faltando.",
+  recent_activity: "Tudo o que acontece no restaurante: pedidos, despesas, estoque e mais.",
+  recent_transactions: "As entradas (em verde) e saídas mais recentes.",
+  upcoming_shifts: "Quem está escalado para trabalhar a seguir.",
+  ai_insights: "Observações em linguagem simples, calculadas com os seus números. Nada aqui é inventado.",
 };
 
 export const widgetDef = (type: string) => WIDGETS.find((w) => w.type === type);
@@ -76,8 +76,8 @@ const w = (type: WidgetType, size?: WidgetInstance["size"], config?: WidgetInsta
 
 export const DASHBOARD_PRESETS = {
   owner: {
-    name: "Owner overview",
-    description: "Money, orders and alerts — the full picture.",
+    name: "Visão do dono",
+    description: "Dinheiro, pedidos e avisos — o quadro completo.",
     widgets: [
       w("kpi_revenue"), w("kpi_expenses"), w("kpi_profit"), w("kpi_orders"),
       w("revenue_chart", "xl", { chart: "area" }), w("expense_breakdown", "md"),
@@ -85,16 +85,16 @@ export const DASHBOARD_PRESETS = {
     ],
   },
   operations: {
-    name: "Operations",
-    description: "Live orders, stock and the team on shift.",
+    name: "Operação",
+    description: "Pedidos ao vivo, estoque e equipe no turno.",
     widgets: [
       w("kpi_orders"), w("kpi_aov"), w("kpi_today_revenue"), w("kpi_week_revenue"),
       w("order_activity", "md"), w("inventory_alerts"), w("popular_products"), w("upcoming_shifts"), w("recent_activity"), w("alerts"),
     ],
   },
   finance: {
-    name: "Finance",
-    description: "Revenue, costs and margins first.",
+    name: "Financeiro",
+    description: "Faturamento, custos e margens em primeiro lugar.",
     widgets: [
       w("kpi_revenue"), w("kpi_expenses"), w("kpi_profit"), w("kpi_aov"),
       w("expense_chart", "xl", { chart: "line" }), w("expense_breakdown", "md"), w("recent_transactions"),

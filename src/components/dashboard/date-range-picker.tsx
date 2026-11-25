@@ -41,12 +41,12 @@ export function DateRangePicker({ range }: { range: DateRange }) {
             </button>
           ))}
           <div className="mt-1 border-t border-line p-2">
-            <p className="mb-2 text-xs font-medium text-ink-3">Custom range</p>
+            <p className="mb-2 text-xs font-medium text-ink-3">Escolher datas</p>
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col gap-1"><Label htmlFor="dr-from" className="text-xs">From</Label><Input id="dr-from" type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} className="h-8 px-2 text-xs" /></div>
-              <div className="flex flex-col gap-1"><Label htmlFor="dr-to" className="text-xs">To</Label><Input id="dr-to" type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} className="h-8 px-2 text-xs" /></div>
+              <div className="flex flex-col gap-1"><Label htmlFor="dr-from" className="text-xs">De</Label><Input id="dr-from" type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} className="h-8 px-2 text-xs" /></div>
+              <div className="flex flex-col gap-1"><Label htmlFor="dr-to" className="text-xs">Até</Label><Input id="dr-to" type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} className="h-8 px-2 text-xs" /></div>
             </div>
-            <Button size="sm" variant="primary" className="mt-2 w-full" disabled={!from || !to || from > to} onClick={() => apply("custom", from, to)}>Apply</Button>
+            <Button size="sm" variant="primary" className="mt-2 w-full" disabled={!from || !to || from > to} onClick={() => apply("custom", from, to)}>Aplicar</Button>
           </div>
         </Popover.Content>
       </Popover.Portal>

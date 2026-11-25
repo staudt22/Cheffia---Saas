@@ -49,8 +49,19 @@ No service-role key is needed: everything runs as the signed-in user, so RLS is 
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | yes | Publishable/anon key (`NEXT_PUBLIC_SUPABASE_ANON_KEY` also accepted) |
 | `NEXT_PUBLIC_SITE_URL` | yes in production | Base URL for invitation links |
+| `NEXT_PUBLIC_SALES_CONTACT` | optional | WhatsApp/e-mail/page link shown on the plans page (“Quero este plano”) until online payment is set up |
 
 Integration and AI keys are listed in `.env.example` for later phases; none are read yet.
+
+## Plans and trial
+
+New restaurants start on `plan = 'trial'` with `trial_ends_at = now() + 7 days`. Restaurant users can't change `plan`, `trial_ends_at` or `is_demo` (a trigger blocks it); activate a paid plan from the Supabase SQL editor or a future billing webhook:
+
+```sql
+update restaurants set plan = 'profissional' where id = '<restaurant id>';
+-- or extend a trial
+update restaurants set trial_ends_at = now() + interval '7 days' where id = '<restaurant id>';
+```
 
 ## Architecture
 
@@ -116,7 +127,11 @@ PGHOST=localhost PGPORT=5432 PGUSER=postgres scripts/db-test.sh
 | Finances: revenue/expenses CRUD, recurring, receipts upload, charts, CSV | ✅ working |
 | Settings: profile, hours, branding, region, operations, notifications, users, roles, security | ✅ working |
 | Integrations page with honest status + labelled demo mode | ✅ working (no live connectors) |
+| Portuguese (pt-BR) interface, BRL defaults, Portuguese demo data | ✅ working |
+| Marketing homepage with real screenshots, 3 plans (Essencial R$ 99, Profissional R$ 199, Rede R$ 399) | ✅ working |
+| 7-day free trial (no card): banner with days left, plans page when it ends, user limit per plan | ✅ working |
+| Custom roles: create/rename/delete roles, pick a role and set “no access / view / view & edit” per area | ✅ working |
 | Suppliers & purchase orders UI, Team shifts & time clock, Analytics, AI assistant | 🔜 next phases (DB already in place for suppliers/POs/shifts) |
-| Receipt OCR, email delivery of invites, Stripe billing, i18n of the interface | 🔜 not implemented |
+| Receipt OCR, email delivery of invites, online payment (Stripe card/Pix) | 🔜 not implemented — plans are activated by the Forkly team for now |
 
 Integrations with iFood, Uber Eats, DoorDash, Stripe, Square, Shopify and Google need approved partner/developer accounts and their credentials before they can be connected. Until then Forkly shows them as *Coming soon*; delivery platforms offer a demo mode whose orders are flagged **Simulated** everywhere.

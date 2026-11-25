@@ -51,17 +51,17 @@ function SortableWidget({
       )}>
         {editing && (
           <div className="flex items-center gap-1 border-b border-line bg-brand-soft/60 px-2 py-1">
-            <button className="flex cursor-grab touch-none items-center gap-1 rounded px-1 py-0.5 text-xs font-medium text-brand active:cursor-grabbing" {...attributes} {...listeners} aria-label={`Drag ${def?.title ?? "widget"}`}>
+            <button className="flex cursor-grab touch-none items-center gap-1 rounded px-1 py-0.5 text-xs font-medium text-brand active:cursor-grabbing" {...attributes} {...listeners} aria-label={`Arrastar ${def?.title ?? "widget"}`}>
               <GripVertical className="size-3.5" /> {def?.title}
             </button>
             <div className="ml-auto flex items-center gap-0.5">
               {sizes.length > 1 && (
                 <>
-                  <button className="rounded p-1 text-ink-3 hover:bg-surface hover:text-ink disabled:opacity-30" disabled={idx <= 0} onClick={() => onResize(-1)} aria-label="Make smaller"><Minimize2 className="size-3.5" /></button>
-                  <button className="rounded p-1 text-ink-3 hover:bg-surface hover:text-ink disabled:opacity-30" disabled={idx >= sizes.length - 1} onClick={() => onResize(1)} aria-label="Make larger"><Maximize2 className="size-3.5" /></button>
+                  <button className="rounded p-1 text-ink-3 hover:bg-surface hover:text-ink disabled:opacity-30" disabled={idx <= 0} onClick={() => onResize(-1)} aria-label="Diminuir"><Minimize2 className="size-3.5" /></button>
+                  <button className="rounded p-1 text-ink-3 hover:bg-surface hover:text-ink disabled:opacity-30" disabled={idx >= sizes.length - 1} onClick={() => onResize(1)} aria-label="Aumentar"><Maximize2 className="size-3.5" /></button>
                 </>
               )}
-              <button className="rounded p-1 text-ink-3 hover:bg-bad-soft hover:text-bad" onClick={onRemove} aria-label="Remove widget"><X className="size-3.5" /></button>
+              <button className="rounded p-1 text-ink-3 hover:bg-bad-soft hover:text-bad" onClick={onRemove} aria-label="Remover widget"><X className="size-3.5" /></button>
             </div>
           </div>
         )}
@@ -121,7 +121,7 @@ export function Dashboard({
     start(async () => {
       const res = await saveLayoutAction(active.id, { widgets, density });
       if (!res.ok) return void toast.error(res.error);
-      toast.success("Dashboard saved");
+      toast.success("Painel salvo");
       setEditing(false);
       router.refresh();
     });
@@ -137,22 +137,22 @@ export function Dashboard({
       <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
         {editing ? (
           <div className="flex w-full flex-wrap items-center gap-2 rounded-lg bg-surface p-2 shadow-card animate-slide-up">
-            <span className="flex items-center gap-2 px-2 text-sm font-medium"><LayoutGrid className="size-4 text-brand" /> Customizing “{active.name}”</span>
+            <span className="flex items-center gap-2 px-2 text-sm font-medium"><LayoutGrid className="size-4 text-brand" /> Personalizando “{active.name}” — arraste, aumente ou remova</span>
             <div className="ml-auto flex flex-wrap items-center gap-2">
-              <Segmented ariaLabel="Density" value={density} onChange={setDensity} options={[{ value: "comfortable", label: "Comfortable" }, { value: "compact", label: "Compact" }]} />
-              <Button size="sm" onClick={() => setLibraryOpen(true)}><Plus /> Add widget</Button>
+              <Segmented ariaLabel="Espaçamento" value={density} onChange={setDensity} options={[{ value: "comfortable", label: "Confortável" }, { value: "compact", label: "Compacto" }]} />
+              <Button size="sm" onClick={() => setLibraryOpen(true)}><Plus /> Adicionar widget</Button>
               <Dropdown>
-                <DropdownTrigger asChild><Button size="sm" variant="ghost"><RotateCcw /> Presets <ChevronDown /></Button></DropdownTrigger>
+                <DropdownTrigger asChild><Button size="sm" variant="ghost"><RotateCcw /> Modelos <ChevronDown /></Button></DropdownTrigger>
                 <DropdownContent>
-                  <DropdownLabel>Replace with a preset</DropdownLabel>
+                  <DropdownLabel>Trocar por um modelo pronto</DropdownLabel>
                   {(Object.keys(DASHBOARD_PRESETS) as PresetKey[]).map((k) => (
-                    <DropdownItem key={k} onSelect={() => setWidgets(DASHBOARD_PRESETS[k].widgets.map((w) => ({ ...w })))}>{DASHBOARD_PRESETS[k].name}{k === "owner" ? " (default)" : ""}</DropdownItem>
+                    <DropdownItem key={k} onSelect={() => setWidgets(DASHBOARD_PRESETS[k].widgets.map((w) => ({ ...w })))}>{DASHBOARD_PRESETS[k].name}{k === "owner" ? " (padrão)" : ""}</DropdownItem>
                   ))}
                 </DropdownContent>
               </Dropdown>
-              <Button size="sm" variant="ghost" onClick={cancel} disabled={pending}>Cancel</Button>
-              <Button size="sm" variant="outline" onClick={() => { setSaveAsName(""); setSaveAsOpen(true); }} disabled={pending}>Save as new</Button>
-              <Button size="sm" variant="primary" onClick={save} loading={pending} disabled={!dirty}><Save /> Save</Button>
+              <Button size="sm" variant="ghost" onClick={cancel} disabled={pending}>Cancelar</Button>
+              <Button size="sm" variant="outline" onClick={() => { setSaveAsName(""); setSaveAsOpen(true); }} disabled={pending}>Salvar como novo</Button>
+              <Button size="sm" variant="primary" onClick={save} loading={pending} disabled={!dirty}><Save /> Salvar</Button>
             </div>
           </div>
         ) : (
@@ -161,7 +161,7 @@ export function Dashboard({
               <Dropdown>
                 <DropdownTrigger asChild><Button variant="ghost">{active.name} <ChevronDown className="text-ink-3" /></Button></DropdownTrigger>
                 <DropdownContent>
-                  <DropdownLabel>Saved layouts</DropdownLabel>
+                  <DropdownLabel>Layouts salvos</DropdownLabel>
                   {layouts.map((l) => (
                     <DropdownItem key={l.id} onSelect={() => start(async () => { const r = await activateLayoutAction(l.id); if (!r.ok) toast.error(r.error); router.refresh(); })}>
                       <span className="flex-1">{l.name}</span>{l.is_active && <Check className="!text-brand" />}
@@ -169,12 +169,12 @@ export function Dashboard({
                   ))}
                   {canEdit && (<>
                     <DropdownSeparator />
-                    <DropdownItem destructive onSelect={() => start(async () => { const r = await deleteLayoutAction(active.id); if (!r.ok) toast.error(r.error); else toast.success("Layout deleted"); router.refresh(); })}><Trash2 /> Delete “{active.name}”</DropdownItem>
+                    <DropdownItem destructive onSelect={() => start(async () => { const r = await deleteLayoutAction(active.id); if (!r.ok) toast.error(r.error); else toast.success("Layout excluído"); router.refresh(); })}><Trash2 /> Excluir “{active.name}”</DropdownItem>
                   </>)}
                 </DropdownContent>
               </Dropdown>
             )}
-            {canEdit && <Button onClick={() => setEditing(true)}><SlidersHorizontal /> Customize dashboard</Button>}
+            {canEdit && <Button onClick={() => setEditing(true)}><SlidersHorizontal /> Personalizar painel</Button>}
           </>
         )}
       </div>
@@ -203,14 +203,14 @@ export function Dashboard({
         </DndContext>
       ) : (
         <Card className="p-10 text-center">
-          <p className="text-sm font-semibold">Your dashboard is empty</p>
-          <p className="mt-1 text-sm text-ink-3">Add widgets from the library to build your view.</p>
-          {canEdit && <Button className="mt-4" variant="primary" onClick={() => { setEditing(true); setLibraryOpen(true); }}><Plus /> Add widgets</Button>}
+          <p className="text-sm font-semibold">Seu painel está vazio</p>
+          <p className="mt-1 text-sm text-ink-3">Adicione widgets da biblioteca para montar o seu painel.</p>
+          {canEdit && <Button className="mt-4" variant="primary" onClick={() => { setEditing(true); setLibraryOpen(true); }}><Plus /> Adicionar widgets</Button>}
         </Card>
       )}
 
       <Dialog open={libraryOpen} onOpenChange={setLibraryOpen}>
-        <DialogContent title="Widget library" description="Add widgets to your dashboard. Changes are previewed until you save." size="lg">
+        <DialogContent title="Biblioteca de widgets" description="Escolha o que quer ver no painel. Você vê a prévia antes de salvar." size="lg">
           <div className="flex flex-col gap-6">
             {groups.map((g) => (
               <div key={g}>
@@ -220,10 +220,10 @@ export function Dashboard({
                     const added = present.has(w.type);
                     return (
                       <button key={w.type} type="button" disabled={added}
-                        onClick={() => { setWidgets((ws) => [...ws, { id: newWidgetId(w.type), type: w.type, size: w.defaultSize }]); toast.success(`${w.title} added`, { duration: 1500 }); }}
+                        onClick={() => { setWidgets((ws) => [...ws, { id: newWidgetId(w.type), type: w.type, size: w.defaultSize }]); toast.success(`${w.title} adicionado`, { duration: 1500 }); }}
                         className="flex items-start gap-3 rounded-lg p-3 text-left ring-1 ring-line transition hover:bg-surface-2 hover:ring-line-strong disabled:cursor-default disabled:opacity-60 disabled:hover:bg-transparent">
                         <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{w.title}</span><span className="block text-xs text-ink-3">{w.description}</span></span>
-                        {added ? <Check className="size-4 shrink-0 text-good" aria-label="Already added" /> : <Plus className="size-4 shrink-0 text-ink-3" />}
+                        {added ? <Check className="size-4 shrink-0 text-good" aria-label="Já adicionado" /> : <Plus className="size-4 shrink-0 text-ink-3" />}
                       </button>
                     );
                   })}
@@ -235,19 +235,19 @@ export function Dashboard({
       </Dialog>
 
       <Dialog open={saveAsOpen} onOpenChange={setSaveAsOpen}>
-        <DialogContent title="Save as a new layout" description="Keep this arrangement as a separate layout you can switch to." size="sm"
+        <DialogContent title="Salvar como novo layout" description="Guarde esta arrumação para alternar quando quiser." size="sm"
           footer={<>
-            <Button variant="ghost" onClick={() => setSaveAsOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setSaveAsOpen(false)}>Cancelar</Button>
             <Button variant="primary" loading={pending} disabled={!saveAsName.trim()} onClick={() => start(async () => {
               const r = await createLayoutAction(saveAsName, { widgets, density });
               if (!r.ok) return void toast.error(r.error);
-              toast.success("Layout saved");
+              toast.success("Layout salvo");
               setSaveAsOpen(false);
               setEditing(false);
               router.refresh();
-            })}>Save layout</Button>
+            })}>Salvar layout</Button>
           </>}>
-          <Input autoFocus placeholder="e.g. Friday night service" value={saveAsName} onChange={(e) => setSaveAsName(e.target.value)} maxLength={60} aria-label="Layout name" />
+          <Input autoFocus placeholder="ex.: Movimento de sexta à noite" value={saveAsName} onChange={(e) => setSaveAsName(e.target.value)} maxLength={60} aria-label="Nome do layout" />
         </DialogContent>
       </Dialog>
     </div>

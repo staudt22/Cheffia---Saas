@@ -1,17 +1,17 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { ComingSoon } from "@/components/app/coming-soon";
 
-export const metadata = { title: "AI Assistant" };
+export const metadata = { title: "Assistente IA" };
 
 export default async function AssistantPage() {
   await requireWorkspace("assistant");
   return (
     <ComingSoon
-      title="AI Assistant"
-      description="Ask questions about your restaurant in plain language."
-      planned={["Chat that answers from your own data only", "“How much did we spend on ingredients this month?”", "“What should I order from suppliers?”", "Never invents numbers — says when data is missing", "Runs server-side; API keys never reach the browser"]}
-      ready={["Dashboard insights computed from your real numbers"]}
-      links={[{ href: "/dashboard", label: "See insights" }]}
+      title="Assistente IA"
+      description="Pergunte sobre o seu restaurante do jeito que você fala."
+      planned={["Conversa que responde só com os seus dados", "“Quanto gastamos com ingredientes este mês?”", "“O que preciso comprar dos fornecedores?”", "Nunca inventa números — avisa quando falta informação", "Roda no servidor, com segurança"]}
+      ready={["Dicas no painel calculadas com os seus números reais"]}
+      links={[{ href: "/dashboard", label: "Ver dicas" }]}
     />
   );
 }

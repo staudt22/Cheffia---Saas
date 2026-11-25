@@ -30,26 +30,26 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
   const money = (v: number) => formatMoney(v, currency, locale);
 
   const filtered = useMemo(() => items.filter((i) => !q || i.name.toLowerCase().includes(q.toLowerCase())), [items, q]);
-  const groups = [...categories.map((c) => ({ id: c.id, name: c.name })), { id: null as string | null, name: "Uncategorized" }]
+  const groups = [...categories.map((c) => ({ id: c.id, name: c.name })), { id: null as string | null, name: "Sem categoria" }]
     .map((g) => ({ ...g, items: filtered.filter((i) => i.category_id === g.id) }))
     .filter((g) => g.items.length || (g.id && !q));
 
   return (
     <div>
-      <PageHeader title="Menu" description="Products, prices and recipes. Food cost is estimated from your inventory prices."
+      <PageHeader title="Cardápio" description="Produtos, preços e fichas técnicas. O custo de cada prato é calculado com os preços do seu estoque."
         actions={canEdit && <>
-          <Button onClick={() => setCatDialog(true)}><Tags /> Categories</Button>
-          <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Add item</Button>
+          <Button onClick={() => setCatDialog(true)}><Tags /> Categorias</Button>
+          <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Novo item</Button>
         </>} />
       {items.length > 0 && (
         <div className="relative mb-4 max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search the menu" className="pl-9" aria-label="Search menu" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar no cardápio" className="pl-9" aria-label="Buscar no cardápio" />
         </div>
       )}
       {!items.length ? (
-        <Card><EmptyState icon={<UtensilsCrossed />} title="Your menu is empty" description="Add the dishes and drinks you sell. Then build recipes so Forkly can calculate food cost and deduct stock."
-          action={canEdit && <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Add your first item</Button>} /></Card>
+        <Card><EmptyState icon={<UtensilsCrossed />} title="Seu cardápio está vazio" description="Cadastre os pratos e bebidas que você vende. Depois monte as fichas técnicas para o Forkly calcular o custo e baixar o estoque."
+          action={canEdit && <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Cadastrar o primeiro item</Button>} /></Card>
       ) : (
         <div className="flex flex-col gap-6">
           {groups.map((g) => (
@@ -69,26 +69,26 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium">{item.name}</p>
-                          <p className="truncate text-xs text-ink-3">{item.description ?? "No description"}</p>
+                          <p className="truncate text-xs text-ink-3">{item.description ?? "Sem descrição"}</p>
                         </div>
                         <div className="hidden w-28 text-right sm:block">
-                          {hasRecipe ? <><p className="text-xs text-ink-3">Food cost</p><p className="text-sm tabular">{money(c.foodCost)}</p></> : <Badge tone="outline">No recipe</Badge>}
+                          {hasRecipe ? <><p className="text-xs text-ink-3">Custo</p><p className="text-sm tabular">{money(c.foodCost)}</p></> : <Badge tone="outline">Sem ficha técnica</Badge>}
                         </div>
                         <div className="hidden w-20 text-right sm:block">
-                          {margin != null && <><p className="text-xs text-ink-3">Margin</p><p className={cn("text-sm font-medium tabular", margin < 0.6 ? "text-warn" : "text-good")}>{formatPercent(margin, locale, 0)}</p></>}
+                          {margin != null && <><p className="text-xs text-ink-3">Margem</p><p className={cn("text-sm font-medium tabular", margin < 0.6 ? "text-warn" : "text-good")}>{formatPercent(margin, locale, 0)}</p></>}
                         </div>
                         <p className="w-20 text-right text-sm font-semibold tabular">{money(item.price)}</p>
                         {canEdit && (
                           <>
-                            <Switch checked={item.is_available} aria-label={`${item.name} available`} disabled={pending}
+                            <Switch checked={item.is_available} aria-label={`${item.name} disponível`} disabled={pending}
                               onCheckedChange={(v) => start(async () => { const r = await setAvailabilityAction(item.id, v); if (!r.ok) toast.error(r.error); })} />
                             <Dropdown>
-                              <DropdownTrigger asChild><Button variant="ghost" size="icon-sm" aria-label="More actions"><MoreHorizontal /></Button></DropdownTrigger>
+                              <DropdownTrigger asChild><Button variant="ghost" size="icon-sm" aria-label="Mais ações"><MoreHorizontal /></Button></DropdownTrigger>
                               <DropdownContent>
-                                <DropdownItem onSelect={() => setEditing(item)}><Pencil /> Edit details</DropdownItem>
-                                <DropdownItem asChild><Link href={`/menu/${item.id}`}><ChefHat /> {hasRecipe ? "Edit recipe" : "Build recipe"}</Link></DropdownItem>
+                                <DropdownItem onSelect={() => setEditing(item)}><Pencil /> Editar item</DropdownItem>
+                                <DropdownItem asChild><Link href={`/menu/${item.id}`}><ChefHat /> {hasRecipe ? "Editar ficha técnica" : "Montar ficha técnica"}</Link></DropdownItem>
                                 <DropdownSeparator />
-                                <DropdownItem destructive onSelect={() => setConfirmDelete(item)}><Trash2 /> Delete</DropdownItem>
+                                <DropdownItem destructive onSelect={() => setConfirmDelete(item)}><Trash2 /> Excluir</DropdownItem>
                               </DropdownContent>
                             </Dropdown>
                           </>
@@ -97,7 +97,7 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
                     );
                   })}
                 </Card>
-              ) : <p className="rounded-lg border border-dashed border-line-strong px-4 py-3 text-sm text-ink-3">No items in this category yet.</p>}
+              ) : <p className="rounded-lg border border-dashed border-line-strong px-4 py-3 text-sm text-ink-3">Nenhum item nesta categoria ainda.</p>}
             </section>
           ))}
         </div>
@@ -108,12 +108,12 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
       </Dialog>
 
       <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
-        <DialogContent size="sm" title={`Delete ${confirmDelete?.name}?`} description="Past orders keep their history. To hide it temporarily, turn availability off instead."
-          footer={<><Button variant="ghost" onClick={() => setConfirmDelete(null)}>Cancel</Button><Button variant="danger" loading={pending} onClick={() => start(async () => {
+        <DialogContent size="sm" title={`Excluir ${confirmDelete?.name}?`} description="Os pedidos antigos continuam no histórico. Para só esconder por um tempo, desligue o botão de disponível."
+          footer={<><Button variant="ghost" onClick={() => setConfirmDelete(null)}>Cancelar</Button><Button variant="danger" loading={pending} onClick={() => start(async () => {
             const r = await deleteMenuItemAction(confirmDelete!.id);
             if (!r.ok) return void toast.error(r.error);
-            toast.success("Item deleted"); setConfirmDelete(null);
-          })}>Delete</Button></>}><span /></DialogContent>
+            toast.success("Item excluído"); setConfirmDelete(null);
+          })}>Excluir</Button></>}><span /></DialogContent>
       </Dialog>
 
       <Dialog open={catDialog} onOpenChange={setCatDialog}>
@@ -129,22 +129,22 @@ function CategoryManager({ categories }: { categories: MenuCategory[] }) {
   const [pending, start] = useTransition();
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, ok?: () => void) => start(async () => { const r = await fn(); if (!r.ok) toast.error(r.error); else ok?.(); });
   return (
-    <DialogContent title="Menu categories" description="Group your menu the way guests read it." size="sm">
+    <DialogContent title="Categorias do cardápio" description="Organize o cardápio do jeito que o cliente lê." size="sm">
       <form className="mb-4 flex gap-2" onSubmit={(e) => { e.preventDefault(); run(() => saveCategoryAction(null, name), () => setName("")); }}>
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="New category, e.g. Brunch" aria-label="New category name" />
-        <Button type="submit" variant="primary" disabled={!name.trim()} loading={pending}>Add</Button>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nova categoria, ex.: Porções" aria-label="Nome da nova categoria" />
+        <Button type="submit" variant="primary" disabled={!name.trim()} loading={pending}>Adicionar</Button>
       </form>
       <ul className="flex flex-col gap-1.5">
         {categories.map((c) => (
           <li key={c.id} className="flex items-center gap-2">
-            <Input value={edits[c.id] ?? c.name} onChange={(e) => setEdits({ ...edits, [c.id]: e.target.value })} aria-label={`Rename ${c.name}`}
+            <Input value={edits[c.id] ?? c.name} onChange={(e) => setEdits({ ...edits, [c.id]: e.target.value })} aria-label={`Renomear ${c.name}`}
               onBlur={() => { const v = edits[c.id]; if (v != null && v.trim() && v !== c.name) run(() => saveCategoryAction(c.id, v)); }} />
-            <Button variant="ghost" size="icon" aria-label={`Delete ${c.name}`} onClick={() => run(() => deleteCategoryAction(c.id))}><Trash2 /></Button>
+            <Button variant="ghost" size="icon" aria-label={`Excluir ${c.name}`} onClick={() => run(() => deleteCategoryAction(c.id))}><Trash2 /></Button>
           </li>
         ))}
-        {!categories.length && <p className="text-sm text-ink-3">No categories yet.</p>}
+        {!categories.length && <p className="text-sm text-ink-3">Nenhuma categoria ainda.</p>}
       </ul>
-      <p className="mt-3 text-xs text-ink-3">Deleting a category moves its items to “Uncategorized”.</p>
+      <p className="mt-3 text-xs text-ink-3">Ao excluir uma categoria, os itens dela vão para “Sem categoria”.</p>
     </DialogContent>
   );
 }

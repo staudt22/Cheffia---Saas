@@ -30,32 +30,32 @@ export function ItemSheet({ item, movements, status, suppliers, currency, locale
     <>
       <SheetContent title={item.name} description={`${item.category}${item.storage_location ? ` · ${item.storage_location}` : ""}`}
         footer={canEdit ? <div className="flex w-full gap-2">
-          <Button variant="danger-ghost" onClick={() => setConfirmDelete(true)}><Trash2 /> Delete</Button>
-          <Button className="ml-auto" onClick={onEdit}><Pencil /> Edit</Button>
+          <Button variant="danger-ghost" onClick={() => setConfirmDelete(true)}><Trash2 /> Excluir</Button>
+          <Button className="ml-auto" onClick={onEdit}><Pencil /> Editar</Button>
         </div> : undefined}>
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs text-ink-3">In stock</p>
+            <p className="text-xs text-ink-3">Tem hoje</p>
             <p className="text-3xl font-semibold tabular">{formatQuantity(item.quantity, item.unit, locale)}</p>
           </div>
           <StatusBadge status={status} expires={item.expires_on} />
         </div>
         <dl className="mt-4 grid grid-cols-2 gap-3 rounded-lg bg-surface-2 p-3 text-sm">
-          <div><dt className="text-xs text-ink-3">Minimum</dt><dd className="tabular">{formatQuantity(item.min_quantity, item.unit, locale)}</dd></div>
-          <div><dt className="text-xs text-ink-3">Cost per {item.unit}</dt><dd className="tabular">{money(Number(item.unit_cost))}</dd></div>
-          <div><dt className="text-xs text-ink-3">Supplier</dt><dd>{supplier?.name ?? "—"}</dd></div>
-          <div><dt className="text-xs text-ink-3">Expires</dt><dd>{item.expires_on ?? "—"}</dd></div>
+          <div><dt className="text-xs text-ink-3">Mínimo</dt><dd className="tabular">{formatQuantity(item.min_quantity, item.unit, locale)}</dd></div>
+          <div><dt className="text-xs text-ink-3">Custo por {item.unit}</dt><dd className="tabular">{money(Number(item.unit_cost))}</dd></div>
+          <div><dt className="text-xs text-ink-3">Fornecedor</dt><dd>{supplier?.name ?? "—"}</dd></div>
+          <div><dt className="text-xs text-ink-3">Validade</dt><dd>{item.expires_on?.split("-").reverse().join("/") ?? "—"}</dd></div>
         </dl>
         {item.notes && <p className="mt-3 text-sm text-ink-2">{item.notes}</p>}
         {canEdit && (
           <div className="mt-5 grid grid-cols-2 gap-2">
-            <Button onClick={() => setMove("purchase")}><PackagePlus /> Purchase</Button>
-            <Button onClick={() => setMove("usage")}><PackageMinus /> Usage</Button>
-            <Button onClick={() => setMove("waste")}><Trash /> Waste</Button>
-            <Button onClick={() => setMove("adjustment")}><ClipboardCheck /> Stock count</Button>
+            <Button onClick={() => setMove("purchase")}><PackagePlus /> Entrada (compra)</Button>
+            <Button onClick={() => setMove("usage")}><PackageMinus /> Saída (uso)</Button>
+            <Button onClick={() => setMove("waste")}><Trash /> Desperdício</Button>
+            <Button onClick={() => setMove("adjustment")}><ClipboardCheck /> Contagem</Button>
           </div>
         )}
-        <p className="mb-2 mt-6 text-xs font-medium uppercase tracking-wide text-ink-3">History</p>
+        <p className="mb-2 mt-6 text-xs font-medium uppercase tracking-wide text-ink-3">Histórico</p>
         {movements.length ? (
           <ul className="divide-y divide-line">
             {movements.slice(0, 30).map((m) => (
@@ -66,19 +66,19 @@ export function ItemSheet({ item, movements, status, suppliers, currency, locale
               </li>
             ))}
           </ul>
-        ) : <p className="text-sm text-ink-3">No movements yet.</p>}
+        ) : <p className="text-sm text-ink-3">Nenhuma movimentação ainda.</p>}
       </SheetContent>
 
       <Dialog open={!!move} onOpenChange={(o) => !o && setMove(null)}>
         {move && <MovementDialog item={item} type={move} setType={setMove} currency={currency} locale={locale} onDone={() => setMove(null)} />}
       </Dialog>
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent size="sm" title={`Delete ${item.name}?`} description="Its movement history is deleted too. Items used in recipes can't be deleted."
-          footer={<><Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button><Button variant="danger" loading={pending} onClick={() => start(async () => {
+        <DialogContent size="sm" title={`Excluir ${item.name}?`} description="O histórico de movimentações também será apagado. Itens usados em fichas técnicas não podem ser excluídos."
+          footer={<><Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancelar</Button><Button variant="danger" loading={pending} onClick={() => start(async () => {
             const r = await deleteInventoryItemAction(item.id);
             if (!r.ok) return void toast.error(r.error);
-            toast.success("Item deleted"); setConfirmDelete(false); onDeleted();
-          })}>Delete</Button></>}><span /></DialogContent>
+            toast.success("Item excluído"); setConfirmDelete(false); onDeleted();
+          })}>Excluir</Button></>}><span /></DialogContent>
       </Dialog>
     </>
   );
@@ -98,31 +98,31 @@ function MovementDialog({ item, type, setType, currency, locale, onDone }: { ite
     start(async () => {
       const r = await recordMovementAction(item.id, payload);
       if (!r.ok) return void toast.error(r.error);
-      toast.success(r.message ?? "Stock updated");
+      toast.success(r.message ?? "Estoque atualizado");
       onDone();
     });
   }
 
   return (
-    <DialogContent size="sm" title={`Update ${item.name}`} description={`Currently ${formatQuantity(current, item.unit, locale)}`}
-      footer={<><Button variant="ghost" onClick={onDone}>Cancel</Button><Button variant="primary" loading={pending} disabled={qty === "" || n < 0 || (type !== "adjustment" && n <= 0) || (type === "waste" && !reason.trim())} onClick={submit}>Save</Button></>}>
+    <DialogContent size="sm" title={`Movimentar ${item.name}`} description={`Hoje tem ${formatQuantity(current, item.unit, locale)}`}
+      footer={<><Button variant="ghost" onClick={onDone}>Cancelar</Button><Button variant="primary" loading={pending} disabled={qty === "" || n < 0 || (type !== "adjustment" && n <= 0) || (type === "waste" && !reason.trim())} onClick={submit}>Salvar</Button></>}>
       <div className="flex flex-col gap-4">
-        <Segmented size="md" ariaLabel="Movement type" value={type} onChange={(t) => { setType(t); setQty(""); }} options={[
-          { value: "purchase", label: "Purchase" }, { value: "usage", label: "Usage" }, { value: "waste", label: "Waste" }, { value: "adjustment", label: "Count" },
+        <Segmented size="md" ariaLabel="Tipo de movimentação" value={type} onChange={(t) => { setType(t); setQty(""); }} options={[
+          { value: "purchase", label: "Compra" }, { value: "usage", label: "Uso" }, { value: "waste", label: "Desperdício" }, { value: "adjustment", label: "Contagem" },
         ]} />
-        <Field label={type === "adjustment" ? `Counted quantity (${item.unit})` : `Quantity (${item.unit})`} htmlFor="mv-qty"
-          hint={after != null ? `After this: ${formatQuantity(after, item.unit, locale)}` : undefined}>
+        <Field label={type === "adjustment" ? `Quantidade contada (${item.unit})` : `Quantidade (${item.unit})`} htmlFor="mv-qty"
+          hint={after != null ? `Depois disso: ${formatQuantity(after, item.unit, locale)}` : type === "adjustment" ? "Conte o que tem na prateleira e digite aqui. O Forkly calcula a diferença." : undefined}>
           <Input id="mv-qty" type="number" min={0} step="any" autoFocus value={qty} onChange={(e) => setQty(e.target.value)} />
         </Field>
         {type === "purchase" && (
-          <Field label={`Cost per ${item.unit} (${currency})`} htmlFor="mv-cost" hint="Updates the item's cost so recipe costs stay accurate.">
+          <Field label={`Custo por ${item.unit} (R$)`} htmlFor="mv-cost" hint="Atualiza o custo do item, para as fichas técnicas ficarem certas.">
             <Input id="mv-cost" type="number" min={0} step="0.0001" value={cost} onChange={(e) => setCost(e.target.value)} />
           </Field>
         )}
-        <Field label={type === "waste" ? "Reason" : "Note (optional)"} htmlFor="mv-reason">
-          <Input id="mv-reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder={type === "waste" ? "e.g. expired, dropped" : ""} />
+        <Field label={type === "waste" ? "Motivo" : "Observação (opcional)"} htmlFor="mv-reason">
+          <Input id="mv-reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder={type === "waste" ? "ex.: venceu, caiu no chão" : ""} />
         </Field>
-        {after != null && after < 0 && <p className="text-xs text-warn">This would make the stock negative.</p>}
+        {after != null && after < 0 && <p className="text-xs text-warn">Assim o estoque ficaria negativo.</p>}
       </div>
     </DialogContent>
   );
@@ -130,7 +130,7 @@ function MovementDialog({ item, type, setType, currency, locale, onDone }: { ite
 
 export function InventoryItemDialog({ item, suppliers, categories, currency, onDone }: { item: InventoryItem | null; suppliers: Supplier[]; categories: string[]; currency: string; onDone: () => void }) {
   const [v, setV] = useState({
-    name: item?.name ?? "", category: item?.category ?? categories[0] ?? "General", unit: item?.unit ?? "kg",
+    name: item?.name ?? "", category: item?.category ?? categories[0] ?? "Geral", unit: item?.unit ?? "kg",
     min_quantity: item ? String(item.min_quantity) : "", unit_cost: item ? String(item.unit_cost) : "",
     supplier_id: item?.supplier_id ?? "", expires_on: item?.expires_on ?? "", storage_location: item?.storage_location ?? "", notes: item?.notes ?? "",
   });
@@ -139,36 +139,36 @@ export function InventoryItemDialog({ item, suppliers, categories, currency, onD
   const set = (p: Partial<typeof v>) => setV({ ...v, ...p });
 
   return (
-    <DialogContent title={item ? `Edit ${item.name}` : "Add inventory item"}
-      footer={<><Button variant="ghost" onClick={onDone}>Cancel</Button><Button variant="primary" loading={pending} disabled={!v.name.trim()} onClick={() => start(async () => {
+    <DialogContent title={item ? `Editar ${item.name}` : "Novo item no estoque"}
+      footer={<><Button variant="ghost" onClick={onDone}>Cancelar</Button><Button variant="primary" loading={pending} disabled={!v.name.trim()} onClick={() => start(async () => {
         const r = await saveInventoryItemAction(item?.id ?? null, { ...v, min_quantity: v.min_quantity || 0, unit_cost: v.unit_cost || 0, supplier_id: v.supplier_id || null, expires_on: v.expires_on || null }, initial ? Number(initial) : undefined);
         if (!r.ok) return void toast.error(r.error);
-        toast.success(item ? "Item updated" : "Item added");
+        toast.success(item ? "Item atualizado" : "Item adicionado");
         onDone();
-      })}>Save</Button></>}>
+      })}>Salvar</Button></>}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Name" htmlFor="ii-name" className="sm:col-span-2"><Input id="ii-name" autoFocus value={v.name} onChange={(e) => set({ name: e.target.value })} /></Field>
-        <Field label="Category" htmlFor="ii-cat">
+        <Field label="Nome" htmlFor="ii-name" className="sm:col-span-2"><Input id="ii-name" autoFocus value={v.name} onChange={(e) => set({ name: e.target.value })} /></Field>
+        <Field label="Categoria" htmlFor="ii-cat">
           <Input id="ii-cat" list="ii-cats" value={v.category} onChange={(e) => set({ category: e.target.value })} />
-          <datalist id="ii-cats">{[...new Set([...categories, "Meat", "Produce", "Dairy", "Bakery", "Beverages", "Pantry", "Packaging", "Cleaning"])].map((c) => <option key={c} value={c} />)}</datalist>
+          <datalist id="ii-cats">{[...new Set([...categories, "Carnes", "Hortifruti", "Laticínios", "Padaria", "Bebidas", "Mercearia", "Embalagens", "Limpeza"])].map((c) => <option key={c} value={c} />)}</datalist>
         </Field>
-        <Field label="Unit" htmlFor="ii-unit" hint={item ? "Changing the unit doesn't convert existing quantities." : undefined}>
+        <Field label="Unidade" htmlFor="ii-unit" hint={item ? "Trocar a unidade não converte a quantidade que já existe." : undefined}>
           <Select id="ii-unit" value={v.unit} onChange={(e) => set({ unit: e.target.value as typeof v.unit })}>
             {UNITS.map((u) => <option key={u} value={u}>{UNIT_LABELS[u]}</option>)}
           </Select>
         </Field>
-        {!item && <Field label={`Current stock (${v.unit})`} htmlFor="ii-qty"><Input id="ii-qty" type="number" min={0} step="any" value={initial} onChange={(e) => setInitial(e.target.value)} placeholder="0" /></Field>}
-        <Field label={`Minimum stock (${v.unit})`} htmlFor="ii-min" hint="You'll get an alert below this level."><Input id="ii-min" type="number" min={0} step="any" value={v.min_quantity} onChange={(e) => set({ min_quantity: e.target.value })} placeholder="0" /></Field>
-        <Field label={`Cost per ${v.unit} (${currency})`} htmlFor="ii-cost"><Input id="ii-cost" type="number" min={0} step="0.0001" value={v.unit_cost} onChange={(e) => set({ unit_cost: e.target.value })} placeholder="0.00" /></Field>
-        <Field label="Supplier" htmlFor="ii-sup">
+        {!item && <Field label={`Quanto tem hoje (${v.unit})`} htmlFor="ii-qty"><Input id="ii-qty" type="number" min={0} step="any" value={initial} onChange={(e) => setInitial(e.target.value)} placeholder="0" /></Field>}
+        <Field label={`Estoque mínimo (${v.unit})`} htmlFor="ii-min" hint="Abaixo disso, você recebe um aviso."><Input id="ii-min" type="number" min={0} step="any" value={v.min_quantity} onChange={(e) => set({ min_quantity: e.target.value })} placeholder="0" /></Field>
+        <Field label={`Custo por ${v.unit} (R$)`} htmlFor="ii-cost"><Input id="ii-cost" type="number" min={0} step="0.0001" value={v.unit_cost} onChange={(e) => set({ unit_cost: e.target.value })} placeholder="0.00" /></Field>
+        <Field label="Fornecedor" htmlFor="ii-sup">
           <Select id="ii-sup" value={v.supplier_id} onChange={(e) => set({ supplier_id: e.target.value })} disabled={!suppliers.length}>
-            <option value="">{suppliers.length ? "None" : "No suppliers yet"}</option>
+            <option value="">{suppliers.length ? "Nenhum" : "Nenhum fornecedor ainda"}</option>
             {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </Select>
         </Field>
-        <Field label="Expiration date" htmlFor="ii-exp"><Input id="ii-exp" type="date" value={v.expires_on} onChange={(e) => set({ expires_on: e.target.value })} /></Field>
-        <Field label="Storage location" htmlFor="ii-loc"><Input id="ii-loc" value={v.storage_location} onChange={(e) => set({ storage_location: e.target.value })} placeholder="e.g. Walk-in fridge" /></Field>
-        <Field label="Notes" htmlFor="ii-notes" className="sm:col-span-2"><Textarea id="ii-notes" rows={2} value={v.notes} onChange={(e) => set({ notes: e.target.value })} /></Field>
+        <Field label="Validade" htmlFor="ii-exp"><Input id="ii-exp" type="date" value={v.expires_on} onChange={(e) => set({ expires_on: e.target.value })} /></Field>
+        <Field label="Onde fica guardado" htmlFor="ii-loc"><Input id="ii-loc" value={v.storage_location} onChange={(e) => set({ storage_location: e.target.value })} placeholder="ex.: Câmara fria" /></Field>
+        <Field label="Observações" htmlFor="ii-notes" className="sm:col-span-2"><Textarea id="ii-notes" rows={2} value={v.notes} onChange={(e) => set({ notes: e.target.value })} /></Field>
       </div>
     </DialogContent>
   );

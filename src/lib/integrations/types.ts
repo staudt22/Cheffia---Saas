@@ -15,7 +15,7 @@ export interface ProviderInfo {
   name: string;
   short: string;
   color: string;
-  category: "Delivery" | "Payments" | "POS" | "E-commerce" | "Marketing";
+  category: string;
   description: string;
   orderSource?: OrderSource;
   /** Env vars that must be set for the real connection to work. */

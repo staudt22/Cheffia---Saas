@@ -14,7 +14,7 @@ export function ColorField({ label, value, onChange }: { label: string; value: s
         </label>
         <Input value={value} onChange={(e) => onChange(e.target.value)} maxLength={7} className="w-28 font-mono uppercase" aria-invalid={!isValidHex(value)} />
       </div>
-      {lowContrast && <p className="text-xs text-ink-3">Very dark colours are lightened automatically so text stays readable.</p>}
+      {lowContrast && <p className="text-xs text-ink-3">Cores muito escuras são clareadas automaticamente para o texto continuar legível.</p>}
     </div>
   );
 }

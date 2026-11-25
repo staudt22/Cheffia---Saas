@@ -11,6 +11,7 @@ import { updateOrderStatusAction } from "@/app/(app)/orders/actions";
 import { FULFILLMENT_LABEL, STATUS_META } from "@/lib/orders";
 import { formatTime } from "@/lib/dates";
 import { formatMoney } from "@/lib/utils";
+import { PAYMENT_METHODS } from "@/lib/validation";
 import type { Order, OrderStatus } from "@/lib/types";
 
 export function OrderDetailSheet({
@@ -25,31 +26,31 @@ export function OrderDetailSheet({
     start(async () => {
       const r = await updateOrderStatusAction(order.id, status);
       if (!r.ok) return void toast.error(r.error);
-      toast.success(`Order #${order.number} ${STATUS_META[status].label.toLowerCase()}`);
+      toast.success(`Pedido #${order.number}: ${STATUS_META[status].label.toLowerCase()}`);
       setConfirmCancel(false);
     });
   }
 
   const meta = order ? STATUS_META[order.status] : null;
   const timeline = order ? ([
-    ["Received", order.created_at], ["Accepted", order.accepted_at], ["Ready", order.ready_at], ["Completed", order.completed_at], ["Cancelled", order.cancelled_at],
+    ["Recebido", order.created_at], ["Aceito", order.accepted_at], ["Pronto", order.ready_at], ["Concluído", order.completed_at], ["Cancelado", order.cancelled_at],
   ] as const).filter(([, t]) => t) : [];
 
   return (
     <Dialog open={!!order} onOpenChange={onOpenChange}>
       {order && meta && (
         <SheetContent
-          title={<span className="flex items-center gap-2">Order #{order.number} <Badge tone={meta.tone}>{meta.label}</Badge></span>}
+          title={<span className="flex items-center gap-2">Pedido #{order.number} <Badge tone={meta.tone}>{meta.label}</Badge></span>}
           description={<span className="flex items-center gap-2"><SourceBadge source={order.source} simulated={order.is_simulated} /> · {FULFILLMENT_LABEL[order.fulfillment]}{order.table_label ? ` · ${order.table_label}` : ""}</span>}
           footer={canEdit && order.status !== "cancelled" ? (
             <div className="flex w-full items-center gap-2">
-              <Button variant="danger-ghost" onClick={() => setConfirmCancel(true)} disabled={pending}><Ban /> Cancel order</Button>
+              <Button variant="danger-ghost" onClick={() => setConfirmCancel(true)} disabled={pending}><Ban /> Cancelar pedido</Button>
               {meta.next && <Button className="ml-auto" variant="primary" loading={pending} onClick={() => setStatus(meta.next!)}>{meta.action}</Button>}
             </div>
           ) : undefined}
         >
           {order.is_simulated && (
-            <p className="mb-4 rounded-md bg-accent-soft px-3 py-2 text-xs text-accent">This is a simulated order created in demo mode. It did not come from a real connected platform.</p>
+            <p className="mb-4 rounded-md bg-accent-soft px-3 py-2 text-xs text-accent">Este é um pedido simulado, criado no modo demonstração. Ele não veio de uma plataforma conectada de verdade.</p>
           )}
           {(order.customer_name || order.customer_phone) && (
             <div className="mb-4 flex flex-col gap-1.5 text-sm">
@@ -72,32 +73,32 @@ export function OrderDetailSheet({
           </ul>
           <dl className="mt-4 flex flex-col gap-1.5 text-sm">
             <div className="flex justify-between text-ink-2"><dt>Subtotal</dt><dd className="tabular">{money(order.subtotal)}</dd></div>
-            {order.discount > 0 && <div className="flex justify-between text-ink-2"><dt>Discount</dt><dd className="tabular">−{money(order.discount)}</dd></div>}
-            {order.delivery_fee > 0 && <div className="flex justify-between text-ink-2"><dt>Delivery fee</dt><dd className="tabular">{money(order.delivery_fee)}</dd></div>}
+            {order.discount > 0 && <div className="flex justify-between text-ink-2"><dt>Desconto</dt><dd className="tabular">−{money(order.discount)}</dd></div>}
+            {order.delivery_fee > 0 && <div className="flex justify-between text-ink-2"><dt>Taxa de entrega</dt><dd className="tabular">{money(order.delivery_fee)}</dd></div>}
             <div className="flex justify-between border-t border-line pt-2 font-semibold"><dt>Total</dt><dd className="tabular">{money(order.total)}</dd></div>
-            {order.payment_method && <div className="flex justify-between text-xs text-ink-3"><dt>Payment</dt><dd className="capitalize">{order.payment_method.replace("_", " ")}</dd></div>}
+            {order.payment_method && <div className="flex justify-between text-xs text-ink-3"><dt>Pagamento</dt><dd>{PAYMENT_METHODS.find((p) => p.value === order.payment_method)?.label ?? order.payment_method}</dd></div>}
           </dl>
           {order.notes && (
             <div className="mt-4 flex gap-2 rounded-md bg-warn-soft px-3 py-2 text-sm text-warn"><MessageSquareText className="mt-0.5 size-4 shrink-0" />{order.notes}</div>
           )}
           <div className="mt-6">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Timeline</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">Linha do tempo</p>
             <ol className="flex flex-col gap-2">
               {timeline.map(([label, t]) => (
                 <li key={label} className="flex items-center gap-2 text-sm"><Clock className="size-3.5 text-ink-3" /><span className="flex-1">{label}</span><span className="text-ink-2 tabular">{formatTime(t!, locale, timezone)}</span></li>
               ))}
             </ol>
             {order.estimated_prep_minutes && order.status !== "completed" && order.status !== "cancelled" && (
-              <p className="mt-2 text-xs text-ink-3">Estimated preparation: {order.estimated_prep_minutes} min</p>
+              <p className="mt-2 text-xs text-ink-3">Tempo estimado de preparo: {order.estimated_prep_minutes} min</p>
             )}
           </div>
         </SheetContent>
       )}
       <Dialog open={confirmCancel} onOpenChange={setConfirmCancel}>
-        <DialogContent size="sm" title={`Cancel order #${order?.number}?`}
-          description={order?.status === "completed" ? "Its revenue will be removed and any stock used will be returned to inventory." : "The kitchen will stop preparing it. This can't be undone."}
-          footer={<><Button variant="ghost" onClick={() => setConfirmCancel(false)}>Keep order</Button><Button variant="danger" loading={pending} onClick={() => setStatus("cancelled")}>Cancel order</Button></>}>
-          <p className="text-sm text-ink-2">Cancelled orders stay in your history for reporting.</p>
+        <DialogContent size="sm" title={`Cancelar o pedido #${order?.number}?`}
+          description={order?.status === "completed" ? "O valor sai do faturamento e os ingredientes usados voltam para o estoque." : "A cozinha vai parar de preparar. Não dá para desfazer."}
+          footer={<><Button variant="ghost" onClick={() => setConfirmCancel(false)}>Manter pedido</Button><Button variant="danger" loading={pending} onClick={() => setStatus("cancelled")}>Cancelar pedido</Button></>}>
+          <p className="text-sm text-ink-2">Pedidos cancelados continuam no histórico para os relatórios.</p>
         </DialogContent>
       </Dialog>
     </Dialog>

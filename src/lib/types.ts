@@ -35,6 +35,7 @@ export interface Restaurant {
   onboarding_step: number;
   onboarding_completed_at: string | null;
   plan: string;
+  trial_ends_at: string | null;
 }
 
 export interface RestaurantSettings {

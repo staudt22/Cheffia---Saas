@@ -18,7 +18,7 @@ export async function createOrderAction(input: unknown): Promise<ActionResult<{ 
   const ctx = await actionContext("orders", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const parsed = orderSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the order details." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira os dados do pedido." };
   const o = parsed.data;
   const { data, error } = await ctx.supabase.rpc("create_order", {
     p_restaurant: ctx.ws.restaurant.id,
@@ -34,7 +34,7 @@ export async function createOrderAction(input: unknown): Promise<ActionResult<{ 
     p_payment_method: o.payment_method,
     p_status: o.status,
   });
-  if (error || !data) return { ok: false, error: friendlyError(error, "The order could not be created.") };
+  if (error || !data) return { ok: false, error: friendlyError(error, "Não foi possível criar o pedido.") };
   refresh();
   return { ok: true, data: { id: data as string } };
 }
@@ -44,11 +44,11 @@ const statusSchema = z.enum(["new", "accepted", "preparing", "ready", "completed
 export async function updateOrderStatusAction(orderId: string, status: OrderStatus): Promise<ActionResult> {
   const ctx = await actionContext("orders", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
-  if (!z.string().uuid().safeParse(orderId).success || !statusSchema.safeParse(status).success) return { ok: false, error: "Invalid request" };
+  if (!z.string().uuid().safeParse(orderId).success || !statusSchema.safeParse(status).success) return { ok: false, error: "Pedido inválido" };
   const { data, error } = await ctx.supabase
     .from("orders").update({ status }).eq("id", orderId).eq("restaurant_id", ctx.ws.restaurant.id).select("id");
   if (error) return { ok: false, error: friendlyError(error) };
-  if (!data?.length) return { ok: false, error: "Order not found" };
+  if (!data?.length) return { ok: false, error: "Pedido não encontrado" };
   refresh();
   return { ok: true };
 }
@@ -61,19 +61,19 @@ export async function simulateOrderAction(providerKey: string): Promise<ActionRe
   const ctx = await actionContext("orders", "edit");
   if ("error" in ctx) return { ok: false, error: ctx.error! };
   const provider = providerInfo(providerKey);
-  if (!provider?.supportsDemo || !provider.orderSource) return { ok: false, error: "Demo mode isn't available for this platform." };
+  if (!provider?.supportsDemo || !provider.orderSource) return { ok: false, error: "O modo demonstração não está disponível para esta plataforma." };
   const rid = ctx.ws.restaurant.id;
   const { data: menu } = await ctx.supabase.from("menu_items").select("id").eq("restaurant_id", rid).eq("is_available", true).limit(30);
-  if (!menu?.length) return { ok: false, error: "Add at least one available menu item first." };
+  if (!menu?.length) return { ok: false, error: "Cadastre pelo menos um item disponível no cardápio antes." };
   const picks = [...menu].sort(() => Math.random() - 0.5).slice(0, Math.min(menu.length, 1 + Math.floor(Math.random() * 3)));
-  const names = ["Alex P.", "Bruna S.", "Chris M.", "Dana K.", "Eli R.", "Fernanda L."];
+  const names = ["Alex P.", "Bruna S.", "Caio M.", "Daniela K.", "Eli R.", "Fernanda L."];
   const { data: id, error } = await ctx.supabase.rpc("create_order", {
     p_restaurant: rid,
     p_items: picks.map((m) => ({ menu_item_id: m.id, quantity: 1 })),
     p_source: provider.orderSource,
     p_fulfillment: "delivery",
     p_customer_name: names[Math.floor(Math.random() * names.length)],
-    p_notes: `Simulated ${provider.name} order (demo mode)`,
+    p_notes: `Pedido simulado do ${provider.name} (modo demonstração)`,
   });
   if (error || !id) return { ok: false, error: friendlyError(error) };
   await ctx.supabase.from("orders").update({ is_simulated: true }).eq("id", id);
@@ -83,5 +83,5 @@ export async function simulateOrderAction(providerKey: string): Promise<ActionRe
   );
   refresh();
   revalidatePath("/integrations");
-  return { ok: true, message: `Simulated ${provider.name} order created` };
+  return { ok: true, message: `Pedido simulado do ${provider.name} criado` };
 }

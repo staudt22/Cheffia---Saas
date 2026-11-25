@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { IntegrationsGrid } from "@/components/settings/integrations-grid";
 import { INTEGRATION_PROVIDERS, availability } from "@/lib/integrations/registry";
 
-export const metadata = { title: "Integrations" };
+export const metadata = { title: "Integrações" };
 
 export default async function IntegrationsPage() {
   const ws = await requireWorkspace("integrations");
@@ -19,7 +19,7 @@ export default async function IntegrationsPage() {
   });
   return (
     <div>
-      <PageHeader title="Integrations" description="Connect delivery, payment and POS platforms so every order lands in one place." />
+      <PageHeader title="Integrações" description="Conecte apps de delivery, pagamento e PDV para todos os pedidos caírem num lugar só." />
       <IntegrationsGrid providers={providers} simulatedCount={simulated ?? 0} canEdit={ws.permissions.integrations.edit} canCreateOrders={ws.permissions.orders.edit} locale={ws.restaurant.locale} timezone={ws.restaurant.timezone} />
     </div>
   );
