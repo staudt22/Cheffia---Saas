@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { usePathname } from "next/navigation";
 import * as D from "@radix-ui/react-dialog";
 import { LogOut, Menu, UserRound, X } from "lucide-react";
@@ -9,11 +9,13 @@ import { NavLinks, type ShellMembership, type ShellRestaurant } from "@/componen
 import { WorkspaceSwitcher } from "@/components/app/workspace-switcher";
 import { NAV } from "@/components/app/nav";
 import { initials } from "@/lib/utils";
+import { signOutAction } from "@/lib/actions/auth";
 import type { PermissionMap } from "@/lib/permissions";
 
 export function Topbar({ restaurant, memberships, permissions, user, roleLabel }: {
   restaurant: ShellRestaurant; memberships: ShellMembership[]; permissions: PermissionMap; user: { fullName: string; email: string }; roleLabel: string;
 }) {
+  const [signingOut, startSignOut] = useTransition();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const current = NAV.find((n) => pathname === n.href || pathname.startsWith(n.href + "/"));
@@ -47,9 +49,9 @@ export function Topbar({ restaurant, memberships, permissions, user, roleLabel }
           <DropdownContent className="w-56">
             <DropdownLabel className="truncate">{user.email}</DropdownLabel>
             <DropdownSeparator />
-            <form action="/auth/signout" method="post">
-              <DropdownItem asChild><button type="submit" className="w-full"><LogOut /> Sair</button></DropdownItem>
-            </form>
+            <DropdownItem disabled={signingOut} onSelect={(e) => { e.preventDefault(); startSignOut(() => signOutAction()); }}>
+              <LogOut /> {signingOut ? "Saindo…" : "Sair"}
+            </DropdownItem>
           </DropdownContent>
         </Dropdown>
       </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight, BellRing, ChefHat, CircleCheck, ClipboardList, FileSpreadsheet, HelpCircle, MonitorSmartphone,
   MousePointerClick, NotebookPen, Package, Receipt, ShieldCheck, Smartphone, Sparkles, TrendingUp, X,
@@ -86,8 +87,7 @@ const FAQ = [
 ];
 
 export default async function Home() {
-  // Logged-in visitors still see the homepage; the header offers a way back to the app.
-  const loggedIn = isSupabaseConfigured && Boolean(await getUser());
+  if (isSupabaseConfigured && (await getUser())) redirect("/dashboard");
   return (
     <div className="app-glow min-h-dvh overflow-x-hidden">
       {/* ------------------------------------------------------------ header */}
@@ -100,14 +100,8 @@ export default async function Home() {
             <a href="#como-funciona" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink lg:block">Como funciona</a>
             <a href="#planos" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink md:block">Planos</a>
             <a href="#duvidas" className="hidden rounded-md px-3 py-2 text-sm text-ink-2 hover:text-ink lg:block">Dúvidas</a>
-            {loggedIn ? (
-              <Button asChild variant="primary"><Link href="/dashboard">Ir para o meu painel <ArrowRight /></Link></Button>
-            ) : (
-              <>
-                <Button asChild variant="ghost"><Link href="/login">Entrar</Link></Button>
-                <Button asChild variant="primary"><Link href="/signup">Testar grátis</Link></Button>
-              </>
-            )}
+            <Button asChild variant="ghost"><Link href="/login">Entrar</Link></Button>
+            <Button asChild variant="primary"><Link href="/signup">Testar grátis</Link></Button>
           </nav>
         </div>
       </header>
