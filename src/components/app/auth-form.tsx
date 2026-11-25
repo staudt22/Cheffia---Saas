@@ -1,5 +1,7 @@
 "use client";
 
+import { translateAuthError } from "@/lib/utils";
+
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -47,7 +49,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const supabase = createClient();
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
-      if (error) return setError(error.message === "Invalid login credentials" ? "E-mail ou senha incorretos." : error.message === "Email not confirmed" ? "Confirme seu e-mail pelo link que enviamos antes de entrar." : error.message);
+      if (error) return setError(translateAuthError(error.message));
       router.replace(next);
       router.refresh();
       return;
@@ -60,7 +62,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
-    if (error) return setError(/already registered/i.test(error.message) ? "Este e-mail já tem conta. Use “Entrar”." : /password/i.test(error.message) ? "Senha fraca. Use pelo menos 8 caracteres." : error.message);
+    if (error) return setError(translateAuthError(error.message));
     if (data.session) {
       router.replace(next);
       router.refresh();

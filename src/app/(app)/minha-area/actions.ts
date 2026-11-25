@@ -7,11 +7,11 @@ import { friendlyError } from "@/lib/utils";
 import type { ActionResult } from "@/lib/types";
 
 /** Clock in or out (whichever applies) for the signed-in member. */
-export async function clockAction(): Promise<ActionResult<{ status: "in" | "out" }>> {
+export async function clockAction(photoPath?: string | null): Promise<ActionResult<{ status: "in" | "out" }>> {
   const ws = await getWorkspace();
   if (!ws) return { ok: false, error: "Sua sessão expirou. Entre novamente." };
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("clock_toggle", { p_restaurant: ws.restaurant.id });
+  const { data, error } = await supabase.rpc("clock_toggle", photoPath ? { p_restaurant: ws.restaurant.id, p_photo: photoPath } : { p_restaurant: ws.restaurant.id });
   if (error) return { ok: false, error: friendlyError(error, "Não foi possível registrar o ponto.") };
   revalidatePath("/minha-area");
   revalidatePath("/team");

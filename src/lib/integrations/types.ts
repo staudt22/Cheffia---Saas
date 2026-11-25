@@ -25,6 +25,8 @@ export interface ProviderInfo {
   /** Whether a clearly-labelled demo mode exists (generates simulated orders). */
   supportsDemo: boolean;
   implemented: boolean;
+  /** Official logo file in /public/brands, when the owner of the brand provided one. */
+  logo?: string;
 }
 
 export interface NormalizedOrder {

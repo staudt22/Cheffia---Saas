@@ -44,6 +44,8 @@ export interface RestaurantSettings {
   default_prep_minutes: number;
   tax_rate: number;
   notifications: Record<string, boolean>;
+  /** Missing until database update 4 is applied; treat as true. */
+  require_selfie?: boolean;
 }
 
 export interface WidgetInstance {

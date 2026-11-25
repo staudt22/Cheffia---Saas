@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { BRAND_LOGOS } from "@/lib/integrations/brand-logos";
 import { IconCheckDone, IconKitchen, IconPhoneOrder } from "./icons";
 import { CheffeDataGlyph } from "@/components/app/logo";
 
 const SOURCES = [
-  { name: "iFood", soon: true }, { name: "99Food", soon: true }, { name: "Rappi", soon: true },
+  { name: "iFood", soon: true, logo: BRAND_LOGOS.ifood }, { name: "99Food", soon: true, logo: BRAND_LOGOS["99food"] }, { name: "Rappi", soon: true, logo: BRAND_LOGOS.rappi },
   { name: "Salão e comandas", soon: false }, { name: "Balcão", soon: false },
 ];
 
@@ -26,6 +27,8 @@ export function OrderFlow() {
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">
           {SOURCES.map((s) => (
             <span key={s.name} className="inline-flex items-center gap-1 rounded-full bg-surface-3 px-2.5 py-1 text-[11px] font-medium text-ink ring-1 ring-line">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {"logo" in s && s.logo && <img src={s.logo} alt="" className="size-4 rounded-sm object-contain" />}
               {s.name}{s.soon && <span className="rounded-full bg-accent-soft px-1.5 text-[9px] font-semibold uppercase tracking-wide text-accent">em breve</span>}
             </span>
           ))}
@@ -39,7 +42,7 @@ export function OrderFlow() {
 
   return (
     <div className="relative">
-      <div className="grid gap-4 md:grid-cols-4 md:gap-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-6">
         {nodes.map((n, i) => {
           const on = i === active, done = i < active;
           return (

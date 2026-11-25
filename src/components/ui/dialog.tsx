@@ -16,7 +16,7 @@ export function DialogContent({
       <D.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
       <D.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 flex max-h-[92vh] w-[calc(100vw-24px)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-xl bg-surface shadow-pop data-[state=open]:animate-slide-up",
+          "fixed left-1/2 top-1/2 z-50 flex max-h-[92dvh] w-[calc(100vw-24px)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-xl bg-surface shadow-pop data-[state=open]:animate-slide-up",
           size === "sm" ? "max-w-sm" : size === "lg" ? "max-w-3xl" : "max-w-lg",
           className,
         )}
@@ -44,7 +44,7 @@ export function SheetContent({ title, description, children, footer, className }
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
             <D.Title className="text-base font-semibold text-ink">{title}</D.Title>
-            {description ? <D.Description className="mt-0.5 text-sm text-ink-3">{description}</D.Description> : <D.Description className="sr-only">Details</D.Description>}
+            {description ? <D.Description className="mt-0.5 text-sm text-ink-3">{description}</D.Description> : <D.Description className="sr-only">Detalhes</D.Description>}
           </div>
           <D.Close className="rounded-md p-1 text-ink-3 hover:bg-surface-3 hover:text-ink" aria-label="Fechar"><X className="size-4" /></D.Close>
         </div>

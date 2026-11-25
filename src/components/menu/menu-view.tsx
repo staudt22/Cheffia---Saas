@@ -68,7 +68,7 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
                           {item.photo_url ? <img src={item.photo_url} alt="" className="size-full object-cover" /> : <ImageIcon className="size-5" />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">{item.name}</p>
+                          <p className="line-clamp-2 text-sm font-medium leading-5 sm:truncate">{item.name}</p>
                           <p className="truncate text-xs text-ink-3">{item.description ?? "Sem descrição"}</p>
                         </div>
                         <div className="hidden w-28 text-right sm:block">

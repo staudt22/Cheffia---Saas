@@ -91,3 +91,18 @@ export function translateDbMessage(message?: string | null) {
   if (!message) return null;
   return DB_MESSAGES.find(([re]) => re.test(message))?.[1] ?? null;
 }
+
+/** Supabase Auth messages come in English; show them in Portuguese. */
+export function translateAuthError(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail pelo link que enviamos antes de entrar.";
+  if (m.includes("already registered") || m.includes("already been registered")) return "Este e-mail já tem conta. Use “Entrar”.";
+  if (m.includes("rate limit") || m.includes("for security purposes")) return "Muitas tentativas seguidas. Espere um minuto e tente de novo.";
+  if (m.includes("should be different")) return "A nova senha precisa ser diferente da atual.";
+  if (m.includes("password")) return "Senha fraca. Use pelo menos 8 caracteres, com letras e números.";
+  if (m.includes("signups not allowed") || m.includes("signup is disabled")) return "O cadastro de novas contas está desativado no momento.";
+  if (m.includes("invalid email") || m.includes("unable to validate email")) return "Esse e-mail não parece válido.";
+  if (m.includes("failed to fetch") || m.includes("network")) return "Sem conexão com o servidor. Verifique a internet e tente de novo.";
+  return "Não foi possível concluir. Tente de novo em instantes.";
+}

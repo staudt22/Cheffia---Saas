@@ -53,6 +53,21 @@ No service-role key is needed: everything runs as the signed-in user, so RLS is 
 
 Integration and AI keys are listed in `.env.example` for later phases; none are read yet.
 
+## AI assistant
+
+`/assistant` answers questions about the restaurant **only from its own data**. The server route (`src/app/api/assistant/route.ts`) gives the model a fixed set of read-only tools (`src/lib/assistant/tools.ts`) that query this restaurant through the signed-in user's Supabase session, so Row Level Security and the user's role apply. There is no web search, fetch or any other data source. Enable it by adding these variables in Vercel → Settings → Environment Variables:
+
+| Variable | Value |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | your key from console.anthropic.com |
+| `ASSISTANT_MODEL` (optional) | defaults to `claude-sonnet-5-5` |
+
+Daily limits per restaurant: trial 30, Profissional 80, Rede 200 messages (table `assistant_usage`). Essencial does not include the assistant.
+
+## Time clock selfies
+
+Staff clock in and out from **Minha área**. By default each punch requires a selfie taken with the device camera; photos go to the private `timeclock` bucket (`<restaurant>/<user>/…`) and only the person and managers with Team access can see them. Owners can switch the selfie off on the Team page.
+
 ## Plans and trial
 
 New restaurants start on `plan = 'trial'` with `trial_ends_at = now() + 7 days`. Restaurant users can't change `plan`, `trial_ends_at` or `is_demo` (a trigger blocks it); activate a paid plan from the Supabase SQL editor or a future billing webhook:

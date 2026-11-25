@@ -3,7 +3,7 @@ import { CheffeDataLogo } from "@/components/app/logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="app-glow grid min-h-dvh lg:grid-cols-[1fr_1.1fr]">
+    <div className="app-glow grid grid-cols-1 min-h-dvh lg:grid-cols-[1fr_1.1fr]">
       <div className="flex flex-col px-6 py-6 sm:px-12">
         <Link href="/" className="w-fit"><CheffeDataLogo /></Link>
         <div className="flex flex-1 items-center">

@@ -15,7 +15,7 @@ export const NAV: { section: Section | null; href: string; label: string; icon: 
   { section: "suppliers", href: "/suppliers", label: "Fornecedores", icon: Truck, soon: true },
   { section: "team", href: "/team", label: "Equipe", icon: UsersRound },
   { section: "analytics", href: "/analytics", label: "Relatórios", icon: BarChart3, soon: true },
-  { section: "assistant", href: "/assistant", label: "Assistente IA", icon: Sparkles, soon: true },
+  { section: "assistant", href: "/assistant", label: "Assistente IA", icon: Sparkles },
   { section: "overview", href: "/unidades", label: "Todas as unidades", icon: Layers },
   { section: "integrations", href: "/integrations", label: "Integrações", icon: PlugZap },
   { section: "settings", href: "/settings", label: "Configurações", icon: Settings },

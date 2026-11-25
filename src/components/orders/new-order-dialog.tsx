@@ -83,7 +83,7 @@ function NewOrderForm({ menu, categories, currency, locale, onDone }: { menu: Me
         <span className="ml-auto text-sm text-ink-2">Total <strong className="text-ink tabular">{money(total)}</strong></span>
         <Button variant="primary" loading={pending} disabled={!lines.length} onClick={submit}>{status === "completed" ? "Registrar pedido" : "Criar pedido"}</Button>
       </div>}>
-      <div className="grid gap-5 md:grid-cols-[1.3fr_1fr]">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[1.3fr_1fr]">
         <div>
           <div className="mb-3 flex gap-1 overflow-x-auto pb-1">
             {[{ id: "all", name: "Todos" }, ...categories].map((c) => (

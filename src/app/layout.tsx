@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="min-h-dvh">
         <TooltipProvider>{children}</TooltipProvider>
-        <Toaster position="bottom-right" toastOptions={{ classNames: { toast: "!rounded-lg !shadow-pop !border-0 !font-sans !bg-[var(--surface-2)] !text-[var(--ink)]" } }} />
+        <Toaster position="top-center" toastOptions={{ classNames: { toast: "!rounded-lg !shadow-pop !border-0 !font-sans !bg-[var(--surface-2)] !text-[var(--ink)]" } }} />
       </body>
     </html>
   );

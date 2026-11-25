@@ -165,7 +165,7 @@ export default async function Home() {
             <p className="text-sm font-semibold uppercase tracking-wider text-brand">Menos planilha, mais cozinha</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Chega de administrar o restaurante no improviso</h2>
           </div>
-          <div className="mt-12 grid gap-4 md:grid-cols-2">
+          <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-2xl bg-surface p-6 shadow-card">
               <p className="flex items-center gap-2 font-semibold text-ink-2"><X className="size-5 text-bad" /> Sem o CheffeData</p>
               <ul className="mt-5 flex flex-col gap-4">
@@ -194,7 +194,7 @@ export default async function Home() {
           </div>
           <div className="mt-16 flex flex-col gap-24">
             {SHOWCASE.map((s, i) => (
-              <div key={s.title} className="grid items-center gap-10 lg:grid-cols-[1fr_1.35fr]">
+              <div key={s.title} className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1.35fr]">
                 <div className={i % 2 ? "lg:order-2" : ""}>
                   <span className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand"><s.icon className="size-3.5" /> {s.eyebrow}</span>
                   <h3 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{s.title}</h3>
@@ -214,7 +214,7 @@ export default async function Home() {
 
         {/* ------------------------------------------------------------ more */}
         <section className="mx-auto max-w-6xl px-5 py-20">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: IconClock, title: "Ponto eletrônico", text: "A equipe bate o ponto no celular. Você vê as horas de todos." },
               { icon: MonitorSmartphone, title: "Computador, tablet e celular", text: "Abra no navegador de qualquer aparelho. Nada para instalar." },
@@ -232,7 +232,7 @@ export default async function Home() {
 
         {/* ------------------------------------------------------------ how it works */}
         <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-12">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wider text-brand">Comece hoje</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Em 5 minutos o seu restaurante está no CheffeData</h2>

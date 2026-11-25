@@ -224,12 +224,29 @@ select pg_temp.check(pg_temp.rejects(format($q$select public.add_to_tab(%L, '[]'
 select pg_temp.check((select count(*) from public.staff_performance(:'r1', now() - interval '1 day', now() + interval '1 minute') where orders >= 2) >= 1, 'staff performance counts orders per person');
 
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
-select (public.clock_toggle(:'r1') ->> 'status') as ck1 \gset
-select pg_temp.check(:'ck1' = 'in', 'clock_toggle clocks in');
-select pg_temp.check((select count(*) from public.time_entries) = 1, 'staff can see their own time entries');
-select (public.clock_toggle(:'r1') ->> 'status') as ck2 \gset
-select pg_temp.check(:'ck2' = 'out', 'clock_toggle clocks out');
-select pg_temp.check(pg_temp.rejects(format($q$select public.clock_toggle(%L)$q$, :'r2')), 'cannot clock in at another restaurant');
+select pg_temp.check(pg_temp.rejects(format($q$select public.clock_toggle(%L)$q$, :'r1')), 'clock_toggle requires a selfie by default');
+select pg_temp.check(pg_temp.rejects(format($q$insert into storage.objects (bucket_id, name) values ('timeclock', %L)$q$, :'r1' || '/00000000-0000-0000-0000-00000000000a/x.jpg')), 'staff cannot upload a selfie into someone else''s folder');
+insert into storage.objects (bucket_id, name) values ('timeclock', :'r1' || '/00000000-0000-0000-0000-00000000000c/in.jpg'), ('timeclock', :'r1' || '/00000000-0000-0000-0000-00000000000c/out.jpg');
+select pg_temp.check(pg_temp.rejects(format($q$select public.clock_toggle(%L, %L)$q$, :'r1', :'r1' || '/00000000-0000-0000-0000-00000000000c/missing.jpg')), 'clock_toggle rejects a selfie that was not uploaded');
+select (public.clock_toggle(:'r1', :'r1' || '/00000000-0000-0000-0000-00000000000c/in.jpg') ->> 'status') as ck1 \gset
+select pg_temp.check(:'ck1' = 'in', 'clock_toggle clocks in with a selfie');
+select pg_temp.check((select count(*) from public.time_entries where clock_in_photo like '%/in.jpg') = 1, 'staff can see their own time entries, with the entry selfie');
+select (public.clock_toggle(:'r1', :'r1' || '/00000000-0000-0000-0000-00000000000c/out.jpg') ->> 'status') as ck2 \gset
+select pg_temp.check(:'ck2' = 'out', 'clock_toggle clocks out with a selfie');
+select pg_temp.check((select clock_out_photo from public.time_entries limit 1) like '%/out.jpg', 'exit selfie stored');
+select pg_temp.check(pg_temp.rejects(format($q$select public.clock_toggle(%L, %L)$q$, :'r2', :'r1' || '/00000000-0000-0000-0000-00000000000c/in.jpg')), 'cannot clock in at another restaurant');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check((select count(*) from storage.objects where bucket_id = 'timeclock') = 0, 'other restaurants cannot see time clock selfies');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check((select count(*) from storage.objects where bucket_id = 'timeclock') = 2, 'owner can see the team''s selfies');
+update public.restaurant_settings set require_selfie = false where restaurant_id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
+select pg_temp.check((public.clock_toggle(:'r1') ->> 'status') = 'in', 'selfie can be turned off by the owner');
+select pg_temp.check((public.clock_toggle(:'r1') ->> 'status') = 'out', 'clock out without selfie when turned off');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check(public.assistant_take_quota(:'r1', 2) and public.assistant_take_quota(:'r1', 2) and not public.assistant_take_quota(:'r1', 2), 'assistant daily quota stops at the limit');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check(pg_temp.rejects(format($q$select public.assistant_take_quota(%L, 5)$q$, :'r1')), 'assistant quota cannot be used for another restaurant');
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 select pg_temp.check((select count(*) from public.tabs) = 0, 'comandas are isolated per restaurant');
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');

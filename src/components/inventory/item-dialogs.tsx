@@ -146,7 +146,7 @@ export function InventoryItemDialog({ item, suppliers, categories, currency, onD
         toast.success(item ? "Item atualizado" : "Item adicionado");
         onDone();
       })}>Salvar</Button></>}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Nome" htmlFor="ii-name" className="sm:col-span-2"><Input id="ii-name" autoFocus value={v.name} onChange={(e) => set({ name: e.target.value })} /></Field>
         <Field label="Categoria" htmlFor="ii-cat">
           <Input id="ii-cat" list="ii-cats" value={v.category} onChange={(e) => set({ category: e.target.value })} />

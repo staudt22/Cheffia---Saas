@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 /** Plan cards. `cta` decides what each card's button does. */
 export function PricingCards({ cta, currentPlan }: { cta: (planKey: string) => React.ReactNode; currentPlan?: string }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {PLANS.map((p) => (
         <div key={p.key} className={cn("relative flex flex-col rounded-2xl bg-surface p-6 shadow-card", p.highlight && "glow-ring")}>
           {p.highlight && <span className="surface-gradient absolute -top-3 left-6 rounded-full px-3 py-1 text-xs font-semibold">Mais escolhido</span>}

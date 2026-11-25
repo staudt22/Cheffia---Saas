@@ -189,11 +189,14 @@ function TabDetail({ tab, menu, categories, money, locale, timezone, canEdit, st
     <DialogContent title={`${tab.label} · comanda #${tab.number}`} size="lg" className="max-w-6xl"
       description={`${tab.customer_name ? `${tab.customer_name} · ` : ""}aberta às ${formatTime(tab.opened_at, locale, timezone)}${tab.opened_by && staffNames[tab.opened_by] ? ` por ${staffNames[tab.opened_by]}` : ""}`}
       footer={<div className="flex w-full flex-wrap items-center gap-3">
-        {canEdit && <Button variant="danger-ghost" onClick={() => setConfirmCancel(true)}><Ban /> Cancelar comanda</Button>}
-        <span className="ml-auto text-sm text-ink-2">Total da comanda <strong className="text-lg text-ink tabular">{money(tab.status === "open" ? subtotal : Number(tab.total))}</strong></span>
-        {canEdit && <Button variant="primary" size="lg" disabled={subtotal === 0 || lines.length > 0} onClick={() => setClosing(true)} title={lines.length ? "Envie ou limpe os itens novos antes de fechar" : undefined}><Receipt /> Fechar conta</Button>}
+        {canEdit && <Button variant="danger-ghost" size="sm" onClick={() => setConfirmCancel(true)}><Ban /> <span className="hidden sm:inline">Cancelar comanda</span><span className="sm:hidden">Cancelar</span></Button>}
+        <span className="ml-auto text-sm text-ink-2"><span className="hidden sm:inline">Total da comanda </span><span className="sm:hidden">Total </span><strong className="text-lg text-ink tabular">{money(tab.status === "open" ? subtotal : Number(tab.total))}</strong></span>
+        {canEdit && lines.length > 0
+          ? <Button variant="primary" size="lg" className="w-full sm:w-auto lg:hidden" loading={pending} onClick={send}><Send /> Enviar para a cozinha · {money(cartTotal)}</Button>
+          : null}
+        {canEdit && <Button variant="primary" size="lg" className={cn("w-full sm:w-auto", lines.length > 0 && "hidden lg:inline-flex")} disabled={subtotal === 0 || lines.length > 0} onClick={() => setClosing(true)} title={lines.length ? "Envie ou limpe os itens novos antes de fechar" : undefined}><Receipt /> Fechar conta</Button>}
       </div>}>
-      <div className={cn("grid gap-5", canEdit && "lg:grid-cols-[1fr_1.15fr]")}>
+      <div className={cn("grid grid-cols-1 gap-5", canEdit && "lg:grid-cols-[1fr_1.15fr]")}>
         {/* What was already ordered */}
         <div className="flex flex-col gap-3">
           <p className="text-xs font-medium uppercase tracking-wide text-ink-3">Já pedido</p>
@@ -212,7 +215,7 @@ function TabDetail({ tab, menu, categories, money, locale, timezone, canEdit, st
                 ))}
               </ul>
             </div>
-          )) : <p className="rounded-lg bg-surface-2 px-4 py-6 text-center text-sm text-ink-3">Nada pedido ainda. Toque nos itens do cardápio ao lado.</p>}
+          )) : <p className="rounded-lg bg-surface-2 px-4 py-6 text-center text-sm text-ink-3">Nada pedido ainda. Toque nos itens do cardápio para adicionar.</p>}
           {tab.status === "closed" && (
             <dl className="rounded-lg bg-surface-2 p-3 text-sm">
               <div className="flex justify-between"><dt className="text-ink-2">Consumo</dt><dd className="tabular">{money(Number(tab.subtotal))}</dd></div>

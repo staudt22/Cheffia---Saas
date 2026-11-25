@@ -19,7 +19,7 @@ export default async function MyAreaPage() {
   const { data: member } = await supabase.from("restaurant_members").select("id").eq("restaurant_id", ws.restaurant.id).eq("user_id", ws.user.id).maybeSingle();
   const { data: employee } = member ? await supabase.from("employees").select("id, full_name, position").eq("member_id", member.id).maybeSingle() : { data: null };
   const { data: entries } = employee
-    ? await supabase.from("time_entries").select("id, clock_in, clock_out").eq("employee_id", employee.id).gte("clock_in", addDaysIso(weekStartUtc, -1)).order("clock_in", { ascending: false }).limit(60)
+    ? await supabase.from("time_entries").select("id, clock_in, clock_out, clock_in_photo, clock_out_photo").eq("employee_id", employee.id).gte("clock_in", addDaysIso(weekStartUtc, -1)).order("clock_in", { ascending: false }).limit(60)
     : { data: [] };
 
   const canOrders = ws.permissions.orders.view;
@@ -38,7 +38,10 @@ export default async function MyAreaPage() {
       name={ws.user.fullName}
       roleName={ws.roleName}
       restaurantName={ws.restaurant.name}
-      entries={(entries ?? []) as { id: string; clock_in: string; clock_out: string | null }[]}
+      entries={(entries ?? []) as { id: string; clock_in: string; clock_out: string | null; clock_in_photo: string | null; clock_out_photo: string | null }[]}
+      restaurantId={ws.restaurant.id}
+      userId={ws.user.id}
+      requireSelfie={ws.settings.require_selfie !== false}
       weekStartUtc={weekStartUtc}
       dayStartUtc={dayStart}
       today={mine(todayPerf) ?? null}

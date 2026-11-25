@@ -92,7 +92,7 @@ export function LiveDashboard({ className }: { className?: string }) {
         <span className="ml-3 flex items-center gap-1.5 text-[11px] text-ink-3"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" /><span className="relative inline-flex size-2 rounded-full bg-brand" /></span> Ao vivo · Burger da Vila (exemplo)</span>
       </div>
 
-      <div className="grid gap-3 p-3 sm:p-4 lg:grid-cols-[1.05fr_1.5fr_0.95fr]">
+      <div className="grid grid-cols-1 gap-3 p-3 sm:p-4 lg:grid-cols-[1.05fr_1.5fr_0.95fr]">
         {/* KPIs + chart */}
         <div className="flex flex-col gap-3">
           <div className="rounded-xl bg-surface-2 p-3.5 ring-1 ring-line">

@@ -19,6 +19,7 @@ import {
 import { DASHBOARD_PRESETS, type PresetKey } from "@/lib/dashboard/widgets";
 import { INTEGRATION_PROVIDERS } from "@/lib/integrations/registry";
 import { BRAND_PRESETS, isValidHex } from "@/lib/theme";
+import { CurrencyOptions, DateFormatOptions, TimezoneOptions } from "@/components/ui/region-options";
 import { CURRENCIES, DATE_FORMATS, LOCALES, RESTAURANT_TYPES, UNITS, UNIT_LABELS } from "@/lib/validation";
 import { ROLES } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
@@ -72,13 +73,10 @@ export function OnboardingWizard({
     timezone: restaurant?.timezone && restaurant.timezone !== "UTC" ? restaurant.timezone : "UTC",
     date_format: restaurant?.date_format ?? "dd/MM/yyyy",
   });
-  const [timezones, setTimezones] = useState<string[]>(["UTC"]);
   useEffect(() => {
     const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const list = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [browserTz];
     // Browser-only values (time zones, locale) are read after mount.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTimezones(list.includes("UTC") ? list : ["UTC", ...list]);
     setRegion((r) => (r.timezone === "UTC" && browserTz ? { ...r, timezone: browserTz } : r));
     const lang = navigator.language;
     void lang;
@@ -131,7 +129,7 @@ export function OnboardingWizard({
             >Continuar</Button>
           </>}
         >
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Nome do restaurante" htmlFor="r-name" className="sm:col-span-2">
               <Input id="r-name" autoFocus value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} placeholder="ex.: Cantina da Vila" />
             </Field>
@@ -178,7 +176,7 @@ export function OnboardingWizard({
             disabled={!isValidHex(brand.brand_color) || !isValidHex(brand.accent_color)}
             onClick={() => run(() => updateRestaurant({ ...brand, onboarding_step: 4 }), 4)}>Continuar</Button></div></>}
         >
-          <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr]">
             <div className="flex flex-col gap-6">
               {rid && <Field label="Logo"><ImageUpload restaurantId={rid} value={brand.logo_url} onChange={(url) => setBrand({ ...brand, logo_url: url })} /></Field>}
               <div>
@@ -231,10 +229,10 @@ export function OnboardingWizard({
         <StepShell title="Moeda, idioma e horário" description="Usados em todos os valores, datas e relatórios do CheffeData."
           footer={<>{back(4)}<div className="flex gap-2"><Button variant="primary" size="lg" loading={pending}
             onClick={() => run(() => updateRestaurant({ ...region, onboarding_step: 6 }), 6)}>Continuar</Button></div></>}>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Moeda" htmlFor="currency">
               <Select id="currency" value={region.currency} onChange={(e) => setRegion({ ...region, currency: e.target.value })}>
-                {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                <CurrencyOptions codes={CURRENCIES} />
               </Select>
             </Field>
             <Field label="Formato de números e datas" htmlFor="locale" hint="Ex.: Português (Brasil) mostra R$ 1.234,50 e 24/11/2026.">
@@ -244,12 +242,12 @@ export function OnboardingWizard({
             </Field>
             <Field label="Fuso horário" htmlFor="tz">
               <Select id="tz" value={region.timezone} onChange={(e) => setRegion({ ...region, timezone: e.target.value })}>
-                {timezones.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
+                <TimezoneOptions current={region.timezone} />
               </Select>
             </Field>
             <Field label="Formato de data" htmlFor="df">
               <Select id="df" value={region.date_format} onChange={(e) => setRegion({ ...region, date_format: e.target.value })}>
-                {DATE_FORMATS.map((d) => <option key={d} value={d}>{d}</option>)}
+                <DateFormatOptions formats={DATE_FORMATS} />
               </Select>
             </Field>
           </div>
@@ -367,7 +365,7 @@ export function OnboardingWizard({
       content = (
         <StepShell title="Conecte suas plataformas" description="Traga os apps de delivery e de pagamento para uma fila de pedidos só."
           footer={<>{back(8)}<Button variant="primary" size="lg" onClick={() => go(10)}>Continuar</Button></>}>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {INTEGRATION_PROVIDERS.slice(0, 6).map((p) => (
               <div key={p.key} className="flex items-center gap-3 rounded-lg bg-surface p-3 shadow-card">
                 <span className="flex size-9 items-center justify-center rounded-md text-xs font-bold text-white" style={{ background: p.color }}>{p.short}</span>
@@ -395,7 +393,7 @@ export function OnboardingWizard({
               router.replace("/dashboard?welcome=1");
               router.refresh();
             })}>Ir para o meu painel</Button></>}>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {(Object.keys(DASHBOARD_PRESETS) as PresetKey[]).map((k) => (
               <button key={k} type="button" onClick={() => setPreset(k)} aria-pressed={preset === k}
                 className={cn("rounded-xl bg-surface p-4 text-left shadow-card transition hover:shadow-pop", preset === k && "ring-2 ring-brand")}>

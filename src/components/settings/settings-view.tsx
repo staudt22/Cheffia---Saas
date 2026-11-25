@@ -30,7 +30,8 @@ import { BRAND_PRESETS, isValidHex } from "@/lib/theme";
 import { ROLES, SECTIONS, roleLabel } from "@/lib/permissions";
 import { CURRENCIES, DATE_FORMATS, LOCALES, RESTAURANT_TYPES } from "@/lib/validation";
 import { planName, trialStatus } from "@/lib/billing";
-import { cn, formatMoney } from "@/lib/utils";
+import { cn, formatMoney, translateAuthError } from "@/lib/utils";
+import { CurrencyOptions, DateFormatOptions, TimezoneOptions } from "@/components/ui/region-options";
 import type { AppRole, Restaurant, RestaurantSettings } from "@/lib/types";
 
 const TABS = [
@@ -82,10 +83,6 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
   const [region, setRegion] = useState({ currency: restaurant.currency, locale: restaurant.locale, timezone: restaurant.timezone, date_format: restaurant.date_format });
   const [ops, setOps] = useState({ inventory_auto_deduct: settings.inventory_auto_deduct, default_prep_minutes: String(settings.default_prep_minutes), tax_rate: String(settings.tax_rate) });
   const [notif, setNotif] = useState(settings.notifications ?? {});
-  const [timezones, setTimezones] = useState<string[]>([restaurant.timezone]);
-  // Browser-only list, read after mount.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { if (typeof Intl.supportedValuesOf === "function") setTimezones(["UTC", ...Intl.supportedValuesOf("timeZone")]); }, []);
   const disabled = !canEdit;
 
   let body: React.ReactNode = null;
@@ -94,7 +91,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
       body = (
         <Section title="Dados do restaurante" description="Aparecem no sistema e nos relatórios."
           footer={canEdit && <Button variant="primary" loading={pending} onClick={() => run(() => updateRestaurant(profile))}>Salvar alterações</Button>}>
-          <fieldset disabled={disabled} className="grid gap-4 sm:grid-cols-2">
+          <fieldset disabled={disabled} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Nome do restaurante" htmlFor="s-name"><Input id="s-name" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} /></Field>
             <Field label="Tipo" htmlFor="s-type">
               <Select id="s-type" value={profile.restaurant_type} onChange={(e) => setProfile({ ...profile, restaurant_type: e.target.value })}>
@@ -130,7 +127,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
       body = (
         <Section title="Logo e cores" description="Aparecem em todo o sistema. Os textos continuam fáceis de ler, seja qual for a cor."
           footer={canEdit && <Button variant="primary" loading={pending} disabled={!isValidHex(brand.brand_color) || !isValidHex(brand.accent_color)} onClick={() => run(() => updateRestaurant(brand), "Identidade visual atualizada")}>Salvar</Button>}>
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <fieldset disabled={disabled} className="flex flex-col gap-6">
               <Field label="Logo"><ImageUpload restaurantId={restaurant.id} value={brand.logo_url} onChange={(u) => setBrand({ ...brand, logo_url: u })} /></Field>
               <Field label="Foto de capa"><ImageUpload kind="cover" restaurantId={restaurant.id} value={brand.cover_url} onChange={(u) => setBrand({ ...brand, cover_url: u })} /></Field>
@@ -159,18 +156,18 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
       body = (
         <Section title="Moeda, idioma e horário" description="Valem para todos os valores, datas e relatórios."
           footer={canEdit && <Button variant="primary" loading={pending} onClick={() => run(() => updateRestaurant(region))}>Salvar alterações</Button>}>
-          <fieldset disabled={disabled} className="grid gap-4 sm:grid-cols-2">
+          <fieldset disabled={disabled} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Moeda" htmlFor="r-cur" hint={`Exemplo: ${formatMoney(1234.5, region.currency, region.locale)}`}>
-              <Select id="r-cur" value={region.currency} onChange={(e) => setRegion({ ...region, currency: e.target.value })}>{CURRENCIES.map((c) => <option key={c}>{c}</option>)}</Select>
+              <Select id="r-cur" value={region.currency} onChange={(e) => setRegion({ ...region, currency: e.target.value })}><CurrencyOptions codes={CURRENCIES} /></Select>
             </Field>
             <Field label="Formato de números e datas" htmlFor="r-loc">
               <Select id="r-loc" value={region.locale} onChange={(e) => setRegion({ ...region, locale: e.target.value })}>{LOCALES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}</Select>
             </Field>
             <Field label="Fuso horário" htmlFor="r-tz" hint="Define o que é “hoje” nos relatórios.">
-              <Select id="r-tz" value={region.timezone} onChange={(e) => setRegion({ ...region, timezone: e.target.value })}>{timezones.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}</Select>
+              <Select id="r-tz" value={region.timezone} onChange={(e) => setRegion({ ...region, timezone: e.target.value })}><TimezoneOptions current={region.timezone} /></Select>
             </Field>
             <Field label="Formato de data" htmlFor="r-df">
-              <Select id="r-df" value={region.date_format} onChange={(e) => setRegion({ ...region, date_format: e.target.value })}>{DATE_FORMATS.map((d) => <option key={d}>{d}</option>)}</Select>
+              <Select id="r-df" value={region.date_format} onChange={(e) => setRegion({ ...region, date_format: e.target.value })}><DateFormatOptions formats={DATE_FORMATS} /></Select>
             </Field>
           </fieldset>
         </Section>
@@ -186,7 +183,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
               <span><span className="block text-sm font-medium">Baixar o estoque quando o pedido for concluído</span><span className="block text-sm text-ink-3">Usa a ficha técnica de cada item. Se um pedido concluído for cancelado, os ingredientes voltam para o estoque.</span></span>
               <Switch checked={ops.inventory_auto_deduct} onCheckedChange={(c) => setOps({ ...ops, inventory_auto_deduct: c })} />
             </label>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Tempo de preparo padrão (minutos)" htmlFor="o-prep" hint="Usado quando o item não tem ficha técnica."><Input id="o-prep" type="number" min={1} max={240} value={ops.default_prep_minutes} onChange={(e) => setOps({ ...ops, default_prep_minutes: e.target.value })} /></Field>
               <Field label="Alíquota de imposto (%)" htmlFor="o-tax" hint="Guardada para os relatórios. Os preços já incluem impostos."><Input id="o-tax" type="number" min={0} max={99} step="0.001" value={ops.tax_rate} onChange={(e) => setOps({ ...ops, tax_rate: e.target.value })} /></Field>
             </div>
@@ -260,7 +257,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[230px_1fr]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[230px_1fr]">
       <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 lg:mx-0 lg:flex-col lg:px-0" aria-label="Seções das configurações">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => router.replace(`${pathname}?tab=${t.key}`, { scroll: false })} aria-current={active === t.key ? "page" : undefined}
@@ -343,7 +340,7 @@ function RolesSection({ permissions, customRoles, members, isOwner, customAllowe
         {isOwner && !customAllowed && <p className="text-sm text-ink-3">Criar cargos novos faz parte do plano <a href="/assinatura" className="font-medium text-brand hover:underline">Profissional</a>. Os cargos padrão continuam editáveis.</p>}
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
         <Card className="h-fit p-2">
           <p className="px-2 pb-2 pt-1 text-xs font-medium uppercase tracking-wide text-ink-3">Escolha o cargo</p>
           <div className="lg:hidden">
@@ -557,10 +554,10 @@ function SecuritySection() {
       <Section title="Trocar senha" description="Use pelo menos 8 caracteres."
         footer={<Button variant="primary" loading={pending} disabled={pw.next.length < 8 || pw.next !== pw.confirm} onClick={() => start(async () => {
           const { error } = await createClient().auth.updateUser({ password: pw.next });
-          if (error) return void toast.error(error.message);
+          if (error) return void toast.error(translateAuthError(error.message));
           toast.success("Senha alterada"); setPw({ next: "", confirm: "" }); setDone(true);
         })}><KeyRound /> Alterar senha</Button>}>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Nova senha" htmlFor="pw1"><Input id="pw1" type="password" autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} /></Field>
           <Field label="Repita a nova senha" htmlFor="pw2" error={pw.confirm && pw.confirm !== pw.next ? "As senhas não são iguais" : undefined}><Input id="pw2" type="password" autoComplete="new-password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} /></Field>
         </div>

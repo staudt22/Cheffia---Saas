@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Pencil, Plus, Trash2, Trophy, UserPlus, Users } from "lucide-react";
+import { Camera, Clock, Pencil, Plus, Trash2, Trophy, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,17 +14,18 @@ import { Field, Input, Select } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
 import { Table, Td, Th, Tr } from "@/components/ui/table";
 import { SimpleBars } from "@/components/dashboard/charts";
-import { deleteTimeEntryAction, saveTimeEntryAction } from "@/app/(app)/team/actions";
+import { deleteTimeEntryAction, saveTimeEntryAction, setRequireSelfieAction } from "@/app/(app)/team/actions";
+import { Switch } from "@/components/ui/switch";
 import { formatDuration, formatTime, utcToZonedInput } from "@/lib/dates";
 import { cn, formatMoney, initials } from "@/lib/utils";
 
 interface Hours { employee_id: string; full_name: string; job_title: string | null; member_id: string | null; minutes: number; entries: number; on_shift_since: string | null }
 interface Perf { user_id: string; full_name: string; orders: number; completed: number; cancelled: number; revenue: number; items: number; tables: number; tabs_closed: number; last_order_at: string | null }
-interface Entry { id: string; employee_id: string; clock_in: string; clock_out: string | null; name: string }
+interface Entry { id: string; employee_id: string; clock_in: string; clock_out: string | null; name: string; inPhoto?: string | null; outPhoto?: string | null }
 
-export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit, showPerformance, performanceLocked, currency, locale, timezone }: {
+export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit, requireSelfie = true, showPerformance, performanceLocked, currency, locale, timezone }: {
   rangeLabel: string; hours: Hours[]; perf: Perf[]; entries: Entry[]; employees: { id: string; full_name: string; position: string | null }[];
-  canEdit: boolean; showPerformance: boolean; performanceLocked?: boolean; currency: string; locale: string; timezone: string;
+  canEdit: boolean; requireSelfie?: boolean; showPerformance: boolean; performanceLocked?: boolean; currency: string; locale: string; timezone: string;
 }) {
   const [tab, setTab] = useState<"now" | "clock" | "performance">("now");
   const [editing, setEditing] = useState<Entry | "new" | null>(null);
@@ -46,7 +47,7 @@ export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit,
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Segmented size="md" ariaLabel="Seção" value={tab} onChange={setTab} options={[
-          { value: "now", label: "Visão geral" }, { value: "clock", label: "Registros de ponto" },
+          { value: "now", label: "Visão geral" }, { value: "clock", label: "Ponto" },
           ...(showPerformance ? [{ value: "performance" as const, label: "Desempenho" }] : []),
         ]} />
         <div className="ml-auto flex gap-2">
@@ -57,7 +58,7 @@ export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit,
 
       {tab === "now" && (
         hours.length ? (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {hours.map((h) => {
               const p = perf.find((x) => x.full_name === h.full_name);
               return (
@@ -79,6 +80,15 @@ export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit,
         ) : <Card><EmptyState icon={<Users />} title="Ninguém na equipe ainda" description="Convide as pessoas em Configurações → Usuários. Cada uma bate o ponto pela própria conta, em “Minha área”." /></Card>
       )}
 
+      {tab === "clock" && canEdit && (
+        <Card className="mb-3 flex flex-wrap items-center justify-between gap-3 p-4">
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 font-medium"><Camera className="size-4 text-brand" /> Exigir selfie ao bater o ponto</p>
+            <p className="text-sm text-ink-3">A foto confirma que foi a própria pessoa. Toque numa foto da lista para ampliar.</p>
+          </div>
+          <SelfieToggle initial={requireSelfie} />
+        </Card>
+      )}
       {tab === "clock" && (
         <Card>
           {entries.length ? (
@@ -91,8 +101,8 @@ export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit,
                     <Tr key={e.id}>
                       <Td className="font-medium">{e.name}</Td>
                       <Td className="text-ink-2">{date(e.clock_in)}</Td>
-                      <Td className="tabular">{formatTime(e.clock_in, locale, timezone)}</Td>
-                      <Td className="tabular">{e.clock_out ? formatTime(e.clock_out, locale, timezone) : <Badge tone="good">Trabalhando</Badge>}</Td>
+                      <Td className="tabular"><span className="flex items-center gap-2"><Selfie url={e.inPhoto} label={`Selfie de entrada · ${e.name}`} />{formatTime(e.clock_in, locale, timezone)}</span></Td>
+                      <Td className="tabular">{e.clock_out ? <span className="flex items-center gap-2"><Selfie url={e.outPhoto} label={`Selfie de saída · ${e.name}`} />{formatTime(e.clock_out, locale, timezone)}</span> : <Badge tone="good">Trabalhando</Badge>}</Td>
                       <Td className={cn("text-right font-medium tabular", mins > 12 * 60 && "text-warn")} suppressHydrationWarning>{formatDuration(mins)}</Td>
                       {canEdit && <Td className="text-right"><Button size="icon-sm" variant="ghost" aria-label="Corrigir registro" onClick={() => setEditing(e)}><Pencil /></Button></Td>}
                     </Tr>
@@ -114,7 +124,7 @@ export function TeamView({ rangeLabel, hours, perf, entries, employees, canEdit,
       )}
       {tab === "performance" && !performanceLocked && (
         perf.length ? (
-          <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
             <Card>
               <Table>
                 <thead><tr><Th>Pessoa</Th><Th className="text-right">Pedidos</Th><Th className="text-right">Mesas</Th><Th className="hidden text-right sm:table-cell">Itens</Th><Th className="hidden text-right md:table-cell">Comandas</Th><Th className="text-right">Vendido</Th><Th className="hidden text-right sm:table-cell">Ticket médio</Th></tr></thead>
@@ -179,5 +189,43 @@ function EntryDialog({ entry, employees, timezone, onDone }: { entry: Entry | nu
         <Field label="Saída" htmlFor="te-out" hint="Deixe em branco se a pessoa ainda está trabalhando."><Input id="te-out" type="datetime-local" value={v.clock_out} onChange={(e) => setV({ ...v, clock_out: e.target.value })} /></Field>
       </div>
     </DialogContent>
+  );
+}
+
+function Selfie({ url, label }: { url?: string | null; label: string }) {
+  const [open, setOpen] = useState(false);
+  if (!url) return <span className="flex size-8 items-center justify-center rounded-full bg-surface-3 text-ink-3" title="Sem selfie"><Camera className="size-3.5" /></span>;
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="size-8 shrink-0 overflow-hidden rounded-full ring-1 ring-line transition hover:ring-brand" aria-label={label}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt="" className="size-full object-cover" />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        {open && (
+          <DialogContent size="sm" title={label}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={label} className="mx-auto w-full max-w-xs rounded-xl" />
+          </DialogContent>
+        )}
+      </Dialog>
+    </>
+  );
+}
+
+function SelfieToggle({ initial }: { initial: boolean }) {
+  const router = useRouter();
+  const [on, setOn] = useState(initial);
+  const [pending, start] = useTransition();
+  return (
+    <Switch checked={on} disabled={pending} aria-label="Exigir selfie ao bater o ponto" onCheckedChange={(v) => {
+      setOn(v);
+      start(async () => {
+        const r = await setRequireSelfieAction(v);
+        if (!r.ok) { setOn(!v); return void toast.error(r.error); }
+        toast.success(v ? "Selfie obrigatória ativada" : "Selfie desativada");
+        router.refresh();
+      });
+    }} />
   );
 }

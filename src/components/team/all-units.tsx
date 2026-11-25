@@ -33,7 +33,7 @@ export function AllUnits({ units, range, currency, locale }: { units: Unit[]; ra
         <Card className="p-4"><p className="text-[13px] text-ink-3">Lucro estimado</p><p className={cn("mt-1.5 text-2xl font-semibold tabular", tot.revenue - tot.expenses < 0 && "text-bad")}>{money(tot.revenue - tot.expenses)}</p></Card>
         <Card className="p-4"><p className="text-[13px] text-ink-3">Pedidos</p><p className="mt-1.5 text-2xl font-semibold tabular">{tot.orders}</p></Card>
       </div>
-      <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
         <Card>
           <Table>
             <thead><tr><Th>Unidade</Th><Th className="text-right">Faturamento</Th><Th className="hidden text-right sm:table-cell">vs anterior</Th><Th className="hidden text-right md:table-cell">Despesas</Th><Th className="text-right">Lucro</Th><Th className="hidden text-right sm:table-cell">Pedidos</Th><Th /></tr></thead>

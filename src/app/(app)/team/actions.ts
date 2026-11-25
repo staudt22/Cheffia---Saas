@@ -35,3 +35,13 @@ export async function deleteTimeEntryAction(id: string): Promise<ActionResult> {
   revalidatePath("/team");
   return { ok: true };
 }
+
+export async function setRequireSelfieAction(value: boolean): Promise<ActionResult> {
+  const ctx = await actionContext("team", "edit");
+  if ("error" in ctx) return { ok: false, error: ctx.error! };
+  const { error } = await ctx.supabase.from("restaurant_settings").update({ require_selfie: value }).eq("restaurant_id", ctx.ws.restaurant.id);
+  if (error) return { ok: false, error: error.message?.includes("require_selfie") ? "Rode a atualização 4 do banco no Supabase para ativar esta opção." : friendlyError(error) };
+  revalidatePath("/team");
+  revalidatePath("/minha-area");
+  return { ok: true };
+}

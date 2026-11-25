@@ -1,9 +1,16 @@
 import type { Availability, ProviderInfo } from "@/lib/integrations/types";
+import { BRAND_LOGOS } from "@/lib/integrations/brand-logos";
 
-export const INTEGRATION_PROVIDERS: ProviderInfo[] = [
+const PROVIDERS: ProviderInfo[] = [
   { key: "ifood", name: "iFood", short: "iF", color: "#EA1D2C", category: "Delivery", orderSource: "ifood",
     description: "Receba os pedidos do iFood direto na fila do CheffeData e na tela da cozinha.",
     requiredEnv: ["IFOOD_CLIENT_ID", "IFOOD_CLIENT_SECRET"], partnerUrl: "https://developer.ifood.com.br", supportsDemo: true, implemented: false },
+  { key: "99food", name: "99Food", short: "99", color: "#FFC700", category: "Delivery",
+    description: "Receba os pedidos do 99Food junto com os outros canais.",
+    requiredEnv: ["NINETYNINE_FOOD_CLIENT_ID", "NINETYNINE_FOOD_CLIENT_SECRET"], partnerUrl: "https://food.99app.com", supportsDemo: false, implemented: false },
+  { key: "rappi", name: "Rappi", short: "Ra", color: "#FF441F", category: "Delivery",
+    description: "Receba os pedidos do Rappi na mesma fila da cozinha.",
+    requiredEnv: ["RAPPI_CLIENT_ID", "RAPPI_CLIENT_SECRET"], partnerUrl: "https://dev-portal.rappi.com", supportsDemo: false, implemented: false },
   { key: "ubereats", name: "Uber Eats", short: "UE", color: "#06C167", category: "Delivery", orderSource: "ubereats",
     description: "Sincronize os pedidos e a disponibilidade do cardápio no Uber Eats.",
     requiredEnv: ["UBER_EATS_CLIENT_ID", "UBER_EATS_CLIENT_SECRET"], partnerUrl: "https://developer.uber.com/docs/eats", supportsDemo: true, implemented: false },
@@ -23,6 +30,8 @@ export const INTEGRATION_PROVIDERS: ProviderInfo[] = [
     description: "Mantenha horário e cardápio sempre atualizados no Google.",
     requiredEnv: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"], partnerUrl: "https://developers.google.com/my-business", supportsDemo: false, implemented: false },
 ];
+
+export const INTEGRATION_PROVIDERS: ProviderInfo[] = PROVIDERS.map((p) => (BRAND_LOGOS[p.key] ? { ...p, logo: BRAND_LOGOS[p.key] } : p));
 
 export function providerInfo(key: string) {
   return INTEGRATION_PROVIDERS.find((p) => p.key === key);

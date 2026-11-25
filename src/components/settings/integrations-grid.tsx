@@ -31,13 +31,16 @@ export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreate
         <Info className="mt-0.5 size-4 shrink-0" />
         <p>Para conectar de verdade, cada plataforma precisa aprovar o CheffeData como parceiro — por isso nenhuma está ativa ainda. Os apps de delivery têm um <strong>modo demonstração</strong>, que cria pedidos marcados como “Simulado” e nunca se misturam com pedidos reais.{simulatedCount > 0 && ` Você tem ${simulatedCount} ${simulatedCount === 1 ? "pedido simulado" : "pedidos simulados"}.`}</p>
       </div>
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {providers.map((p) => {
           const demo = p.status === "demo";
           return (
             <Card key={p.key} className="flex flex-col p-4">
               <div className="flex items-start gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white" style={{ background: p.color }} aria-hidden>{p.short}</span>
+                {p.logo
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={p.logo} alt="" className="size-10 shrink-0 rounded-lg bg-white object-contain p-1" />
+                  : <span className="flex size-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white" style={{ background: p.color }} aria-hidden>{p.short}</span>}
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-ink-3">{p.category}</p>

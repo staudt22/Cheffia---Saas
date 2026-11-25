@@ -215,7 +215,7 @@ export function Dashboard({
             {groups.map((g) => (
               <div key={g}>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-3">{g}</p>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {library.filter((w) => w.group === g).map((w) => {
                     const added = present.has(w.type);
                     return (

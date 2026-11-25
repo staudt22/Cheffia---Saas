@@ -180,7 +180,7 @@ export function DemoApp() {
                 <Card className="p-4"><p className="text-[13px] text-ink-3">Ticket médio</p><p className="mt-1.5 text-2xl font-semibold tabular">{brl(revenue / count)}</p></Card>
                 <button onClick={() => setView("estoque")} className="text-left"><Card className={cn("h-full p-4 transition hover:ring-1 hover:ring-warn/40", low.length && "ring-1 ring-warn/30")}><p className="text-[13px] text-ink-3">Itens acabando</p><p className={cn("mt-1.5 text-2xl font-semibold tabular", low.length && "text-warn")}>{low.length}</p></Card></button>
               </div>
-              <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
                 <Card>
                   <CardHeader title="Faturamento por hora" description="Hoje · conclua um pedido e veja a última barra subir" />
                   <div className="px-2 pb-3 pt-2"><RevenueChart data={hours} kind="bar" currency="BRL" locale="pt-BR" height={250} /></div>
@@ -205,7 +205,7 @@ export function DemoApp() {
           )}
 
           {view === "pedidos" && (
-            <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
               <Card>
                 <Table>
                   <thead><tr><Th>Pedido</Th><Th>Onde</Th><Th className="hidden sm:table-cell">Canal</Th><Th>Status</Th><Th className="text-right">Total</Th></tr></thead>
@@ -242,7 +242,7 @@ export function DemoApp() {
           )}
 
           {view === "cozinha" && (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {(["novo", "preparo", "pronto"] as const).map((s) => (
                 <div key={s} className="rounded-2xl bg-surface/60 p-3 ring-1 ring-line">
                   <p className="mb-3 flex items-center gap-2 px-1 text-sm font-medium"><Badge tone={STATUS[s].tone}>{STATUS[s].label}</Badge><span className="text-ink-3">{orders.filter((o) => o.status === s).length}</span></p>

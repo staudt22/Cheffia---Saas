@@ -50,7 +50,7 @@ export function MenuItemDialog({ item, categories, restaurantId, currency, onDon
         {!item && <Button variant="outline" loading={pending} disabled={!v.name.trim() || v.price === ""} onClick={() => save(true)}>Salvar e montar ficha técnica</Button>}
         <Button variant="primary" loading={pending} disabled={!v.name.trim() || v.price === ""} onClick={() => save()}>Salvar</Button>
       </>}>
-      <div className="grid gap-4 sm:grid-cols-[96px_1fr]">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[96px_1fr]">
         <button type="button" onClick={() => file.current?.click()} className="relative flex size-24 items-center justify-center overflow-hidden rounded-lg border border-dashed border-line-strong bg-surface-2 text-ink-3 hover:border-brand hover:text-brand" aria-label="Enviar foto">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {v.photo_url ? <img src={v.photo_url} alt="" className="size-full object-cover" /> : <ImagePlus className="size-6" />}

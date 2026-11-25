@@ -64,7 +64,7 @@ export function RecipeBuilder({ item, recipe, inventory, autoDeduct, currency, l
         {canEdit && <Button variant="primary" loading={pending} onClick={save}>Salvar ficha técnica</Button>}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
         <Card>
           <CardHeader title="Ingredientes" description="Quantidade usada em uma porção. O custo usa o preço atual de cada item do estoque." />
           <div className="p-4">

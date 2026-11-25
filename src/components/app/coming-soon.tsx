@@ -14,7 +14,7 @@ export function ComingSoon({ title, description, planned, ready, links }: {
         <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent"><Hourglass className="size-3.5" /> Próxima etapa</span>
         <h2 className="mt-4 text-lg font-semibold">Esta área está sendo construída</h2>
         <p className="mt-1 text-sm text-ink-2">Veja o que ela vai ter. Nada aqui é de mentira — cada recurso aparece quando estiver funcionando de verdade.</p>
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {planned.map((p) => <li key={p} className="flex gap-2 text-sm text-ink-2"><span className="mt-2 size-1.5 shrink-0 rounded-full bg-line-strong" />{p}</li>)}
         </ul>
         {ready && ready.length > 0 && (

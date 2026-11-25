@@ -49,7 +49,7 @@ export function ExpenseDialog({ expense, suppliers, restaurantId, onDone }: { ex
           toast.success(expense ? "Despesa atualizada" : "Despesa lançada");
           onDone();
         })}>Salvar despesa</Button></>}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Descrição" htmlFor="ex-desc" className="sm:col-span-2"><Input id="ex-desc" autoFocus value={v.description} onChange={(e) => set({ description: e.target.value })} placeholder="ex.: Compra do hortifruti da semana" /></Field>
         <Field label="Valor (R$)" htmlFor="ex-amount"><Input id="ex-amount" type="number" min={0} step="0.01" value={v.amount} onChange={(e) => set({ amount: e.target.value })} /></Field>
         <Field label="Data" htmlFor="ex-date"><Input id="ex-date" type="date" value={v.date} onChange={(e) => set({ date: e.target.value })} /></Field>
@@ -118,7 +118,7 @@ export function RevenueDialog({ record, onDone }: { record: RevenueRecord | null
           if (!r.ok) return void toast.error(r.error);
           toast.success("Receita salva"); onDone();
         })}>Salvar</Button></>}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Descrição" htmlFor="rv-desc" className="sm:col-span-2"><Input id="rv-desc" autoFocus value={v.description} onChange={(e) => set({ description: e.target.value })} placeholder="ex.: Almoço da empresa X" /></Field>
         <Field label="Valor (R$)" htmlFor="rv-amount"><Input id="rv-amount" type="number" min={0} step="0.01" value={v.amount} onChange={(e) => set({ amount: e.target.value })} /></Field>
         <Field label="Data" htmlFor="rv-date"><Input id="rv-date" type="date" value={v.date} onChange={(e) => set({ date: e.target.value })} /></Field>

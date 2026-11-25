@@ -28,7 +28,7 @@ export const PLANS: Plan[] = [
     tagline: "Para restaurantes com equipe e várias frentes de venda.",
     highlight: true,
     limits: ["1 restaurante", "Até 15 usuários", "Apps de delivery ilimitados"],
-    features: ["Tudo do Essencial", "Desempenho de cada garçom", "Cargos personalizados", "Vários layouts de painel", "Suporte prioritário"],
+    features: ["Tudo do Essencial", "Assistente IA com os dados do seu restaurante", "Desempenho de cada garçom", "Cargos personalizados", "Vários layouts de painel", "Suporte prioritário"],
   },
   {
     key: "rede",
@@ -41,7 +41,7 @@ export const PLANS: Plan[] = [
 ];
 
 /** What each plan unlocks. The free trial unlocks everything so owners can try it all. */
-export function planAllows(plan: string, feature: "staff_performance" | "custom_roles" | "all_units") {
+export function planAllows(plan: string, feature: "staff_performance" | "custom_roles" | "all_units" | "assistant") {
   if (plan === "trial" || plan === "rede") return true;
   if (plan === "profissional") return feature !== "all_units";
   return false;
@@ -61,3 +61,8 @@ export function trialStatus(r: Pick<Restaurant, "plan" | "is_demo"> & { trial_en
 export const SALES_CONTACT = process.env.NEXT_PUBLIC_SALES_CONTACT ?? "";
 
 export const formatBRL = (v: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(v);
+
+/** Assistant messages per restaurant per day. */
+export function assistantDailyLimit(plan: string) {
+  return plan === "rede" ? 200 : plan === "profissional" ? 80 : plan === "trial" ? 30 : 0;
+}
