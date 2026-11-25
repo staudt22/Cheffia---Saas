@@ -1,15 +1,16 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { InfoTip } from "@/components/ui/info-tip";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("rounded-lg bg-surface shadow-card", className)} {...props} />;
 }
 
-export function CardHeader({ title, description, action, className }: { title: React.ReactNode; description?: React.ReactNode; action?: React.ReactNode; className?: string }) {
+export function CardHeader({ title, description, action, className, help }: { title: React.ReactNode; description?: React.ReactNode; action?: React.ReactNode; className?: string; help?: string }) {
   return (
     <div className={cn("flex items-start justify-between gap-3 px-4 pt-4", className)}>
       <div className="min-w-0">
-        <h3 className="truncate text-sm font-semibold text-ink">{title}</h3>
+        <h3 className="flex items-center gap-1.5 truncate text-sm font-semibold text-ink">{title}{help && <InfoTip text={help} />}</h3>
         {description && <p className="mt-0.5 text-xs text-ink-3">{description}</p>}
       </div>
       {action && <div className="flex shrink-0 items-center gap-1.5">{action}</div>}

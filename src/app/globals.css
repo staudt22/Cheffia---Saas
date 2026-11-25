@@ -1,42 +1,46 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces";
 
 /* ---------------------------------------------------------------------------
    Forkly design tokens — warm neutrals, charcoal ink, muted green default brand.
    Brand variables are overridden per restaurant (see lib/theme.ts).
 --------------------------------------------------------------------------- */
 :root {
-  --bg: #f6f4ef;
-  --surface: #ffffff;
-  --surface-2: #faf9f6;
-  --surface-3: #f1eee7;
-  --ink: #1f1d1a;
-  --ink-2: #55514a;
-  --ink-3: #8a857b;
-  --line: #e8e3da;
-  --line-strong: #d6cfc2;
+  color-scheme: dark;
+  --bg: #0a1120;
+  --surface: #101a2e;
+  --surface-2: #132036;
+  --surface-3: #1a2842;
+  --ink: #e8eefa;
+  --ink-2: #a9b7d0;
+  --ink-3: #7385a6;
+  --line: #1d2a45;
+  --line-strong: #2b3c5f;
 
-  --brand: #3f6b4e;
-  --brand-raw: #3f6b4e;
-  --brand-foreground: #ffffff;
-  --brand-soft: #ecf0ed;
-  --brand-muted: #cfdad2;
-  --accent: #b4652f;
-  --accent-soft: #f8ede4;
+  --brand: #38bdf8;
+  --brand-raw: #38bdf8;
+  --brand-foreground: #06101f;
+  --brand-soft: #13304a;
+  --brand-muted: #1f5677;
+  --brand-glow: rgb(56 189 248 / 0.35);
+  --accent: #a78bfa;
+  --accent-soft: #2a2550;
+  --grad-from: #38bdf8;
+  --grad-to: #a78bfa;
+  --grad-foreground: #06101f;
 
-  --good: #2f7a4f;
-  --good-soft: #e8f3ec;
-  --warn: #9a6512;
-  --warn-soft: #fbf1de;
-  --bad: #b23b2a;
-  --bad-soft: #fbe9e6;
-  --info: #2a6bb3;
-  --info-soft: #e7f0fa;
+  --good: #34d399;
+  --good-soft: rgb(52 211 153 / 0.13);
+  --warn: #fbbf24;
+  --warn-soft: rgb(251 191 36 / 0.13);
+  --bad: #f87171;
+  --bad-soft: rgb(248 113 113 / 0.13);
+  --info: #60a5fa;
+  --info-soft: rgb(96 165 250 / 0.13);
 
-  /* Chart series (validated categorical slots 1–3, reference palette) */
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
+  /* Chart series — validated for CVD separation on the navy surface */
+  --series-1: #3987e5;
+  --series-2: #d55181;
+  --series-3: #199e70;
 }
 
 @theme inline {
@@ -56,6 +60,7 @@
   --color-brand-muted: var(--brand-muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-grad-foreground: var(--grad-foreground);
   --color-good: var(--good);
   --color-good-soft: var(--good-soft);
   --color-warn: var(--warn);
@@ -67,15 +72,16 @@
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 10px;
   --radius-xl: 14px;
 
-  --shadow-card: 0 1px 2px rgb(31 29 26 / 0.04), 0 0 0 1px rgb(31 29 26 / 0.05);
-  --shadow-pop: 0 10px 30px -10px rgb(31 29 26 / 0.25), 0 0 0 1px rgb(31 29 26 / 0.06);
+  --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.035), 0 0 0 1px rgb(120 145 200 / 0.10), 0 12px 32px -18px rgb(0 0 0 / 0.7);
+  --shadow-pop: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(120 145 200 / 0.16), 0 24px 48px -16px rgb(0 0 0 / 0.75);
+  --shadow-glow: 0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent), 0 8px 28px -6px var(--brand-glow);
 
   --animate-fade-in: fade-in 160ms ease-out;
   --animate-slide-up: slide-up 200ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -96,14 +102,34 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
-::selection { background: var(--brand-muted); }
+::selection { background: var(--brand-muted); color: var(--ink); }
+
+/* Soft light blooms behind the workspace, tinted by the restaurant's colours. */
+.app-glow {
+  background:
+    radial-gradient(1100px 520px at 18% -8%, color-mix(in srgb, var(--brand-raw) 13%, transparent), transparent 62%),
+    radial-gradient(900px 520px at 100% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 60%),
+    radial-gradient(900px 700px at 60% 110%, color-mix(in srgb, var(--brand-raw) 6%, transparent), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+.surface-gradient {
+  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
+  color: var(--grad-foreground);
+  box-shadow: 0 14px 40px -14px var(--brand-glow), inset 0 1px 0 rgb(255 255 255 / 0.25);
+}
+.glow-ring { box-shadow: var(--shadow-glow); }
+.text-gradient {
+  background: linear-gradient(90deg, var(--grad-from), var(--grad-to));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
 
 *:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
 .tabular { font-variant-numeric: tabular-nums; }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-3) 0%, #f7f5f0 50%, var(--surface-3) 100%);
+  background: linear-gradient(90deg, var(--surface-3) 0%, #24365a 50%, var(--surface-3) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   border-radius: var(--radius-sm);
@@ -118,3 +144,5 @@ body {
 .recharts-cartesian-axis-tick text { fill: var(--ink-3); font-size: 11px; }
 .recharts-cartesian-grid line { stroke: var(--line); }
 .recharts-surface:focus { outline: none; }
+.recharts-line-curve, .recharts-area-curve { filter: drop-shadow(0 0 6px var(--brand-glow)); }
+input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }

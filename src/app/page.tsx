@@ -18,7 +18,7 @@ const features = [
 export default async function Home() {
   if (isSupabaseConfigured && (await getUser())) redirect("/dashboard");
   return (
-    <div className="min-h-dvh">
+    <div className="app-glow min-h-dvh">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <ForklyLogo />
         <nav className="flex items-center gap-2">
@@ -28,9 +28,9 @@ export default async function Home() {
       </header>
       <main className="mx-auto max-w-6xl px-5">
         <section className="py-16 sm:py-24">
-          <p className="mb-4 text-sm font-medium text-[#3f6b4e]">Restaurant management, finally calm</p>
-          <h1 className="max-w-3xl font-display text-5xl font-medium leading-[1.05] tracking-tight text-ink sm:text-6xl">
-            Your restaurant.<br />Under control.
+          <p className="mb-4 text-sm font-medium text-brand">Restaurant management, finally calm</p>
+          <h1 className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+            Your restaurant.<br /><span className="text-gradient">Under control.</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-2">
             Forkly brings orders, finances, inventory, menu and team into one place — and makes it feel like your own system, not generic software.
@@ -43,7 +43,7 @@ export default async function Home() {
         <section className="grid gap-px overflow-hidden rounded-xl bg-line shadow-card sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div key={f.title} className="bg-surface p-6">
-              <f.icon className="size-5 text-[#3f6b4e]" />
+              <f.icon className="size-5 text-brand" />
               <h3 className="mt-4 text-[15px] font-semibold">{f.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-3">{f.text}</p>
             </div>

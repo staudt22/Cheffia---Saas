@@ -32,7 +32,7 @@ function ChartTooltip({ active, payload, label, money }: { active?: boolean; pay
   );
 }
 
-const axisProps = { tickLine: false, axisLine: false, tickMargin: 8, minTickGap: 18 } as const;
+const axisProps = { tickLine: false, axisLine: false, tickMargin: 8, minTickGap: 18, tick: { fill: "var(--ink-3)", fontSize: 11 } } as const;
 
 export function RevenueChart({ data, kind, currency, locale, height = 240 }: { data: Point[]; kind: "area" | "bar" | "line"; currency: string; locale: string; height?: number }) {
   const m = useMoney(currency, locale);

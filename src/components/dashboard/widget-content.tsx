@@ -6,7 +6,9 @@ import { useState } from "react";
 import {
   AlertTriangle, ArrowDownRight, ArrowUpRight, CalendarClock, ChefHat, CircleAlert, Info, Lightbulb, Minus, PackageX, Receipt, Sparkles, TrendingDown, TrendingUp,
 } from "lucide-react";
-import { CardHeader } from "@/components/ui/card";
+import { CardHeader as BaseHeader } from "@/components/ui/card";
+import { InfoTip } from "@/components/ui/info-tip";
+import { WIDGET_HELP } from "@/lib/dashboard/widgets";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Segmented } from "@/components/ui/segmented";
 import { Badge } from "@/components/ui/badge";
@@ -21,34 +23,40 @@ import type { WidgetInstance } from "@/lib/types";
 
 export interface Ctx { data: DashboardData; currency: string; locale: string; timezone: string; compact: boolean }
 
-function Delta({ current, previous, invert = false, label }: { current: number; previous: number; invert?: boolean; label: string }) {
+function WHeader({ type, ...p }: React.ComponentProps<typeof BaseHeader> & { type: string }) {
+  return <BaseHeader help={WIDGET_HELP[type]} {...p} />;
+}
+
+export const HIGHLIGHT_WIDGETS = new Set(["kpi_revenue", "kpi_profit"]);
+
+function Delta({ current, previous, invert = false, label, onColor = false }: { current: number; previous: number; invert?: boolean; label: string; onColor?: boolean }) {
   const change = pctChange(current, previous);
-  if (change == null) return <span className="text-xs text-ink-3">No data for {label}</span>;
+  if (change == null) return <span className={cn("text-xs", onColor ? "opacity-75" : "text-ink-3")}>No data for {label}</span>;
   const up = change > 0.0005, down = change < -0.0005;
   const good = invert ? down : up;
   const Icon = up ? ArrowUpRight : down ? ArrowDownRight : Minus;
   return (
     <span className="flex items-center gap-1 text-xs">
-      <span className={cn("inline-flex items-center gap-0.5 font-medium tabular", up || down ? (good ? "text-good" : "text-bad") : "text-ink-3")}>
+      <span className={cn("inline-flex items-center gap-0.5 font-medium tabular", onColor ? "rounded bg-black/15 px-1" : up || down ? (good ? "text-good" : "text-bad") : "text-ink-3")}>
         <Icon className="size-3.5" aria-hidden />{formatPercent(Math.abs(change), "en-US", 1)}
       </span>
-      <span className="text-ink-3">vs {label}</span>
+      <span className={onColor ? "opacity-75" : "text-ink-3"}>vs {label}</span>
     </span>
   );
 }
 
-function Kpi({ title, value, current, previous, spark, invert, prevLabel, ctx }: {
-  title: string; value: string; current: number; previous: number; spark?: number[]; invert?: boolean; prevLabel: string; ctx: Ctx;
+function Kpi({ title, value, current, previous, spark, invert, prevLabel, ctx, help, highlight }: {
+  title: string; value: string; current: number; previous: number; spark?: number[]; invert?: boolean; prevLabel: string; ctx: Ctx; help?: string; highlight?: boolean;
 }) {
   return (
     <div className={cn("flex h-full flex-col justify-between", ctx.compact ? "p-3" : "p-4")}>
-      <p className="text-[13px] font-medium text-ink-3">{title}</p>
+      <p className={cn("flex items-center gap-1.5 text-[13px] font-medium", highlight ? "opacity-80" : "text-ink-3")}>{title}{help && <InfoTip text={help} className={highlight ? "text-current opacity-70 hover:text-current" : undefined} />}</p>
       <div className={cn("flex items-end justify-between gap-3", ctx.compact ? "mt-1.5" : "mt-3")}>
         <div className="min-w-0">
-          <p className={cn("font-semibold tracking-tight text-ink tabular", ctx.compact ? "text-xl" : "text-[26px] leading-8")}>{value}</p>
-          <div className="mt-1"><Delta current={current} previous={previous} invert={invert} label={prevLabel} /></div>
+          <p className={cn("font-semibold tracking-tight tabular", highlight ? "" : "text-ink", ctx.compact ? "text-xl" : "text-[28px] leading-8")}>{value}</p>
+          <div className="mt-1"><Delta current={current} previous={previous} invert={invert} label={prevLabel} onColor={highlight} /></div>
         </div>
-        {spark && <Sparkline values={spark} className="hidden h-9 w-20 shrink sm:block" />}
+        {spark && <Sparkline values={spark} color={highlight ? "currentColor" : undefined} className="hidden h-9 w-20 shrink sm:block" />}
       </div>
     </div>
   );
@@ -67,27 +75,27 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
 
   switch (widget.type) {
     case "kpi_revenue":
-      return <Kpi ctx={ctx} title="Revenue" value={kpiMoney(data.totals.revenue)} current={data.totals.revenue} previous={data.previous.revenue} spark={spark("revenue")} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Revenue" value={kpiMoney(data.totals.revenue)} current={data.totals.revenue} previous={data.previous.revenue} spark={spark("revenue")} prevLabel="previous period" />;
     case "kpi_expenses":
-      return <Kpi ctx={ctx} title="Expenses" value={kpiMoney(data.totals.expenses)} current={data.totals.expenses} previous={data.previous.expenses} spark={spark("expenses")} invert prevLabel="previous period" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Expenses" value={kpiMoney(data.totals.expenses)} current={data.totals.expenses} previous={data.previous.expenses} spark={spark("expenses")} invert prevLabel="previous period" />;
     case "kpi_profit": {
       const p = data.totals.revenue - data.totals.expenses, pp = data.previous.revenue - data.previous.expenses;
       const profitSpark = data.daily.map((d) => d.revenue - (d.expenses ?? 0));
-      return <Kpi ctx={ctx} title="Estimated profit" value={kpiMoney(p)} current={p} previous={pp} spark={profitSpark} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Estimated profit" value={kpiMoney(p)} current={p} previous={pp} spark={profitSpark} prevLabel="previous period" />;
     }
     case "kpi_orders":
-      return <Kpi ctx={ctx} title="Orders" value={formatNumber(data.totals.orders, locale)} current={data.totals.orders} previous={data.previous.orders} spark={spark("orders")} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Orders" value={formatNumber(data.totals.orders, locale)} current={data.totals.orders} previous={data.previous.orders} spark={spark("orders")} prevLabel="previous period" />;
     case "kpi_aov": {
       const a = data.totals.orders ? data.orderRevenue.current / data.totals.orders : 0;
       const b = data.previous.orders ? data.orderRevenue.previous / data.previous.orders : 0;
-      return <Kpi ctx={ctx} title="Average order value" value={money(a)} current={a} previous={b} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Average order value" value={money(a)} current={a} previous={b} prevLabel="previous period" />;
     }
     case "kpi_today_revenue":
-      return <Kpi ctx={ctx} title="Today's revenue" value={kpiMoney(data.quick.today)} current={data.quick.today} previous={data.quick.todayPrev} prevLabel="same day last week" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Today's revenue" value={kpiMoney(data.quick.today)} current={data.quick.today} previous={data.quick.todayPrev} prevLabel="same day last week" />;
     case "kpi_week_revenue":
-      return <Kpi ctx={ctx} title="Weekly revenue" value={kpiMoney(data.quick.week)} current={data.quick.week} previous={data.quick.weekPrev} prevLabel="previous 7 days" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Weekly revenue" value={kpiMoney(data.quick.week)} current={data.quick.week} previous={data.quick.weekPrev} prevLabel="previous 7 days" />;
     case "kpi_month_revenue":
-      return <Kpi ctx={ctx} title="Monthly revenue" value={kpiMoney(data.quick.month)} current={data.quick.month} previous={data.quick.monthPrev} prevLabel="same point last month" />;
+      return <Kpi ctx={ctx} help={WIDGET_HELP[widget.type]} highlight={HIGHLIGHT_WIDGETS.has(widget.type)} title="Monthly revenue" value={kpiMoney(data.quick.month)} current={data.quick.month} previous={data.quick.monthPrev} prevLabel="same point last month" />;
 
     case "revenue_chart":
       return <RevenueWidget widget={widget} ctx={ctx} onConfig={onConfig} />;
@@ -96,7 +104,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
       const kind = widget.config?.chart === "bar" ? "bar" : "line";
       return (
         <>
-          <CardHeader title="Revenue vs expenses" description={data.range.label} action={onConfig && (
+          <WHeader type={widget.type} title="Revenue vs expenses" description={data.range.label} action={onConfig && (
             <Segmented ariaLabel="Chart type" value={kind} onChange={(v) => onConfig({ ...widget.config, chart: v })} options={[{ value: "line", label: "Line" }, { value: "bar", label: "Bars" }]} />
           )} />
           <div className="px-2 pb-3 pt-2">
@@ -111,7 +119,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "expense_breakdown":
       return (
         <>
-          <CardHeader title="Expense breakdown" description={`${data.range.label} · ${money(data.totals.expenses)}`} />
+          <WHeader type={widget.type} title="Expense breakdown" description={`${data.range.label} · ${money(data.totals.expenses)}`} />
           <div className="p-4">
             {data.expenseBreakdown.length ? <CategoryBars data={data.expenseBreakdown.slice(0, ctx.compact ? 5 : 7)} currency={currency} locale={locale} />
               : <ListEmpty icon={<Receipt />} title="No expenses in this period" text="Record rent, ingredients and bills to see where the money goes." href="/finances" cta="Add an expense" />}
@@ -122,7 +130,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "popular_products":
       return (
         <>
-          <CardHeader title="Popular products" description={data.range.label} action={<Link href="/menu" className="text-xs font-medium text-ink-3 hover:text-ink">Menu</Link>} />
+          <WHeader type={widget.type} title="Popular products" description={data.range.label} action={<Link href="/menu" className="text-xs font-medium text-ink-3 hover:text-ink">Menu</Link>} />
           <div className="px-4 pb-3 pt-2">
             {data.products.length ? (
               <table className="w-full text-sm">
@@ -149,7 +157,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "order_activity":
       return (
         <>
-          <CardHeader title="Order activity" description={`${data.liveOrders.length} in progress`} action={<Link href="/orders/kitchen" className="text-xs font-medium text-ink-3 hover:text-ink">Kitchen display</Link>} />
+          <WHeader type={widget.type} title="Order activity" description={`${data.liveOrders.length} in progress`} action={<Link href="/orders/kitchen" className="text-xs font-medium text-ink-3 hover:text-ink">Kitchen display</Link>} />
           <div className="px-2 pb-2 pt-2">
             {data.liveOrders.length ? (
               <ul>
@@ -172,7 +180,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "inventory_alerts":
       return (
         <>
-          <CardHeader title="Inventory alerts" description={data.inventoryAlerts.length ? `${data.inventoryAlerts.length} item${data.inventoryAlerts.length > 1 ? "s" : ""} need attention` : "Stock levels look good"} action={<Link href="/inventory" className="text-xs font-medium text-ink-3 hover:text-ink">Inventory</Link>} />
+          <WHeader type={widget.type} title="Inventory alerts" description={data.inventoryAlerts.length ? `${data.inventoryAlerts.length} item${data.inventoryAlerts.length > 1 ? "s" : ""} need attention` : "Stock levels look good"} action={<Link href="/inventory" className="text-xs font-medium text-ink-3 hover:text-ink">Inventory</Link>} />
           <div className="px-4 pb-3 pt-2">
             {data.inventoryAlerts.length ? (
               <ul className="flex flex-col gap-1">
@@ -192,7 +200,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "alerts":
       return (
         <>
-          <CardHeader title="Alerts" description={data.alerts.length ? `${data.alerts.length} need${data.alerts.length === 1 ? "s" : ""} your attention` : "Nothing urgent"} />
+          <WHeader type={widget.type} title="Alerts" description={data.alerts.length ? `${data.alerts.length} need${data.alerts.length === 1 ? "s" : ""} your attention` : "Nothing urgent"} />
           <div className="px-2 pb-2 pt-2">
             {data.alerts.length ? (
               <ul>
@@ -216,7 +224,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "recent_activity":
       return (
         <>
-          <CardHeader title="Recent activity" />
+          <WHeader type={widget.type} title="Recent activity" />
           <div className="px-4 pb-3 pt-2">
             {data.activity.length ? (
               <ol className="relative flex flex-col gap-3 before:absolute before:inset-y-1 before:left-[3px] before:w-px before:bg-line">
@@ -236,7 +244,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "recent_transactions":
       return (
         <>
-          <CardHeader title="Recent transactions" action={<Link href="/finances" className="text-xs font-medium text-ink-3 hover:text-ink">Finances</Link>} />
+          <WHeader type={widget.type} title="Recent transactions" action={<Link href="/finances" className="text-xs font-medium text-ink-3 hover:text-ink">Finances</Link>} />
           <div className="px-4 pb-3 pt-2">
             {data.transactions.length ? (
               <ul>
@@ -258,7 +266,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "upcoming_shifts":
       return (
         <>
-          <CardHeader title="Upcoming shifts" />
+          <WHeader type={widget.type} title="Upcoming shifts" />
           <div className="px-4 pb-3 pt-2">
             {data.shifts.length ? (
               <ul>
@@ -283,7 +291,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "ai_insights":
       return (
         <>
-          <CardHeader title={<span className="flex items-center gap-1.5"><Lightbulb className="size-4 text-accent" /> Insights</span>} description="Calculated from your own numbers" />
+          <WHeader type={widget.type} title={<span className="flex items-center gap-1.5"><Lightbulb className="size-4 text-accent" /> Insights</span>} description="Calculated from your own numbers" />
           <div className="px-4 pb-3 pt-2">
             {data.insights.length ? (
               <ul className="flex flex-col gap-2">
@@ -313,7 +321,7 @@ function RevenueWidget({ widget, ctx, onConfig }: { widget: WidgetInstance; ctx:
   const scope = bucket === "week" ? "Last 12 weeks" : bucket === "month" ? "Last 12 months" : bucket === "hour" ? `${ctx.data.range.label} · by hour (orders)` : ctx.data.range.days < 2 ? "Last 30 days" : ctx.data.range.label;
   return (
     <>
-      <CardHeader
+      <WHeader type={widget.type}
         title="Revenue"
         description={<span className="tabular">{scope} · {formatMoney(total, ctx.currency, ctx.locale)}</span>}
         action={

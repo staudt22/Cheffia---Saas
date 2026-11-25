@@ -29,8 +29,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm text-ink-3">{today}</p>
-          <h1 className="mt-1 font-display text-[28px] font-medium leading-tight tracking-tight sm:text-[32px]">
-            {greeting(r.timezone)}, {r.name}
+          <h1 className="mt-1 font-display text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
+            {greeting(r.timezone)}, <span className="text-gradient">{r.name}</span>
           </h1>
         </div>
         <Suspense><DateRangePicker range={range} /></Suspense>

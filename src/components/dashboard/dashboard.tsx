@@ -15,7 +15,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
-import { WidgetContent, type Ctx } from "@/components/dashboard/widget-content";
+import { HIGHLIGHT_WIDGETS, WidgetContent, type Ctx } from "@/components/dashboard/widget-content";
 import { activateLayoutAction, createLayoutAction, deleteLayoutAction, saveLayoutAction } from "@/app/(app)/dashboard/actions";
 import { DASHBOARD_PRESETS, WIDGETS, newWidgetId, widgetDef, type PresetKey } from "@/lib/dashboard/widgets";
 import { cn } from "@/lib/utils";
@@ -44,7 +44,8 @@ function SortableWidget({
       className={cn(SIZE_CLASS[widget.size], "min-w-0", isDragging && "z-20")}
     >
       <Card className={cn(
-        "relative h-full overflow-hidden transition-shadow",
+        "relative h-full overflow-hidden transition-[box-shadow,transform] duration-200",
+        HIGHLIGHT_WIDGETS.has(widget.type) ? "surface-gradient" : "hover:shadow-pop",
         editing && "ring-1 ring-dashed ring-brand/40",
         isDragging && "shadow-pop ring-2 ring-brand",
       )}>

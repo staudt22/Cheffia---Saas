@@ -95,7 +95,7 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
       : Promise.resolve({ data: [] }),
     supabase.from("audit_logs").select("id, summary, action, created_at").eq("restaurant_id", rid).not("summary", "is", null).order("created_at", { ascending: false }).limit(8),
     can("finances")
-      ? supabase.from("revenue_records").select("id, description, amount, date, source, created_at").eq("restaurant_id", rid).order("date", { ascending: false }).order("created_at", { ascending: false }).limit(8)
+      ? supabase.from("revenue_records").select("id, description, amount, date, source, created_at").eq("restaurant_id", rid).gte("date", d(-7)).order("date", { ascending: false }).order("created_at", { ascending: false }).limit(2000)
       : Promise.resolve({ data: [] }),
     can("finances")
       ? supabase.from("expenses").select("id, description, amount, date, category, created_at").eq("restaurant_id", rid).order("date", { ascending: false }).order("created_at", { ascending: false }).limit(8)
@@ -236,7 +236,19 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
     if (margin != null) insights.push({ id: "pm", tone: margin >= 0.1 ? "good" : "bad", text: `Estimated profit margin for the period is ${Math.round(margin * 100)}%.` });
   }
 
-  const rev = ((revenueRows.data as Record<string, unknown>[] | null) ?? []).map((r) => ({ id: `r-${r.id}`, kind: "revenue" as const, description: r.description as string, amount: n(r.amount), date: r.date as string, category: r.source as string, created_at: r.created_at as string }));
+  // Order revenue is summarised per day so single orders don't flood the list.
+  const revRows = (revenueRows.data as Record<string, unknown>[] | null) ?? [];
+  const orderDays = new Map<string, { total: number; count: number; created_at: string }>();
+  for (const r of revRows.filter((x) => x.source === "order")) {
+    const e = orderDays.get(r.date as string) ?? { total: 0, count: 0, created_at: r.created_at as string };
+    e.total += n(r.amount); e.count++;
+    if ((r.created_at as string) > e.created_at) e.created_at = r.created_at as string;
+    orderDays.set(r.date as string, e);
+  }
+  const rev = [
+    ...revRows.filter((x) => x.source !== "order").map((r) => ({ id: `r-${r.id}`, kind: "revenue" as const, description: r.description as string, amount: n(r.amount), date: r.date as string, category: r.source as string, created_at: r.created_at as string })),
+    ...[...orderDays.entries()].map(([date, e]) => ({ id: `orders-${date}`, kind: "revenue" as const, description: `${e.count} completed order${e.count === 1 ? "" : "s"}`, amount: Math.round(e.total * 100) / 100, date, category: "order", created_at: e.created_at })),
+  ];
   const exp = ((expenseRows.data as Record<string, unknown>[] | null) ?? []).map((e) => ({ id: `e-${e.id}`, kind: "expense" as const, description: e.description as string, amount: n(e.amount), date: e.date as string, category: e.category as string, created_at: e.created_at as string }));
   const transactions = [...rev, ...exp].sort((a, b) => (b.date + b.created_at).localeCompare(a.date + a.created_at)).slice(0, 8).map(({ created_at: _c, ...t }) => { void _c; return t; });
 

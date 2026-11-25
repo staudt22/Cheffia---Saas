@@ -13,7 +13,7 @@ export function DialogContent({
 }: { title: string; description?: string; children: React.ReactNode; className?: string; footer?: React.ReactNode; size?: "sm" | "md" | "lg" }) {
   return (
     <D.Portal>
-      <D.Overlay className="fixed inset-0 z-50 bg-ink/30 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
+      <D.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
       <D.Content
         className={cn(
           "fixed left-1/2 top-1/2 z-50 flex max-h-[92vh] w-[calc(100vw-24px)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-xl bg-surface shadow-pop data-[state=open]:animate-slide-up",
@@ -39,7 +39,7 @@ export function DialogContent({
 export function SheetContent({ title, description, children, footer, className }: { title: React.ReactNode; description?: React.ReactNode; children: React.ReactNode; footer?: React.ReactNode; className?: string }) {
   return (
     <D.Portal>
-      <D.Overlay className="fixed inset-0 z-50 bg-ink/25 data-[state=open]:animate-fade-in" />
+      <D.Overlay className="fixed inset-0 z-50 bg-black/55 data-[state=open]:animate-fade-in" />
       <D.Content className={cn("fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-surface shadow-pop data-[state=open]:animate-slide-in-right", className)}>
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">

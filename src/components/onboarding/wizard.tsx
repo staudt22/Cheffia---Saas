@@ -40,7 +40,7 @@ const STEPS = [
 function StepShell({ title, description, children, footer }: { title: string; description: string; children: React.ReactNode; footer: React.ReactNode }) {
   return (
     <div className="animate-slide-up">
-      <h1 className="font-display text-3xl font-medium tracking-tight">{title}</h1>
+      <h1 className="font-display text-3xl font-semibold tracking-tight">{title}</h1>
       <p className="mt-2 text-[15px] text-ink-2">{description}</p>
       <div className="mt-8">{children}</div>
       <div className="mt-10 flex items-center justify-between gap-3 border-t border-line pt-5">{footer}</div>
@@ -62,8 +62,8 @@ export function OnboardingWizard({
   });
   const [brand, setBrand] = useState({
     logo_url: restaurant?.logo_url ?? null as string | null,
-    brand_color: restaurant?.brand_color ?? "#3F6B4E",
-    accent_color: restaurant?.accent_color ?? "#C8743A",
+    brand_color: restaurant?.brand_color ?? "#38BDF8",
+    accent_color: restaurant?.accent_color ?? "#A78BFA",
   });
   const [type, setType] = useState(restaurant?.restaurant_type ?? "");
   const [region, setRegion] = useState({
@@ -415,21 +415,21 @@ export function OnboardingWizard({
 
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
   return (
-    <div className="min-h-dvh">
+    <div className="app-glow min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-4">
           <ForklyLogo />
           <span className="text-sm text-ink-3 tabular">Step {step} of {STEPS.length} · {STEPS[step - 1]?.title}</span>
         </div>
         <div className="h-0.5 bg-line" role="progressbar" aria-valuemin={1} aria-valuemax={10} aria-valuenow={step}>
-          <div className="h-full bg-[#3f6b4e] transition-[width] duration-500" style={{ width: `${progress}%` }} />
+          <div className="h-full bg-brand transition-[width] duration-500" style={{ width: `${progress}%` }} />
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-5 py-10 sm:py-14">
         <ol className="mb-10 hidden gap-1 sm:flex" aria-label="Onboarding steps">
           {STEPS.map((s) => (
             <li key={s.n} className="flex-1">
-              <div className={cn("h-1 rounded-full", s.n < step ? "bg-[#3f6b4e]" : s.n === step ? "bg-[#3f6b4e]/50" : "bg-line")} />
+              <div className={cn("h-1 rounded-full", s.n < step ? "bg-brand" : s.n === step ? "bg-brand/50" : "bg-line")} />
               <p className={cn("mt-1.5 text-[11px]", s.n === step ? "font-medium text-ink" : "text-ink-3")}>{s.title}</p>
             </li>
           ))}

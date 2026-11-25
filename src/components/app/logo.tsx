@@ -4,8 +4,14 @@ import { cn } from "@/lib/utils";
 export function ForklyMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={cn("size-7", className)} aria-hidden>
-      <rect width="32" height="32" rx="8" fill="currentColor" />
-      <g fill="#fff">
+      <defs>
+        <linearGradient id="forkly-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#38bdf8" />
+          <stop offset="1" stopColor="#a78bfa" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="8" fill="url(#forkly-g)" />
+      <g fill="#06101f">
         <rect x="9" y="12" width="3" height="8" rx="1.5" />
         <rect x="14.5" y="9" width="3" height="11" rx="1.5" />
         <rect x="20" y="6" width="3" height="14" rx="1.5" />
@@ -18,7 +24,7 @@ export function ForklyMark({ className }: { className?: string }) {
 export function ForklyLogo({ className, markClassName }: { className?: string; markClassName?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-2 text-ink", className)}>
-      <ForklyMark className={cn("text-[#3f6b4e]", markClassName)} />
+      <ForklyMark className={markClassName} />
       <span className="font-display text-[19px] font-semibold tracking-tight">Forkly</span>
     </span>
   );

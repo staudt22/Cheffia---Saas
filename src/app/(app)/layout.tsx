@@ -14,11 +14,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const memberships = ws.memberships.map((m) => ({ restaurant_id: m.restaurant_id, name: m.name, logo_url: m.logo_url }));
 
   return (
-    <div style={brandVars(r.brand_color, r.accent_color) as React.CSSProperties} className="flex min-h-dvh">
+    <div style={brandVars(r.brand_color, r.accent_color) as React.CSSProperties} className="app-glow flex min-h-dvh">
       <Sidebar restaurant={shell} memberships={memberships} permissions={ws.permissions} />
       <div className="flex min-w-0 flex-1 flex-col">
         {r.is_demo && (
-          <div className="flex items-center justify-center gap-2 bg-accent-soft px-4 py-1.5 text-xs font-medium text-accent">
+          <div className="flex items-center justify-center gap-2 border-b border-line bg-accent-soft/70 px-4 py-1.5 text-xs font-medium text-accent">
             <FlaskConical className="size-3.5" /> Demo workspace — all data here is sample data
           </div>
         )}

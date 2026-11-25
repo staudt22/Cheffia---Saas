@@ -87,7 +87,7 @@ function NewOrderForm({ menu, categories, currency, locale, onDone }: { menu: Me
         <div>
           <div className="mb-3 flex gap-1 overflow-x-auto pb-1">
             {[{ id: "all", name: "All" }, ...categories].map((c) => (
-              <button key={c.id} onClick={() => setCat(c.id)} className={cn("whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition", cat === c.id ? "bg-ink text-white" : "bg-surface-3 text-ink-2 hover:text-ink")}>{c.name}</button>
+              <button key={c.id} onClick={() => setCat(c.id)} className={cn("whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition", cat === c.id ? "bg-brand text-brand-foreground" : "bg-surface-3 text-ink-2 hover:text-ink")}>{c.name}</button>
             ))}
           </div>
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">

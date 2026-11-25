@@ -79,7 +79,7 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
   }
 
   return (
-    <div className="-mx-4 -my-6 flex min-h-[calc(100dvh-56px)] flex-col bg-[#f1eee7] lg:-mx-8 lg:-my-8">
+    <div className="-mx-4 -my-6 flex min-h-[calc(100dvh-56px)] flex-col bg-bg/40 lg:-mx-8 lg:-my-8">
       <div className="flex flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-3 lg:px-6">
         <Button asChild variant="ghost" size="sm"><Link href="/orders"><ArrowLeft /> Orders</Link></Button>
         <h1 className="text-lg font-semibold">Kitchen display</h1>

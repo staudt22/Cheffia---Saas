@@ -14,7 +14,7 @@ export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; l
   ];
   const bars = [38, 52, 44, 61, 58, 72, 66];
   return (
-    <div style={vars} className="overflow-hidden rounded-xl bg-bg shadow-card" aria-label="Branding preview">
+    <div style={vars} className="app-glow overflow-hidden rounded-xl shadow-card" aria-label="Branding preview">
       <div className="flex h-64">
         <div className="flex w-36 flex-col gap-0.5 border-r border-line bg-surface p-2.5">
           <div className="mb-2 flex items-center gap-2 px-1">
@@ -33,18 +33,18 @@ export function BrandPreview({ name, logoUrl, brand, accent }: { name: string; l
           ))}
         </div>
         <div className="flex-1 p-3">
-          <p className="font-display text-sm">Good morning, {name || "your restaurant"}</p>
+          <p className="text-sm font-semibold">Good morning, <span className="text-gradient">{name || "your restaurant"}</span></p>
           <div className="mt-2 grid grid-cols-3 gap-1.5">
             {["Revenue", "Orders", "Profit"].map((k, i) => (
-              <div key={k} className="rounded-md bg-surface p-1.5 shadow-card">
-                <p className="text-[8px] text-ink-3">{k}</p>
+              <div key={k} className={i === 0 ? "surface-gradient rounded-md p-1.5" : "rounded-md bg-surface p-1.5 shadow-card"}>
+                <p className={i === 0 ? "text-[8px] opacity-75" : "text-[8px] text-ink-3"}>{k}</p>
                 <p className="text-[11px] font-semibold tabular">{["$12,480", "486", "$4,210"][i]}</p>
               </div>
             ))}
           </div>
           <div className="mt-1.5 rounded-md bg-surface p-2 shadow-card">
             <div className="flex h-20 items-end gap-1">
-              {bars.map((h, i) => <div key={i} className="flex-1 rounded-t-[3px] bg-brand" style={{ height: `${h}%`, opacity: i === bars.length - 1 ? 1 : 0.85 }} />)}
+              {bars.map((h, i) => <div key={i} className="flex-1 rounded-t-[3px] bg-[linear-gradient(180deg,var(--grad-from),var(--grad-to))]" style={{ height: `${h}%`, opacity: i === bars.length - 1 ? 1 : 0.8 }} />)}
             </div>
           </div>
           <div className="mt-1.5 flex gap-1.5">

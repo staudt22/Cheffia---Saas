@@ -15,6 +15,7 @@ export interface WidgetDef {
   defaultSize: WidgetInstance["size"];
   charts?: ("area" | "bar" | "line")[];
   group: "Key numbers" | "Charts" | "Operations" | "Insights";
+  help?: string;
 }
 
 export const WIDGETS: WidgetDef[] = [
@@ -38,6 +39,28 @@ export const WIDGETS: WidgetDef[] = [
   { type: "recent_activity", title: "Recent activity", description: "Latest events across the restaurant", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Insights" },
   { type: "ai_insights", title: "Insights", description: "Observations computed from your own data", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Insights" },
 ];
+
+export const WIDGET_HELP: Record<string, string> = {
+  kpi_revenue: "All money that came in during the period: completed orders plus any revenue you recorded manually (catering, events…).",
+  kpi_expenses: "Everything you recorded as spent in the period: ingredients, rent, salaries, bills and so on.",
+  kpi_profit: "Revenue minus expenses. It's an estimate — it's only as complete as the expenses you record.",
+  kpi_orders: "How many orders were completed in the period. Cancelled orders are not counted.",
+  kpi_aov: "Average order value: order revenue divided by the number of completed orders. Raising it is often easier than finding new customers.",
+  kpi_today_revenue: "Revenue recorded today, compared with the same weekday last week.",
+  kpi_week_revenue: "Revenue for the last 7 days, compared with the 7 days before.",
+  kpi_month_revenue: "Revenue since the 1st of this month, compared with the same days last month.",
+  revenue_chart: "Shows how revenue moves over time. Switch between hourly, daily, weekly and monthly to spot your busiest moments.",
+  expense_chart: "Revenue and expenses day by day. When the pink line is above the blue one, that day cost more than it earned.",
+  expense_breakdown: "Which categories take the biggest share of your spending. Ingredients and staff are usually the largest.",
+  popular_products: "Your best sellers. Margin = how much of the price is left after ingredient cost (needs a recipe). Above 65% is healthy.",
+  order_activity: "Orders that are still being handled: new, accepted, preparing or ready.",
+  inventory_alerts: "Items below the minimum you set, out of stock, or expiring within 3 days.",
+  alerts: "Things that need your attention: stock, unusual spending, bills coming up and missing information.",
+  recent_activity: "A live log of what's happening: new orders, expenses, stock changes and more.",
+  recent_transactions: "The latest money in (green) and money out.",
+  upcoming_shifts: "Who is scheduled to work next.",
+  ai_insights: "Plain-language observations calculated from your own numbers. Nothing here is guessed.",
+};
 
 export const widgetDef = (type: string) => WIDGETS.find((w) => w.type === type);
 

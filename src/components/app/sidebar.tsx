@@ -31,7 +31,7 @@ export function NavLinks({ permissions, collapsed, onNavigate }: { permissions: 
               collapsed && "justify-center px-0",
             )}
           >
-            {active && <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-brand" aria-hidden />}
+            {active && <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-brand shadow-[0_0_10px_2px_var(--brand-glow)]" aria-hidden />}
             <n.icon className={cn("size-[18px] shrink-0", active ? "text-brand" : "text-ink-3 group-hover:text-ink-2")} />
             {!collapsed && <span className="truncate">{n.label}</span>}
             {!collapsed && n.soon && <span className="ml-auto rounded px-1.5 text-[10px] font-medium uppercase tracking-wide text-ink-3 ring-1 ring-line-strong">Soon</span>}
@@ -56,7 +56,7 @@ export function Sidebar({ restaurant, memberships, permissions }: { restaurant: 
     });
   }
   return (
-    <aside className={cn("sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 lg:flex", collapsed ? "w-[60px]" : "w-60")}>
+    <aside className={cn("sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-surface/70 backdrop-blur-xl transition-[width] duration-200 lg:flex", collapsed ? "w-[60px]" : "w-60")}>
       <div className={cn("flex h-14 items-center border-b border-line", collapsed ? "justify-center px-2" : "px-3")}>
         <WorkspaceSwitcher restaurant={restaurant} memberships={memberships} collapsed={collapsed} />
       </div>
