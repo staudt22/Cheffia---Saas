@@ -4,7 +4,7 @@
 # Usage: PGHOST=... PGPORT=... PGUSER=postgres scripts/db-test.sh
 set -euo pipefail
 cd "$(dirname "$0")/../supabase"
-DB="forkly_test_$$"
+DB="cheffedata_test_$$"
 psql -v ON_ERROR_STOP=1 -q -d postgres -c "create database $DB"
 trap 'psql -q -d postgres -c "drop database if exists $DB" >/dev/null' EXIT
 psql -v ON_ERROR_STOP=1 -q -d "$DB" -f tests/supabase_stub.sql 2>/dev/null

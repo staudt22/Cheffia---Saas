@@ -291,7 +291,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
     case "ai_insights":
       return (
         <>
-          <WHeader type={widget.type} title={<span className="flex items-center gap-1.5"><Lightbulb className="size-4 text-accent" /> Dicas do Forkly</span>} description="Calculadas com os seus números" />
+          <WHeader type={widget.type} title={<span className="flex items-center gap-1.5"><Lightbulb className="size-4 text-accent" /> Dicas do CheffeData</span>} description="Calculadas com os seus números" />
           <div className="px-4 pb-3 pt-2">
             {data.insights.length ? (
               <ul className="flex flex-col gap-2">

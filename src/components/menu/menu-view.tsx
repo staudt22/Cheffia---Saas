@@ -48,7 +48,7 @@ export function MenuView({ items, categories, costs, restaurantId, currency, loc
         </div>
       )}
       {!items.length ? (
-        <Card><EmptyState icon={<UtensilsCrossed />} title="Seu cardápio está vazio" description="Cadastre os pratos e bebidas que você vende. Depois monte as fichas técnicas para o Forkly calcular o custo e baixar o estoque."
+        <Card><EmptyState icon={<UtensilsCrossed />} title="Seu cardápio está vazio" description="Cadastre os pratos e bebidas que você vende. Depois monte as fichas técnicas para o CheffeData calcular o custo e baixar o estoque."
           action={canEdit && <Button variant="primary" onClick={() => setEditing("new")}><Plus /> Cadastrar o primeiro item</Button>} /></Card>
       ) : (
         <div className="flex flex-col gap-6">

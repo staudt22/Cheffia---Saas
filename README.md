@@ -1,8 +1,8 @@
-# Forkly
+# CheffeData
 
-**Your restaurant. Under control.**
+**Todos os pedidos. Toda a operação. Um único sistema.**
 
-Forkly is a multi-tenant restaurant management SaaS: orders and a kitchen display, finances, inventory, menu & recipe costing, team roles, and a dashboard each restaurant can personalize with its own logo, colours and layout.
+CheffeData is a multi-tenant restaurant management SaaS: orders and a kitchen display, finances, inventory, menu & recipe costing, team roles, and a dashboard each restaurant can personalize with its own logo, colours and layout.
 
 Built with Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage, Realtime, Row Level Security) · Recharts · React Hook Form + Zod · dnd-kit.
 
@@ -62,6 +62,17 @@ update restaurants set plan = 'profissional' where id = '<restaurant id>';
 -- or extend a trial
 update restaurants set trial_ends_at = now() + interval '7 days' where id = '<restaurant id>';
 ```
+
+| | Essencial | Profissional | Rede |
+| --- | --- | --- | --- |
+| Restaurantes | 1 | 1 | até 5 |
+| Usuários | 3 | 15 | ilimitados |
+| Apps de delivery integrados | 1 (enforced by a DB trigger) | ilimitados | ilimitados |
+| Comandas, ponto, KDS, finanças, estoque, cardápio | ✅ | ✅ | ✅ |
+| Desempenho por garçom, cargos personalizados | — | ✅ | ✅ |
+| Painel “Todas as unidades” (comparação entre restaurantes) | — | — | ✅ |
+
+The trial unlocks everything.
 
 ## Architecture
 
@@ -131,7 +142,11 @@ PGHOST=localhost PGPORT=5432 PGUSER=postgres scripts/db-test.sh
 | Marketing homepage with real screenshots, 3 plans (Essencial R$ 99, Profissional R$ 199, Rede R$ 399) | ✅ working |
 | 7-day free trial (no card): banner with days left, plans page when it ends, user limit per plan | ✅ working |
 | Custom roles: create/rename/delete roles, pick a role and set “no access / view / view & edit” per area | ✅ working |
-| Suppliers & purchase orders UI, Team shifts & time clock, Analytics, AI assistant | 🔜 next phases (DB already in place for suppliers/POs/shifts) |
-| Receipt OCR, email delivery of invites, online payment (Stripe card/Pix) | 🔜 not implemented — plans are activated by the Forkly team for now |
+| Comandas (tabs) for waiters on a tablet: open by table/number/counter, add rounds, send to kitchen, close with service fee | ✅ working |
+| Time clock (“Minha área”), team page with who's on shift, hours, punch corrections and per-waiter performance | ✅ working |
+| Plan gates: 1 integration on Essencial, custom roles & staff performance from Profissional, all-units panel on Rede | ✅ working |
+| Homepage with live code-built dashboard, order-flow animation, public interactive demo at `/demo` | ✅ working |
+| Suppliers & purchase orders UI, Analytics, AI assistant | 🔜 next phases (DB already in place for suppliers/POs) |
+| Receipt OCR, email delivery of invites, online payment (Stripe card/Pix) | 🔜 not implemented — plans are activated by the CheffeData team for now |
 
-Integrations with iFood, Uber Eats, DoorDash, Stripe, Square, Shopify and Google need approved partner/developer accounts and their credentials before they can be connected. Until then Forkly shows them as *Coming soon*; delivery platforms offer a demo mode whose orders are flagged **Simulated** everywhere.
+Integrations with iFood, 99Food, Rappi, Uber Eats, DoorDash, Stripe, Square, Shopify and Google need approved partner/developer accounts and their credentials before they can be connected. Until then CheffeData shows them as *Coming soon*; delivery platforms offer a demo mode whose orders are flagged **Simulated** everywhere.

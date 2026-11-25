@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildPermissionMap, homePath, roleLabel, type PermissionMap } from "@/lib/permissions";
 import type { AppRole, Restaurant, RestaurantSettings, Section } from "@/lib/types";
 
-export const ACTIVE_RESTAURANT_COOKIE = "forkly_rid";
+export const ACTIVE_RESTAURANT_COOKIE = "cheffedata_rid";
 
 export interface Workspace {
   user: { id: string; email: string; fullName: string };

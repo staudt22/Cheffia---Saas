@@ -55,7 +55,7 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
   const seen = useRef<Set<string> | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { try { setSound(localStorage.getItem("forkly.kds.sound") === "on"); } catch {} }, []);
+  useEffect(() => { try { setSound(localStorage.getItem("cheffedata.kds.sound") === "on"); } catch {} }, []);
   useEffect(() => {
     const ids = new Set(orders.filter((o) => o.status === "new").map((o) => o.id));
     if (seen.current && sound && [...ids].some((id) => !seen.current!.has(id))) chime();
@@ -90,7 +90,7 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
           {lastCompleted && canEdit && (
             <Button size="sm" variant="ghost" onClick={() => start(async () => { const r = await updateOrderStatusAction(lastCompleted.id, "ready"); if (!r.ok) toast.error(r.error); })}><Undo2 /> Voltar o #{lastCompleted.number}</Button>
           )}
-          <Button size="sm" variant="secondary" onClick={() => { const v = !sound; setSound(v); try { localStorage.setItem("forkly.kds.sound", v ? "on" : "off"); } catch {} if (v) chime(); }} aria-pressed={sound}>
+          <Button size="sm" variant="secondary" onClick={() => { const v = !sound; setSound(v); try { localStorage.setItem("cheffedata.kds.sound", v ? "on" : "off"); } catch {} if (v) chime(); }} aria-pressed={sound}>
             {sound ? <Bell /> : <BellOff />} Som {sound ? "ligado" : "desligado"}
           </Button>
           <Button size="sm" variant="secondary" onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {})}>

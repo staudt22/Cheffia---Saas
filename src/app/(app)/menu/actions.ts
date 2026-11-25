@@ -18,7 +18,7 @@ export async function saveMenuItemAction(id: string | null, input: unknown): Pro
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Confira os dados do item." };
   const rid = ctx.ws.restaurant.id;
   if (parsed.data.photo_url && !parsed.data.photo_url.startsWith(`${env.supabaseUrl}/storage/v1/object/public/menu-photos/${rid}/`)) {
-    return { ok: false, error: "As fotos precisam ser enviadas pelo Forkly." };
+    return { ok: false, error: "As fotos precisam ser enviadas pelo CheffeData." };
   }
   const row = { ...parsed.data, restaurant_id: rid };
   const q = id

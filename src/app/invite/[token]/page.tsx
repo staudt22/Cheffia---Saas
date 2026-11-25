@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ForklyLogo } from "@/components/app/logo";
+import { CheffeDataLogo } from "@/components/app/logo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -19,7 +19,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-5 py-12">
-      <ForklyLogo className="mb-8" />
+      <CheffeDataLogo className="mb-8" />
       <Card className="p-6">
         {!invite || invite.expired ? (
           <>

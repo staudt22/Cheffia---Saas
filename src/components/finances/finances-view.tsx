@@ -143,7 +143,7 @@ export function FinancesView({ range, totals, previous, daily, breakdown, expens
                 ))}
               </tbody>
             </Table>
-          ) : <EmptyState icon={<Repeat />} title="Nenhuma conta fixa" description="Marque aluguel, salários ou assinaturas como repetidos e o Forkly lança sozinho a cada período." />}
+          ) : <EmptyState icon={<Repeat />} title="Nenhuma conta fixa" description="Marque aluguel, salários ou assinaturas como repetidos e o CheffeData lança sozinho a cada período." />}
         </Card>
       )}
 
@@ -198,7 +198,7 @@ function Transactions({ expenses, revenue, money, canEdit, rangeLabel, onEdit, o
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
-    a.href = url; a.download = `forkly-lancamentos-${rangeLabel.replace(/\W+/g, "-").toLowerCase()}.csv`; a.click();
+    a.href = url; a.download = `cheffedata-lancamentos-${rangeLabel.replace(/\W+/g, "-").toLowerCase()}.csv`; a.click();
     URL.revokeObjectURL(url);
   }
 

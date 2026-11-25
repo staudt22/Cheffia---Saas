@@ -107,3 +107,36 @@ export function minutesSince(value: string) {
 export function isoHoursAgo(hours: number) {
   return new Date(Date.now() - hours * 3600_000).toISOString();
 }
+
+/** Offset (ms) of a time zone at a given instant: local wall time minus UTC. */
+function tzOffsetMs(at: Date, timeZone: string) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", { timeZone, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" })
+      .formatToParts(at).map((p) => [p.type, p.value]),
+  );
+  const asUtc = Date.UTC(+parts.year!, +parts.month! - 1, +parts.day!, +parts.hour!, +parts.minute!, +parts.second!);
+  return asUtc - at.getTime();
+}
+
+/** Converts a wall-clock time in the restaurant's time zone ("yyyy-MM-ddTHH:mm") to a UTC Date. */
+export function zonedToUtc(local: string, timeZone: string): Date {
+  const [d, t = "00:00"] = local.split("T");
+  const [y, m, day] = d!.split("-").map(Number);
+  const [hh, mm] = t.split(":").map(Number);
+  const guess = Date.UTC(y!, m! - 1, day!, hh!, mm!);
+  let result = guess - tzOffsetMs(new Date(guess), timeZone);
+  result = guess - tzOffsetMs(new Date(result), timeZone);
+  return new Date(result);
+}
+
+/** Formats a UTC instant as "yyyy-MM-ddTHH:mm" in the restaurant's time zone (for datetime-local inputs). */
+export function utcToZonedInput(iso: string, timeZone: string) {
+  const at = new Date(iso);
+  return new Date(at.getTime() + tzOffsetMs(at, timeZone)).toISOString().slice(0, 16);
+}
+
+export function formatDuration(minutes: number) {
+  const m = Math.max(0, Math.round(minutes));
+  const h = Math.floor(m / 60);
+  return h ? `${h}h${String(m % 60).padStart(2, "0")}` : `${m}min`;
+}

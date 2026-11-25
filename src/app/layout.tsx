@@ -6,11 +6,11 @@ import { TooltipProvider } from "@/components/ui/info-tip";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Forkly — Seu restaurante. Sob controle.", template: "%s · Forkly" },
+  title: { default: "CheffeData — Todos os pedidos. Toda a operação. Um único sistema.", template: "%s · CheffeData" },
   description: "Pedidos, finanças, estoque, cardápio e equipe do seu restaurante em um só lugar. Teste grátis por 7 dias.",
 };
 
-export const viewport: Viewport = { themeColor: "#0a1120", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0a0d0c", colorScheme: "dark" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

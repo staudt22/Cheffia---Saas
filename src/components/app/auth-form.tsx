@@ -81,7 +81,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   return (
     <div className="animate-slide-up">
-      <h1 className="text-2xl font-semibold tracking-tight">{mode === "signin" ? "Que bom te ver de novo" : isDemo ? "Conheça o Forkly" : "Crie sua conta grátis"}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{mode === "signin" ? "Que bom te ver de novo" : isDemo ? "Conheça o CheffeData" : "Crie sua conta grátis"}</h1>
       <p className="mt-1.5 text-sm text-ink-3">
         {mode === "signin" ? "Entre para acessar o seu restaurante." : isDemo ? "Crie uma conta e montamos um restaurante de exemplo, cheio de dados para você explorar." : "7 dias grátis, sem cartão. Passo 1 de 10 — leva uns 5 minutos."}
       </p>

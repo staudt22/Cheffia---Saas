@@ -20,6 +20,11 @@ export default async function IntegrationsPage() {
   return (
     <div>
       <PageHeader title="Integrações" description="Conecte apps de delivery, pagamento e PDV para todos os pedidos caírem num lugar só." />
+      {ws.restaurant.plan === "essencial" && (
+        <div className="mb-4 rounded-lg border border-line bg-surface-2 px-4 py-3 text-sm text-ink-2">
+          No plano <strong className="text-ink">Essencial</strong> você integra <strong className="text-ink">1 aplicativo</strong>. Para integrar quantos quiser, <a href="/assinatura" className="font-medium text-brand hover:underline">mude para o Profissional</a>.
+        </div>
+      )}
       <IntegrationsGrid providers={providers} simulatedCount={simulated ?? 0} canEdit={ws.permissions.integrations.edit} canCreateOrders={ws.permissions.orders.edit} locale={ws.restaurant.locale} timezone={ws.restaurant.timezone} />
     </div>
   );

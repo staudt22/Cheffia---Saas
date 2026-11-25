@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, Copy, Plus, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { ForklyLogo } from "@/components/app/logo";
+import { CheffeDataLogo } from "@/components/app/logo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select } from "@/components/ui/input";
@@ -62,8 +62,8 @@ export function OnboardingWizard({
   });
   const [brand, setBrand] = useState({
     logo_url: restaurant?.logo_url ?? null as string | null,
-    brand_color: restaurant?.brand_color ?? "#38BDF8",
-    accent_color: restaurant?.accent_color ?? "#A78BFA",
+    brand_color: restaurant?.brand_color ?? "#34D399",
+    accent_color: restaurant?.accent_color ?? "#2DD4BF",
   });
   const [type, setType] = useState(restaurant?.restaurant_type ?? "");
   const [region, setRegion] = useState({
@@ -228,7 +228,7 @@ export function OnboardingWizard({
 
     case 5:
       content = (
-        <StepShell title="Moeda, idioma e horário" description="Usados em todos os valores, datas e relatórios do Forkly."
+        <StepShell title="Moeda, idioma e horário" description="Usados em todos os valores, datas e relatórios do CheffeData."
           footer={<>{back(4)}<div className="flex gap-2"><Button variant="primary" size="lg" loading={pending}
             onClick={() => run(() => updateRestaurant({ ...region, onboarding_step: 6 }), 6)}>Continuar</Button></div></>}>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -289,7 +289,7 @@ export function OnboardingWizard({
     case 7: {
       const valid = stock.filter((s) => s.name.trim());
       content = (
-        <StepShell title="O que tem no seu estoque?" description="Cadastre os ingredientes principais. O Forkly avisa quando algum ficar abaixo do mínimo."
+        <StepShell title="O que tem no seu estoque?" description="Cadastre os ingredientes principais. O CheffeData avisa quando algum ficar abaixo do mínimo."
           footer={<>{back(6)}<div className="flex gap-2">{skip(8)}<Button variant="primary" size="lg" loading={pending} disabled={!valid.length}
             onClick={() => run(async () => {
               const res = await addInventoryItemsAction(valid.map((s) => ({
@@ -418,7 +418,7 @@ export function OnboardingWizard({
     <div className="app-glow min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-4">
-          <ForklyLogo />
+          <CheffeDataLogo />
           <span className="text-sm text-ink-3 tabular">Passo {step} de {STEPS.length} · {STEPS[step - 1]?.title}</span>
         </div>
         <div className="h-0.5 bg-line" role="progressbar" aria-valuemin={1} aria-valuemax={10} aria-valuenow={step}>

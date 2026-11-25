@@ -16,8 +16,8 @@ export function NavLinks({ permissions, collapsed, onNavigate }: { permissions: 
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-0.5" aria-label="Principal">
-      {NAV.filter((n) => permissions[n.section].view).map((n) => {
-        const active = pathname === n.href || pathname.startsWith(n.href + "/");
+      {NAV.filter((n) => (n.section ? permissions[n.section].view : true)).map((n) => {
+        const active = pathname === n.href || (pathname.startsWith(n.href + "/") && !NAV.some((o) => o.href !== n.href && o.href.startsWith(n.href) && pathname.startsWith(o.href)));
         return (
           <Link
             key={n.href}
@@ -47,11 +47,11 @@ export function Sidebar({ restaurant, memberships, permissions }: { restaurant: 
   useEffect(() => {
     // Client-only preference; read after mount to keep hydration consistent.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    try { setCollapsed(localStorage.getItem("forkly.sidebar") === "collapsed"); } catch {}
+    try { setCollapsed(localStorage.getItem("cheffedata.sidebar") === "collapsed"); } catch {}
   }, []);
   function toggle() {
     setCollapsed((c) => {
-      try { localStorage.setItem("forkly.sidebar", c ? "open" : "collapsed"); } catch {}
+      try { localStorage.setItem("cheffedata.sidebar", c ? "open" : "collapsed"); } catch {}
       return !c;
     });
   }

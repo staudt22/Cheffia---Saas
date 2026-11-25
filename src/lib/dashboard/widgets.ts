@@ -37,7 +37,7 @@ export const WIDGETS: WidgetDef[] = [
   { type: "upcoming_shifts", title: "Próximos turnos", description: "Quem trabalha a seguir", section: "team", sizes: ["md", "lg"], defaultSize: "md", group: "Operação" },
   { type: "alerts", title: "Avisos", description: "Tudo que precisa da sua atenção", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
   { type: "recent_activity", title: "Atividade recente", description: "O que aconteceu no restaurante", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
-  { type: "ai_insights", title: "Dicas do Forkly", description: "Observações calculadas com os seus números", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
+  { type: "ai_insights", title: "Dicas do CheffeData", description: "Observações calculadas com os seus números", section: "overview", sizes: ["md", "lg"], defaultSize: "md", group: "Análises" },
 ];
 
 export const WIDGET_HELP: Record<string, string> = {

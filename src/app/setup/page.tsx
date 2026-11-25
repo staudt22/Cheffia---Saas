@@ -1,4 +1,4 @@
-import { ForklyLogo } from "@/components/app/logo";
+import { CheffeDataLogo } from "@/components/app/logo";
 import { Card } from "@/components/ui/card";
 import { isSupabaseConfigured } from "@/lib/env";
 import { redirect } from "next/navigation";
@@ -10,10 +10,10 @@ export default function SetupPage() {
   if (isSupabaseConfigured) redirect("/");
   return (
     <div className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center px-5 py-12">
-      <ForklyLogo className="mb-8" />
+      <CheffeDataLogo className="mb-8" />
       <Card className="p-6">
-        <h1 className="text-lg font-semibold">Conecte o Forkly ao Supabase</h1>
-        <p className="mt-2 text-sm text-ink-2">O Forkly precisa de um projeto Supabase para o banco de dados, o login e os arquivos. Ele ainda não foi configurado.</p>
+        <h1 className="text-lg font-semibold">Conecte o CheffeData ao Supabase</h1>
+        <p className="mt-2 text-sm text-ink-2">O CheffeData precisa de um projeto Supabase para o banco de dados, o login e os arquivos. Ele ainda não foi configurado.</p>
         <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-ink-2">
           <li>Crie um projeto em supabase.com (ou rode <code className="rounded bg-surface-3 px-1">npx supabase start</code> localmente).</li>
           <li>Aplique as migrations de <code className="rounded bg-surface-3 px-1">supabase/migrations</code> com <code className="rounded bg-surface-3 px-1">npx supabase db push</code>.</li>

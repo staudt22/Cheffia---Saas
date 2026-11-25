@@ -1,34 +1,34 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Forkly design tokens — warm neutrals, charcoal ink, muted green default brand.
+   CheffeData design tokens — neutral dark surfaces, green default brand.
    Brand variables are overridden per restaurant (see lib/theme.ts).
 --------------------------------------------------------------------------- */
 :root {
   color-scheme: dark;
-  --bg: #0a1120;
-  --surface: #101a2e;
-  --surface-2: #132036;
-  --surface-3: #1a2842;
-  --ink: #e8eefa;
-  --ink-2: #a9b7d0;
-  --ink-3: #7385a6;
-  --line: #1d2a45;
-  --line-strong: #2b3c5f;
+  --bg: #0a0d0c;
+  --surface: #111614;
+  --surface-2: #151b18;
+  --surface-3: #1d2521;
+  --ink: #ecf2ee;
+  --ink-2: #a8b6af;
+  --ink-3: #75847c;
+  --line: #1f2723;
+  --line-strong: #2e3a34;
 
-  --brand: #38bdf8;
-  --brand-raw: #38bdf8;
-  --brand-foreground: #06101f;
-  --brand-soft: #13304a;
-  --brand-muted: #1f5677;
-  --brand-glow: rgb(56 189 248 / 0.35);
-  --accent: #a78bfa;
-  --accent-soft: #2a2550;
-  --grad-from: #38bdf8;
-  --grad-to: #a78bfa;
-  --grad-foreground: #06101f;
+  --brand: #34d399;
+  --brand-raw: #34d399;
+  --brand-foreground: #04140c;
+  --brand-soft: #11301f;
+  --brand-muted: #1b5a3c;
+  --brand-glow: rgb(52 211 153 / 0.35);
+  --accent: #2dd4bf;
+  --accent-soft: #10302d;
+  --grad-from: #34d399;
+  --grad-to: #2dd4bf;
+  --grad-foreground: #04140c;
 
-  --good: #34d399;
+  --good: #4ade80;
   --good-soft: rgb(52 211 153 / 0.13);
   --warn: #fbbf24;
   --warn-soft: rgb(251 191 36 / 0.13);
@@ -37,7 +37,7 @@
   --info: #60a5fa;
   --info-soft: rgb(96 165 250 / 0.13);
 
-  /* Chart series — validated for CVD separation on the navy surface */
+  /* Chart series — validated for CVD separation on the dark surface */
   --series-1: #3987e5;
   --series-2: #d55181;
   --series-3: #199e70;
@@ -79,8 +79,8 @@
   --radius-lg: 10px;
   --radius-xl: 14px;
 
-  --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.035), 0 0 0 1px rgb(120 145 200 / 0.10), 0 12px 32px -18px rgb(0 0 0 / 0.7);
-  --shadow-pop: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(120 145 200 / 0.16), 0 24px 48px -16px rgb(0 0 0 / 0.75);
+  --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.035), 0 0 0 1px rgb(140 170 155 / 0.10), 0 12px 32px -18px rgb(0 0 0 / 0.7);
+  --shadow-pop: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(140 170 155 / 0.16), 0 24px 48px -16px rgb(0 0 0 / 0.75);
   --shadow-glow: 0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent), 0 8px 28px -6px var(--brand-glow);
 
   --animate-fade-in: fade-in 160ms ease-out;
@@ -92,6 +92,8 @@
 @keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
 @keyframes slide-up { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes slide-in-right { from { transform: translateX(24px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes pop { from { opacity: 0; transform: translateY(-6px) scale(.97) } to { opacity: 1; transform: none } }
+@keyframes travel { 0% { left: 0%; opacity: 0 } 15% { opacity: 1 } 85% { opacity: 1 } 100% { left: 100%; opacity: 0 } }
 @keyframes pulse-soft { 0%, 100% { opacity: 1 } 50% { opacity: 0.55 } }
 
 html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -146,3 +148,5 @@ body {
 .recharts-surface:focus { outline: none; }
 .recharts-line-curve, .recharts-area-curve { filter: drop-shadow(0 0 6px var(--brand-glow)); }
 input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }

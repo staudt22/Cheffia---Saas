@@ -14,10 +14,10 @@ import type { Availability, ProviderInfo } from "@/lib/integrations/types";
 type P = ProviderInfo & { availability: Availability; status: string; lastSync: string | null; lastError: string | null };
 
 const FLOW = [
-  "Você clica em Conectar e o Forkly explica o que será compartilhado.",
+  "Você clica em Conectar e o CheffeData explica o que será compartilhado.",
   "Você entra na plataforma e autoriza o acesso.",
-  "A plataforma te devolve para o Forkly.",
-  "O Forkly confirma a conexão e guarda o acesso com segurança, só no servidor.",
+  "A plataforma te devolve para o CheffeData.",
+  "O CheffeData confirma a conexão e guarda o acesso com segurança, só no servidor.",
   "Os pedidos começam a chegar na sua fila e na tela da cozinha.",
 ];
 
@@ -29,7 +29,7 @@ export function IntegrationsGrid({ providers, simulatedCount, canEdit, canCreate
     <>
       <div className="mb-5 flex gap-3 rounded-lg bg-info-soft px-4 py-3 text-sm text-info">
         <Info className="mt-0.5 size-4 shrink-0" />
-        <p>Para conectar de verdade, cada plataforma precisa aprovar o Forkly como parceiro — por isso nenhuma está ativa ainda. Os apps de delivery têm um <strong>modo demonstração</strong>, que cria pedidos marcados como “Simulado” e nunca se misturam com pedidos reais.{simulatedCount > 0 && ` Você tem ${simulatedCount} ${simulatedCount === 1 ? "pedido simulado" : "pedidos simulados"}.`}</p>
+        <p>Para conectar de verdade, cada plataforma precisa aprovar o CheffeData como parceiro — por isso nenhuma está ativa ainda. Os apps de delivery têm um <strong>modo demonstração</strong>, que cria pedidos marcados como “Simulado” e nunca se misturam com pedidos reais.{simulatedCount > 0 && ` Você tem ${simulatedCount} ${simulatedCount === 1 ? "pedido simulado" : "pedidos simulados"}.`}</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {providers.map((p) => {

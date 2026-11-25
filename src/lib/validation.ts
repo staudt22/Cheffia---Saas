@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use uma cor no formato #38BDF8");
+const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use uma cor no formato #34D399");
 const optionalText = (max = 200) =>
   z.string().trim().max(max).optional().nullable().transform((v) => (v ? v : null));
 

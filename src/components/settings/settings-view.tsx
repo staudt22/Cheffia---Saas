@@ -214,7 +214,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
       break;
 
     case "roles":
-      body = <RolesSection permissions={permissions} customRoles={customRoles} members={members} isOwner={role === "owner"} />;
+      body = <RolesSection permissions={permissions} customRoles={customRoles} members={members} isOwner={role === "owner"} customAllowed={restaurant.plan !== "essencial"} />;
       break;
 
     case "notifications":
@@ -241,7 +241,7 @@ export function SettingsView({ tab, restaurant, settings, role, currentUserId, c
     case "billing": {
       const t = trialStatus(restaurant);
       body = (
-        <Section title="Plano" description="Sua assinatura do Forkly.">
+        <Section title="Plano" description="Sua assinatura do CheffeData.">
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-surface-2 p-4">
             <div>
               <p className="text-sm font-semibold">{restaurant.is_demo ? "Restaurante de demonstração" : planName(restaurant.plan)}</p>
@@ -302,7 +302,7 @@ const ROLE_ICON: Record<string, typeof Crown> = { owner: Crown, manager: UserCog
 
 function levelOf(p?: Perm): Level { return p?.can_edit ? "edit" : p?.can_view ? "view" : "none"; }
 
-function RolesSection({ permissions, customRoles, members, isOwner }: { permissions: Perm[]; customRoles: CustomRole[]; members: Member[]; isOwner: boolean }) {
+function RolesSection({ permissions, customRoles, members, isOwner, customAllowed }: { permissions: Perm[]; customRoles: CustomRole[]; members: Member[]; isOwner: boolean; customAllowed: boolean }) {
   const router = useRouter();
   const [perms, setPerms] = useState(permissions);
   // Keep local state in sync after the server refreshes.
@@ -339,7 +339,8 @@ function RolesSection({ permissions, customRoles, members, isOwner }: { permissi
           <p className="text-[15px] font-semibold">Cargos e permissões</p>
           <p className="text-sm text-ink-3">{isOwner ? "1. Escolha um cargo na lista · 2. Defina o que ele pode fazer em cada área. Vale na hora." : "Só o dono pode alterar os cargos."}</p>
         </div>
-        {isOwner && <Button variant="primary" onClick={() => setCreateOpen(true)}><Plus /> Criar cargo</Button>}
+        {isOwner && customAllowed && <Button variant="primary" onClick={() => setCreateOpen(true)}><Plus /> Criar cargo</Button>}
+        {isOwner && !customAllowed && <p className="text-sm text-ink-3">Criar cargos novos faz parte do plano <a href="/assinatura" className="font-medium text-brand hover:underline">Profissional</a>. Os cargos padrão continuam editáveis.</p>}
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-[280px_1fr]">

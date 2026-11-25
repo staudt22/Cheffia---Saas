@@ -2,7 +2,7 @@ import type { OrderSource } from "@/lib/types";
 
 /**
  * Integration abstraction. Each provider implements this contract; the rest of
- * Forkly only talks to the interface, so adding a provider never touches the UI
+ * CheffeData only talks to the interface, so adding a provider never touches the UI
  * or the order pipeline.
  */
 export type Availability =
@@ -43,6 +43,6 @@ export interface ProviderConnector {
   getAuthorizationUrl(params: { state: string; redirectUri: string }): string;
   /** Exchange the OAuth code for tokens (server-side only). */
   exchangeCode(params: { code: string; redirectUri: string }): Promise<{ accessToken: string; refreshToken?: string; expiresAt?: string; scopes?: string[] }>;
-  /** Verify and translate a webhook payload into Forkly orders. */
+  /** Verify and translate a webhook payload into CheffeData orders. */
   parseWebhook?(headers: Headers, rawBody: string): Promise<NormalizedOrder[]>;
 }

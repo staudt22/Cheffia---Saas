@@ -21,7 +21,7 @@ export async function updateRestaurant(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Valores inválidos" };
   const values = parsed.data;
   if (!ownsStorageUrl(values.logo_url, ctx.ws.restaurant.id) || !ownsStorageUrl(values.cover_url, ctx.ws.restaurant.id)) {
-    return { ok: false, error: "As imagens precisam ser enviadas pelo Forkly." };
+    return { ok: false, error: "As imagens precisam ser enviadas pelo CheffeData." };
   }
   const { error } = await ctx.supabase.from("restaurants").update(values).eq("id", ctx.ws.restaurant.id);
   if (error) return { ok: false, error: friendlyError(error) };

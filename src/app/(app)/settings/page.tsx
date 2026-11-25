@@ -26,7 +26,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <PageHeader title="Configurações" description="Deixe o Forkly com a cara e o jeito do seu restaurante." />
+      <PageHeader title="Configurações" description="Deixe o CheffeData com a cara e o jeito do seu restaurante." />
       <SettingsView
         tab={tab ?? "profile"}
         restaurant={ws.restaurant}

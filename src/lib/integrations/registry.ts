@@ -2,7 +2,7 @@ import type { Availability, ProviderInfo } from "@/lib/integrations/types";
 
 export const INTEGRATION_PROVIDERS: ProviderInfo[] = [
   { key: "ifood", name: "iFood", short: "iF", color: "#EA1D2C", category: "Delivery", orderSource: "ifood",
-    description: "Receba os pedidos do iFood direto na fila do Forkly e na tela da cozinha.",
+    description: "Receba os pedidos do iFood direto na fila do CheffeData e na tela da cozinha.",
     requiredEnv: ["IFOOD_CLIENT_ID", "IFOOD_CLIENT_SECRET"], partnerUrl: "https://developer.ifood.com.br", supportsDemo: true, implemented: false },
   { key: "ubereats", name: "Uber Eats", short: "UE", color: "#06C167", category: "Delivery", orderSource: "ubereats",
     description: "Sincronize os pedidos e a disponibilidade do cardápio no Uber Eats.",

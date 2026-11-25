@@ -111,7 +111,7 @@ function MovementDialog({ item, type, setType, currency, locale, onDone }: { ite
           { value: "purchase", label: "Compra" }, { value: "usage", label: "Uso" }, { value: "waste", label: "Desperdício" }, { value: "adjustment", label: "Contagem" },
         ]} />
         <Field label={type === "adjustment" ? `Quantidade contada (${item.unit})` : `Quantidade (${item.unit})`} htmlFor="mv-qty"
-          hint={after != null ? `Depois disso: ${formatQuantity(after, item.unit, locale)}` : type === "adjustment" ? "Conte o que tem na prateleira e digite aqui. O Forkly calcula a diferença." : undefined}>
+          hint={after != null ? `Depois disso: ${formatQuantity(after, item.unit, locale)}` : type === "adjustment" ? "Conte o que tem na prateleira e digite aqui. O CheffeData calcula a diferença." : undefined}>
           <Input id="mv-qty" type="number" min={0} step="any" autoFocus value={qty} onChange={(e) => setQty(e.target.value)} />
         </Field>
         {type === "purchase" && (

@@ -71,7 +71,7 @@ export function ExpenseDialog({ expense, suppliers, restaurantId, onDone }: { ex
         </Field>
         <div className="flex flex-col gap-3 rounded-lg bg-surface-2 p-3 sm:col-span-2">
           <label className="flex items-center justify-between gap-3">
-            <span><span className="block text-sm font-medium">É uma conta fixa?</span><span className="block text-xs text-ink-3">Ex.: aluguel, salários, internet. O Forkly lança sozinho a cada período, a partir desta data.</span></span>
+            <span><span className="block text-sm font-medium">É uma conta fixa?</span><span className="block text-xs text-ink-3">Ex.: aluguel, salários, internet. O CheffeData lança sozinho a cada período, a partir desta data.</span></span>
             <Switch checked={v.is_recurring} onCheckedChange={(c) => set({ is_recurring: c })} />
           </label>
           {v.is_recurring && (

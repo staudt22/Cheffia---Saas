@@ -18,8 +18,8 @@ export const PLANS: Plan[] = [
     name: "Essencial",
     price: 99,
     tagline: "Para quem está organizando o restaurante pela primeira vez.",
-    limits: ["1 restaurante", "Até 3 usuários"],
-    features: ["Pedidos e tela da cozinha", "Cardápio com ficha técnica", "Estoque com alertas", "Finanças e despesas recorrentes", "Dashboard personalizável"],
+    limits: ["1 restaurante", "Até 3 usuários", "1 app de delivery integrado"],
+    features: ["Pedidos, comandas e tela da cozinha", "Ponto eletrônico da equipe", "Cardápio com ficha técnica", "Estoque com alertas", "Finanças e contas fixas"],
   },
   {
     key: "profissional",
@@ -27,18 +27,25 @@ export const PLANS: Plan[] = [
     price: 199,
     tagline: "Para restaurantes com equipe e várias frentes de venda.",
     highlight: true,
-    limits: ["1 restaurante", "Até 15 usuários"],
-    features: ["Tudo do Essencial", "Permissões por cargo", "Vários layouts de dashboard", "Integrações com apps de delivery (quando disponíveis)", "Suporte prioritário"],
+    limits: ["1 restaurante", "Até 15 usuários", "Apps de delivery ilimitados"],
+    features: ["Tudo do Essencial", "Desempenho de cada garçom", "Cargos personalizados", "Vários layouts de painel", "Suporte prioritário"],
   },
   {
     key: "rede",
     name: "Rede",
     price: 399,
     tagline: "Para grupos e franquias com mais de uma unidade.",
-    limits: ["Até 5 restaurantes", "Usuários ilimitados"],
-    features: ["Tudo do Profissional", "Troca rápida entre unidades", "Relatórios por unidade", "Acompanhamento na implantação"],
+    limits: ["Até 5 restaurantes", "Usuários ilimitados", "Apps de delivery ilimitados"],
+    features: ["Tudo do Profissional", "Painel com todas as unidades juntas", "Comparação de faturamento e lucro entre unidades", "Troca rápida entre unidades", "Acompanhamento na implantação"],
   },
 ];
+
+/** What each plan unlocks. The free trial unlocks everything so owners can try it all. */
+export function planAllows(plan: string, feature: "staff_performance" | "custom_roles" | "all_units") {
+  if (plan === "trial" || plan === "rede") return true;
+  if (plan === "profissional") return feature !== "all_units";
+  return false;
+}
 
 export const planName = (key: string) =>
   key === "trial" ? "Teste grátis" : PLANS.find((p) => p.key === key)?.name ?? key;

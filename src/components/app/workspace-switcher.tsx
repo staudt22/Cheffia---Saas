@@ -20,7 +20,7 @@ export function WorkspaceSwitcher({ restaurant, memberships, collapsed }: { rest
           <>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{restaurant.name}</span>
-              <span className="block truncate text-[11px] text-ink-3">{restaurant.is_demo ? "Demonstração" : "Forkly"}</span>
+              <span className="block truncate text-[11px] text-ink-3">{restaurant.is_demo ? "Demonstração" : "CheffeData"}</span>
             </span>
             <ChevronsUpDown className="size-4 shrink-0 text-ink-3" />
           </>

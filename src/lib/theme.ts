@@ -33,13 +33,13 @@ function mix(a: RGB, b: RGB, t: number): RGB {
 }
 
 const WHITE: RGB = [255, 255, 255];
-const SURFACE: RGB = [16, 26, 46]; // --surface (#101a2e)
+const SURFACE: RGB = [17, 22, 20]; // --surface (#111614)
 const DARK_INK = "#06101f";
 
-/** Lightens a colour until it stands out against the navy surface. */
+/** Lightens a colour until it stands out against the dark surface. */
 function ensureContrastOnDark(rgb: RGB, target = 3.2): RGB {
   let c = rgb;
-  for (let i = 0; i < 20 && contrastRatio(rgbToHex(c), "#101a2e") < target; i++) c = mix(c, WHITE, 0.12);
+  for (let i = 0; i < 20 && contrastRatio(rgbToHex(c), "#111614") < target; i++) c = mix(c, WHITE, 0.12);
   return c;
 }
 
@@ -61,8 +61,8 @@ export function isValidHex(v: string | null | undefined): v is string {
  * on the colours a restaurant picks.
  */
 export function brandVars(brand: string, accent: string): Record<string, string> {
-  const raw = hexToRgb(isValidHex(brand) ? brand : "#38BDF8");
-  const rawAccent = hexToRgb(isValidHex(accent) ? accent : "#A78BFA");
+  const raw = hexToRgb(isValidHex(brand) ? brand : "#34D399");
+  const rawAccent = hexToRgb(isValidHex(accent) ? accent : "#2DD4BF");
   const b = rgbToHex(ensureContrastOnDark(raw));
   const a = rgbToHex(ensureContrastOnDark(rawAccent));
   const [r, g, bl] = hexToRgb(b);
@@ -82,10 +82,10 @@ export function brandVars(brand: string, accent: string): Record<string, string>
 }
 
 export const BRAND_PRESETS = [
-  { name: "Ocean", brand: "#38BDF8", accent: "#A78BFA" },
-  { name: "Aurora", brand: "#2DD4BF", accent: "#818CF8" },
+  { name: "CheffeData", brand: "#34D399", accent: "#2DD4BF" },
+  { name: "Lima", brand: "#A3E635", accent: "#34D399" },
+  { name: "Oceano", brand: "#38BDF8", accent: "#A78BFA" },
+  { name: "Brasa", brand: "#FB923C", accent: "#F472B6" },
   { name: "Neon", brand: "#A78BFA", accent: "#F472B6" },
-  { name: "Sunset", brand: "#FB923C", accent: "#F472B6" },
-  { name: "Emerald", brand: "#34D399", accent: "#38BDF8" },
-  { name: "Gold", brand: "#FBBF24", accent: "#FB7185" },
+  { name: "Ouro", brand: "#FBBF24", accent: "#FB7185" },
 ];

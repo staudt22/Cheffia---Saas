@@ -79,7 +79,7 @@ const DB_MESSAGES: [RegExp, string][] = [
   [/^Cross-restaurant reference rejected/, "Esse item pertence a outro restaurante."],
   [/^restaurant_id cannot be changed/, "Não é possível mover dados entre restaurantes."],
   [/^Inventory item does not belong/, "Esse item de estoque pertence a outro restaurante."],
-  [/^Billing fields can only be changed/, "O plano só pode ser alterado pela equipe do Forkly."],
+  [/^Billing fields can only be changed/, "O plano só pode ser alterado pela equipe do CheffeData."],
   [/^Demo data can only be added/, "Dados de exemplo só podem ser criados num restaurante de demonstração."],
   [/^Only the owner can seed demo data/, "Só o dono pode criar dados de exemplo."],
   [/^This demo workspace already has data/, "Este restaurante de demonstração já tem dados."],

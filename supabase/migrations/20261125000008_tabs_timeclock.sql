@@ -1,10 +1,10 @@
 -- =============================================================================
--- FORKLY — 0008: comandas (tabs), time clock, staff performance, plan limits,
+-- CHEFFEDATA — 0008: comandas (tabs), time clock, staff performance, plan limits,
 -- green brand defaults.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Brand: green is Forkly's default colour now.
+-- Brand: green is CheffeData's default colour now.
 -- -----------------------------------------------------------------------------
 alter table public.restaurants alter column brand_color set default '#34D399';
 alter table public.restaurants alter column accent_color set default '#2DD4BF';
@@ -66,7 +66,7 @@ begin
     or new.order_counter is distinct from old.order_counter
     or new.tab_counter is distinct from old.tab_counter
   ) then
-    raise exception 'Billing fields can only be changed by Forkly' using errcode = '42501';
+    raise exception 'Billing fields can only be changed by CheffeData' using errcode = '42501';
   end if;
   return new;
 end $$;

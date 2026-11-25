@@ -16,8 +16,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const shell = { id: r.id, name: r.name, logo_url: r.logo_url, is_demo: r.is_demo };
   const memberships = ws.memberships.map((m) => ({ restaurant_id: m.restaurant_id, name: m.name, logo_url: m.logo_url }));
 
+  const vars = brandVars(r.brand_color, r.accent_color);
+  // Also set on :root so dialogs and menus rendered in portals use the restaurant's colours.
+  const rootCss = `:root{${Object.entries(vars).map(([k, v]) => `${k}:${v}`).join(";")}}`;
+
   return (
-    <div style={brandVars(r.brand_color, r.accent_color) as React.CSSProperties} className="app-glow flex min-h-dvh">
+    <div style={vars as React.CSSProperties} className="app-glow flex min-h-dvh">
+      <style>{rootCss}</style>
       <Sidebar restaurant={shell} memberships={memberships} permissions={ws.permissions} />
       <div className="flex min-w-0 flex-1 flex-col">
         {r.is_demo && (

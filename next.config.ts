@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Forkly is an authenticated, per-tenant app: every workspace page depends on
+  // CheffeData is an authenticated, per-tenant app: every workspace page depends on
   // the signed-in user's cookies, so pages render dynamically per request.
   cacheComponents: false,
   poweredByHeader: false,

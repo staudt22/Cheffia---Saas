@@ -1,7 +1,7 @@
 /**
  * Receipt extraction (OCR / AI) — architecture placeholder.
  *
- * Not implemented yet. Forkly does NOT pretend to read receipts: uploads are
+ * Not implemented yet. CheffeData does NOT pretend to read receipts: uploads are
  * stored as attachments only. When an extractor is added it should implement
  * this interface, run server-side only, and return suggestions the user
  * confirms before anything is saved.
