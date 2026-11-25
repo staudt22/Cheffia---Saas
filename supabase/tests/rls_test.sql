@@ -185,6 +185,8 @@ reset role;
 update public.restaurants set plan = 'essencial' where id = :'r1';
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 select pg_temp.check(pg_temp.rejects(format($q$insert into public.invitations (restaurant_id, email, role) values (%L, 'x@one.test', 'employee')$q$, :'r1')), 'Essencial plan limits the team to 3 users');
+reset role;
+update public.restaurants set plan = 'trial' where id = :'r1';
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 select pg_temp.check(exists (select 1 from public.menu_items where name = 'Burger Clássico' and price = 34.90), 'demo data is in Portuguese with BRL prices');
 select pg_temp.check((select count(*) from public.audit_logs where summary like 'Novo pedido%') > 0, 'activity log is in Portuguese');
@@ -205,6 +207,46 @@ select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
 delete from public.custom_roles where id = :'cr';
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
 select pg_temp.check((select count(*) from public.orders) = 1, 'deleting a custom role falls back to the base role');
+reset role;
+
+-- ------------------------------------------------------------ comandas & time clock
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+insert into public.tabs (restaurant_id, label, customer_name) values (:'r1', 'Mesa 7', 'João') returning id as tab1, number as tabnum \gset
+select pg_temp.check(:tabnum = 1, 'comandas are numbered per restaurant');
+select public.add_to_tab(:'tab1', format('[{"menu_item_id": "%s", "quantity": 1}]', :'a_steak')::jsonb) as tord1 \gset
+select public.add_to_tab(:'tab1', format('[{"menu_item_id": "%s", "quantity": 2}]', :'a_steak')::jsonb);
+select pg_temp.check((select count(*) from public.orders where tab_id = :'tab1' and table_label = 'Mesa 7') = 2, 'items sent from a comanda become kitchen orders for that table');
+select public.close_tab(:'tab1', 'pix', 10);
+select pg_temp.check((select status = 'closed' and subtotal = 75 and service_fee = 7.5 and total = 82.5 from public.tabs where id = :'tab1'), 'closing a comanda totals orders plus 10% service fee');
+select pg_temp.check((select count(*) from public.orders where tab_id = :'tab1' and status = 'completed') = 2, 'closing completes all orders of the comanda');
+select pg_temp.check(exists (select 1 from public.revenue_records where description like 'Taxa de serviço — Mesa 7%' and amount = 7.5), 'service fee recorded as revenue');
+select pg_temp.check(pg_temp.rejects(format($q$select public.add_to_tab(%L, '[]'::jsonb)$q$, :'tab1')), 'closed comandas cannot receive items');
+select pg_temp.check((select count(*) from public.staff_performance(:'r1', now() - interval '1 day', now() + interval '1 minute') where orders >= 2) >= 1, 'staff performance counts orders per person');
+
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
+select (public.clock_toggle(:'r1') ->> 'status') as ck1 \gset
+select pg_temp.check(:'ck1' = 'in', 'clock_toggle clocks in');
+select pg_temp.check((select count(*) from public.time_entries) = 1, 'staff can see their own time entries');
+select (public.clock_toggle(:'r1') ->> 'status') as ck2 \gset
+select pg_temp.check(:'ck2' = 'out', 'clock_toggle clocks out');
+select pg_temp.check(pg_temp.rejects(format($q$select public.clock_toggle(%L)$q$, :'r2')), 'cannot clock in at another restaurant');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+select pg_temp.check((select count(*) from public.tabs) = 0, 'comandas are isolated per restaurant');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+select pg_temp.check((select count(*) from public.team_hours(:'r1', now() - interval '1 day', now() + interval '1 minute') where entries >= 1) >= 1, 'owner sees team hours');
+
+-- plan gates
+reset role;
+update public.restaurants set plan = 'essencial' where id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+insert into public.integrations (restaurant_id, provider, status) values (:'r1', 'ifood', 'demo');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.integrations (restaurant_id, provider, status) values (%L, 'ubereats', 'demo')$q$, :'r1')), 'Essencial plan allows one integration');
+select pg_temp.check(pg_temp.rejects(format($q$insert into public.custom_roles (restaurant_id, name) values (%L, 'Garçom')$q$, :'r1')), 'Essencial plan has no custom roles');
+reset role;
+update public.restaurants set plan = 'profissional' where id = :'r1';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+insert into public.integrations (restaurant_id, provider, status) values (:'r1', 'ubereats', 'demo');
+select pg_temp.check((select count(*) from public.integrations where restaurant_id = :'r1') = 2, 'Profissional plan allows unlimited integrations');
 reset role;
 
 -- ------------------------------------------------------------ deleting a restaurant
