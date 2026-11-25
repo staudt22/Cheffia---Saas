@@ -34,7 +34,7 @@ export interface DashboardData {
   inventoryAlerts: { id: string; name: string; quantity: Num; min_quantity: Num; unit: string; expires_on: string | null; kind: "out" | "low" | "expiring" }[];
   activity: { id: Num; summary: string; action: string; created_at: string }[];
   transactions: { id: string; kind: "revenue" | "expense"; description: string; amount: Num; date: string; category: string }[];
-  shifts: { id: string; employee: string; position: string | null; starts_at: string; ends_at: string }[];
+  shifts: { id: string; employee: string; position: string | null; starts_at: string; ends_at: string; live: boolean }[];
   alerts: Alert[];
   insights: { id: string; text: string; tone: "good" | "bad" | "neutral" }[];
   hasAnyData: boolean;
@@ -268,9 +268,17 @@ export async function loadDashboardData(ws: Workspace, range: DateRange): Promis
     transactions,
     shifts: ((shifts.data as Record<string, unknown>[] | null) ?? []).map((s) => {
       const e = s.employees as { full_name: string; position: string | null } | null;
-      return { id: s.id as string, employee: e?.full_name ?? "—", position: (s.position as string) ?? e?.position ?? null, starts_at: s.starts_at as string, ends_at: s.ends_at as string };
+      const nowMs = Date.now();
+      return { id: s.id as string, employee: e?.full_name ?? "—", position: (s.position as string) ?? e?.position ?? null, starts_at: s.starts_at as string, ends_at: s.ends_at as string,
+        live: new Date(s.starts_at as string).getTime() <= nowMs && new Date(s.ends_at as string).getTime() > nowMs };
     }),
-    alerts: alerts.sort((a, b) => ["critical", "warning", "info"].indexOf(a.severity) - ["critical", "warning", "info"].indexOf(b.severity)),
+    alerts: alerts.filter((a) => {
+      const prefs = ws.settings.notifications ?? {};
+      if (["out", "low", "exp"].includes(a.id)) return prefs.low_stock !== false;
+      if (a.id.startsWith("bill-")) return prefs.upcoming_bills !== false;
+      if (a.id.startsWith("unusual-")) return prefs.unusual_expenses !== false;
+      return true;
+    }).sort((a, b) => ["critical", "warning", "info"].indexOf(a.severity) - ["critical", "warning", "info"].indexOf(b.severity)),
     insights,
     hasAnyData: totals.revenue > 0 || totals.expenses > 0 || totals.orders > 0 || previous.revenue > 0 || productRows.length > 0,
   };

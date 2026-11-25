@@ -76,6 +76,8 @@ export function OnboardingWizard({
   useEffect(() => {
     const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const list = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [browserTz];
+    // Browser-only values (time zones, locale) are read after mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimezones(list.includes("UTC") ? list : ["UTC", ...list]);
     setRegion((r) => (r.timezone === "UTC" && browserTz ? { ...r, timezone: browserTz } : r));
     const lang = navigator.language;

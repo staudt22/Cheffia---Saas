@@ -47,19 +47,19 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
 }) {
   const { live } = useRealtimeOrders(restaurantId, 20000);
   const now = useNow();
-  const [optimistic, setOptimistic] = useState<Record<string, OrderStatus>>({});
+  const [optimistic, setOptimistic] = useState<Record<string, { from: OrderStatus; to: OrderStatus }>>({});
   const [sound, setSound] = useState(false);
   const [full, setFull] = useState(false);
   const [, start] = useTransition();
   const [rejecting, setRejecting] = useState<string | null>(null);
   const seen = useRef<Set<string> | null>(null);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { try { setSound(localStorage.getItem("forkly.kds.sound") === "on"); } catch {} }, []);
   useEffect(() => {
     const ids = new Set(orders.filter((o) => o.status === "new").map((o) => o.id));
     if (seen.current && sound && [...ids].some((id) => !seen.current!.has(id))) chime();
     seen.current = ids;
-    setOptimistic({});
   }, [orders, sound]);
   useEffect(() => {
     const onFs = () => setFull(Boolean(document.fullscreenElement));
@@ -67,10 +67,10 @@ export function KitchenDisplay({ orders, lastCompleted, restaurantId, locale, ti
     return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
 
-  const view = useMemo(() => orders.map((o) => ({ ...o, status: optimistic[o.id] ?? o.status })).filter((o) => o.status !== "completed" && o.status !== "cancelled"), [orders, optimistic]);
+  const view = useMemo(() => orders.map((o) => ({ ...o, status: optimistic[o.id]?.from === o.status ? optimistic[o.id]!.to : o.status })).filter((o) => o.status !== "completed" && o.status !== "cancelled"), [orders, optimistic]);
 
   function move(order: Order, status: OrderStatus) {
-    setOptimistic((s) => ({ ...s, [order.id]: status }));
+    setOptimistic((s) => ({ ...s, [order.id]: { from: order.status, to: status } }));
     start(async () => {
       const r = await updateOrderStatusAction(order.id, status);
       if (!r.ok) { toast.error(r.error); setOptimistic((s) => { const n = { ...s }; delete n[order.id]; return n; }); }

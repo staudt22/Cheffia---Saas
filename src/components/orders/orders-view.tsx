@@ -1,8 +1,8 @@
 "use client";
 
+import { RelativeTime } from "@/components/ui/relative-time";
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { formatDistanceToNowStrict } from "date-fns";
 import { ChefHat, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +40,10 @@ export function OrdersView({
 
   function setParam(patch: Record<string, string | undefined>) {
     const next = new URLSearchParams(params);
-    for (const [k, v] of Object.entries(patch)) (v ? next.set(k, v) : next.delete(k));
+    for (const [k, v] of Object.entries(patch)) {
+      if (v) next.set(k, v);
+      else next.delete(k);
+    }
     next.delete("order");
     start(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));
   }
@@ -90,7 +93,7 @@ export function OrdersView({
                     <Td className="font-semibold tabular">#{o.number}</Td>
                     <Td className="whitespace-nowrap text-ink-2">
                       {formatTime(o.created_at, locale, timezone)}
-                      <span className="ml-1.5 text-xs text-ink-3">{tab === "active" ? formatDistanceToNowStrict(new Date(o.created_at)) : new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: timezone }).format(new Date(o.created_at))}</span>
+                      <span className="ml-1.5 text-xs text-ink-3">{tab === "active" ? <RelativeTime date={o.created_at} /> : new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: timezone }).format(new Date(o.created_at))}</span>
                     </Td>
                     <Td className="max-w-40 truncate">{o.customer_name ?? o.table_label ?? <span className="text-ink-3">{FULFILLMENT_LABEL[o.fulfillment]}</span>}</Td>
                     <Td><SourceBadge source={o.source} simulated={o.is_simulated} /></Td>

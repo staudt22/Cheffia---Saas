@@ -10,7 +10,7 @@ type Point = { label: string; revenue: number; expenses?: number; orders?: numbe
 function useMoney(currency: string, locale: string) {
   return {
     full: (v: number) => formatMoney(v, currency, locale),
-    axis: (v: number) => formatMoney(v, currency, locale, true).replace(/[.,]00(?=\D*$)/, ""),
+    axis: (v: number) => new Intl.NumberFormat(locale, { style: "currency", currency, notation: "compact", maximumFractionDigits: 1 }).format(v),
   };
 }
 
@@ -39,19 +39,19 @@ export function RevenueChart({ data, kind, currency, locale, height = 240 }: { d
   const common = { data, margin: { top: 8, right: 4, left: 0, bottom: 0 } };
   const grid = <CartesianGrid vertical={false} strokeDasharray="0" />;
   const x = <XAxis dataKey="label" {...axisProps} />;
-  const y = <YAxis {...axisProps} width={56} tickFormatter={m.axis} />;
+  const y = <YAxis {...axisProps} width={64} tickFormatter={m.axis} />;
   const tip = <Tooltip cursor={{ stroke: "var(--line-strong)", fill: "var(--surface-3)" }} content={<ChartTooltip money={m.full} />} />;
   return (
     <ResponsiveContainer width="100%" height={height}>
       {kind === "bar" ? (
         <BarChart {...common} barCategoryGap="22%">
           {grid}{x}{y}{tip}
-          <Bar dataKey="revenue" name="Revenue" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+          <Bar dataKey="revenue" name="Revenue" fill="var(--brand)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={32} />
         </BarChart>
       ) : kind === "line" ? (
         <LineChart {...common}>
           {grid}{x}{y}{tip}
-          <Line dataKey="revenue" name="Revenue" stroke="var(--brand)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="revenue" name="Revenue" stroke="var(--brand)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </LineChart>
       ) : (
         <AreaChart {...common}>
@@ -62,7 +62,7 @@ export function RevenueChart({ data, kind, currency, locale, height = 240 }: { d
             </linearGradient>
           </defs>
           {grid}{x}{y}{tip}
-          <Area dataKey="revenue" name="Revenue" stroke="var(--brand)" strokeWidth={2} fill="url(#rev-fill)" activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Area dataKey="revenue" animationDuration={500} name="Revenue" stroke="var(--brand)" strokeWidth={2} fill="url(#rev-fill)" activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </AreaChart>
       )}
     </ResponsiveContainer>
@@ -80,21 +80,21 @@ export function RevenueExpenseChart({ data, kind, currency, locale, height = 260
         <BarChart {...common} barGap={2} barCategoryGap="20%">
           <CartesianGrid vertical={false} />
           <XAxis dataKey="label" {...axisProps} />
-          <YAxis {...axisProps} width={56} tickFormatter={m.axis} />
+          <YAxis {...axisProps} width={64} tickFormatter={m.axis} />
           <Tooltip cursor={{ fill: "var(--surface-3)" }} content={<ChartTooltip money={m.full} />} />
           {legend}
-          <Bar dataKey="revenue" name="Revenue" fill="var(--series-1)" radius={[4, 4, 0, 0]} maxBarSize={18} />
-          <Bar dataKey="expenses" name="Expenses" fill="var(--series-2)" radius={[4, 4, 0, 0]} maxBarSize={18} />
+          <Bar dataKey="revenue" name="Revenue" fill="var(--series-1)" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={18} />
+          <Bar dataKey="expenses" animationDuration={500} name="Expenses" fill="var(--series-2)" radius={[4, 4, 0, 0]} maxBarSize={18} />
         </BarChart>
       ) : (
         <LineChart {...common}>
           <CartesianGrid vertical={false} />
           <XAxis dataKey="label" {...axisProps} />
-          <YAxis {...axisProps} width={56} tickFormatter={m.axis} />
+          <YAxis {...axisProps} width={64} tickFormatter={m.axis} />
           <Tooltip cursor={{ stroke: "var(--line-strong)" }} content={<ChartTooltip money={m.full} />} />
           {legend}
-          <Line dataKey="revenue" name="Revenue" stroke="var(--series-1)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
-          <Line dataKey="expenses" name="Expenses" stroke="var(--series-2)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="revenue" name="Revenue" stroke="var(--series-1)" animationDuration={500} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
+          <Line dataKey="expenses" animationDuration={500} name="Expenses" stroke="var(--series-2)" strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--surface)" }} />
         </LineChart>
       )}
     </ResponsiveContainer>
@@ -129,11 +129,11 @@ export function SimpleBars({ data, color = "var(--brand)", height = 200, format 
       <BarChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }} barCategoryGap="22%">
         <CartesianGrid vertical={false} />
         <XAxis dataKey="label" {...axisProps} />
-        <YAxis {...axisProps} width={48} tickFormatter={(v) => format(v)} />
+        <YAxis {...axisProps} width={56} tickFormatter={(v) => format(v)} />
         <Tooltip cursor={{ fill: "var(--surface-3)" }} content={({ active, payload, label }) => active && payload?.length ? (
           <div className="rounded-md bg-surface px-3 py-2 text-xs shadow-pop"><p className="font-medium">{label}</p><p className="text-ink-2 tabular">{format(Number(payload[0]!.value))}</p></div>
         ) : null} />
-        <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={32}>
+        <Bar dataKey="value" animationDuration={500} radius={[4, 4, 0, 0]} maxBarSize={32}>
           {data.map((_, i) => <Cell key={i} fill={color} />)}
         </Bar>
       </BarChart>

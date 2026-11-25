@@ -1,7 +1,7 @@
 "use client";
 
+import { RelativeTime } from "@/components/ui/relative-time";
 import { useMemo, useState } from "react";
-import { formatDistanceToNowStrict } from "date-fns";
 import { AlertTriangle, ArrowDownToLine, CalendarClock, History, Package, PackageX, Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -144,7 +144,7 @@ export function InventoryView({ items, suppliers, movements, today, currency, lo
               <tbody>
                 {movements.map((m) => (
                   <Tr key={m.id}>
-                    <Td className="whitespace-nowrap text-ink-2" title={new Date(m.created_at).toLocaleString(locale, { timeZone: timezone })}>{formatDistanceToNowStrict(new Date(m.created_at), { addSuffix: true })}</Td>
+                    <Td className="whitespace-nowrap text-ink-2" title={new Date(m.created_at).toLocaleString(locale, { timeZone: timezone })}><RelativeTime date={m.created_at} suffix /></Td>
                     <Td className="font-medium">{m.item}</Td>
                     <Td><Badge tone={m.type === "waste" ? "bad" : m.type === "purchase" || m.type === "po_receipt" ? "good" : "neutral"}>{MOVEMENT_LABEL[m.type] ?? m.type}</Badge></Td>
                     <Td className={cn("text-right font-medium tabular", m.quantity_delta > 0 ? "text-good" : "text-ink")}>{m.quantity_delta > 0 ? "+" : ""}{formatNumber(m.quantity_delta, locale, 3)} {m.unit}</Td>

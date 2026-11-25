@@ -24,6 +24,14 @@ export const ROLES: { key: AppRole; label: string; description: string }[] = [
 
 export const roleLabel = (role: AppRole) => ROLES.find((r) => r.key === role)?.label ?? role;
 
+/** First page a member can open — kitchen staff land on the kitchen display. */
+export function homePath(p: PermissionMap): string {
+  if (p.overview.view) return "/dashboard";
+  if (p.orders.view) return "/orders/kitchen";
+  const order: [keyof PermissionMap, string][] = [["finances", "/finances"], ["inventory", "/inventory"], ["menu", "/menu"], ["integrations", "/integrations"], ["settings", "/settings"]];
+  return order.find(([s]) => p[s]?.view)?.[1] ?? "/settings?tab=security";
+}
+
 export type PermissionMap = Record<Section, { view: boolean; edit: boolean }>;
 
 export function buildPermissionMap(

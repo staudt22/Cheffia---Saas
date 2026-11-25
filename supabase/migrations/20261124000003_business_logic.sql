@@ -12,12 +12,13 @@ language sql immutable as $$
     {"id":"kpi-expenses","type":"kpi_expenses","size":"sm"},
     {"id":"kpi-profit","type":"kpi_profit","size":"sm"},
     {"id":"kpi-orders","type":"kpi_orders","size":"sm"},
-    {"id":"revenue-chart","type":"revenue_chart","size":"lg","config":{"chart":"area"}},
-    {"id":"expense-breakdown","type":"expense_breakdown","size":"md","config":{"chart":"bar"}},
+    {"id":"revenue-chart","type":"revenue_chart","size":"xl","config":{"chart":"area"}},
+    {"id":"expense-breakdown","type":"expense_breakdown","size":"md"},
     {"id":"popular-products","type":"popular_products","size":"md"},
     {"id":"alerts","type":"alerts","size":"md"},
     {"id":"recent-activity","type":"recent_activity","size":"md"},
-    {"id":"ai-insights","type":"ai_insights","size":"md"}
+    {"id":"ai-insights","type":"ai_insights","size":"md"},
+    {"id":"recent-transactions","type":"recent_transactions","size":"md"}
   ]'::jsonb
 $$;
 
@@ -552,7 +553,12 @@ begin
     end if;
   else
     v_action := tg_table_name || '.' || lower(tg_op);
-    v_summary := initcap(replace(tg_table_name, '_', ' ')) || ' ' || lower(tg_op) || 'd'
+    v_summary := case tg_table_name
+                   when 'menu_items' then 'Menu item'
+                   when 'suppliers' then 'Supplier'
+                   when 'revenue_records' then 'Revenue'
+                   else initcap(replace(rtrim(tg_table_name, 's'), '_', ' ')) end
+                 || case tg_op when 'INSERT' then ' added' when 'DELETE' then ' removed' else ' updated' end
                  || coalesce(': ' || coalesce(rec ->> 'name', rec ->> 'full_name', rec ->> 'description'), '');
   end if;
 

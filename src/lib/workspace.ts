@@ -3,7 +3,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { buildPermissionMap, type PermissionMap } from "@/lib/permissions";
+import { buildPermissionMap, homePath, type PermissionMap } from "@/lib/permissions";
 import type { AppRole, Restaurant, RestaurantSettings, Section } from "@/lib/types";
 
 export const ACTIVE_RESTAURANT_COOKIE = "forkly_rid";
@@ -71,7 +71,10 @@ export async function requireWorkspace(section?: Section, action: "view" | "edit
   if (!user) redirect("/login");
   const ws = await getWorkspace();
   if (!ws) redirect("/onboarding");
-  if (section && !ws.permissions[section][action]) redirect("/dashboard?denied=" + section);
+  if (section && !ws.permissions[section][action]) {
+    const home = homePath(ws.permissions);
+    redirect(home === "/dashboard" ? `/dashboard?denied=${section}` : home + (home.includes("?") ? "&" : "?") + `denied=${section}`);
+  }
   return ws;
 }
 

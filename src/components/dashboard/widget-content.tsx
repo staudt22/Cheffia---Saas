@@ -1,8 +1,8 @@
 "use client";
 
+import { RelativeTime } from "@/components/ui/relative-time";
 import Link from "next/link";
 import { useState } from "react";
-import { formatDistanceToNowStrict } from "date-fns";
 import {
   AlertTriangle, ArrowDownRight, ArrowUpRight, CalendarClock, ChefHat, CircleAlert, Info, Lightbulb, Minus, PackageX, Receipt, Sparkles, TrendingDown, TrendingUp,
 } from "lucide-react";
@@ -45,10 +45,10 @@ function Kpi({ title, value, current, previous, spark, invert, prevLabel, ctx }:
       <p className="text-[13px] font-medium text-ink-3">{title}</p>
       <div className={cn("flex items-end justify-between gap-3", ctx.compact ? "mt-1.5" : "mt-3")}>
         <div className="min-w-0">
-          <p className={cn("truncate font-semibold tracking-tight text-ink tabular", ctx.compact ? "text-xl" : "text-[26px] leading-8")}>{value}</p>
+          <p className={cn("font-semibold tracking-tight text-ink tabular", ctx.compact ? "text-xl" : "text-[26px] leading-8")}>{value}</p>
           <div className="mt-1"><Delta current={current} previous={previous} invert={invert} label={prevLabel} /></div>
         </div>
-        {spark && <Sparkline values={spark} className="h-9 w-24 shrink-0" />}
+        {spark && <Sparkline values={spark} className="hidden h-9 w-20 shrink sm:block" />}
       </div>
     </div>
   );
@@ -61,18 +61,19 @@ function ListEmpty({ icon, title, text, href, cta }: { icon: React.ReactNode; ti
 export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstance; ctx: Ctx; onConfig?: (c: WidgetInstance["config"]) => void }) {
   const { data, currency, locale } = ctx;
   const money = (v: number, compact = false) => formatMoney(v, currency, locale, compact);
-  const prevLabel = data.range.key === "today" ? "same day last week" : "previous period";
+  // KPI tiles: drop cents on large values so the number never truncates.
+  const kpiMoney = (v: number) => (Math.abs(v) >= 1000 ? new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(v) : money(v));
   const spark = (key: "revenue" | "expenses" | "orders") => data.daily.map((d) => Number(d[key] ?? 0));
 
   switch (widget.type) {
     case "kpi_revenue":
-      return <Kpi ctx={ctx} title="Revenue" value={money(data.totals.revenue)} current={data.totals.revenue} previous={data.previous.revenue} spark={spark("revenue")} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} title="Revenue" value={kpiMoney(data.totals.revenue)} current={data.totals.revenue} previous={data.previous.revenue} spark={spark("revenue")} prevLabel="previous period" />;
     case "kpi_expenses":
-      return <Kpi ctx={ctx} title="Expenses" value={money(data.totals.expenses)} current={data.totals.expenses} previous={data.previous.expenses} spark={spark("expenses")} invert prevLabel="previous period" />;
+      return <Kpi ctx={ctx} title="Expenses" value={kpiMoney(data.totals.expenses)} current={data.totals.expenses} previous={data.previous.expenses} spark={spark("expenses")} invert prevLabel="previous period" />;
     case "kpi_profit": {
       const p = data.totals.revenue - data.totals.expenses, pp = data.previous.revenue - data.previous.expenses;
       const profitSpark = data.daily.map((d) => d.revenue - (d.expenses ?? 0));
-      return <Kpi ctx={ctx} title="Estimated profit" value={money(p)} current={p} previous={pp} spark={profitSpark} prevLabel="previous period" />;
+      return <Kpi ctx={ctx} title="Estimated profit" value={kpiMoney(p)} current={p} previous={pp} spark={profitSpark} prevLabel="previous period" />;
     }
     case "kpi_orders":
       return <Kpi ctx={ctx} title="Orders" value={formatNumber(data.totals.orders, locale)} current={data.totals.orders} previous={data.previous.orders} spark={spark("orders")} prevLabel="previous period" />;
@@ -82,11 +83,11 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
       return <Kpi ctx={ctx} title="Average order value" value={money(a)} current={a} previous={b} prevLabel="previous period" />;
     }
     case "kpi_today_revenue":
-      return <Kpi ctx={ctx} title="Today's revenue" value={money(data.quick.today)} current={data.quick.today} previous={data.quick.todayPrev} prevLabel="same day last week" />;
+      return <Kpi ctx={ctx} title="Today's revenue" value={kpiMoney(data.quick.today)} current={data.quick.today} previous={data.quick.todayPrev} prevLabel="same day last week" />;
     case "kpi_week_revenue":
-      return <Kpi ctx={ctx} title="Weekly revenue" value={money(data.quick.week)} current={data.quick.week} previous={data.quick.weekPrev} prevLabel="previous 7 days" />;
+      return <Kpi ctx={ctx} title="Weekly revenue" value={kpiMoney(data.quick.week)} current={data.quick.week} previous={data.quick.weekPrev} prevLabel="previous 7 days" />;
     case "kpi_month_revenue":
-      return <Kpi ctx={ctx} title="Monthly revenue" value={money(data.quick.month)} current={data.quick.month} previous={data.quick.monthPrev} prevLabel="same point last month" />;
+      return <Kpi ctx={ctx} title="Monthly revenue" value={kpiMoney(data.quick.month)} current={data.quick.month} previous={data.quick.monthPrev} prevLabel="same point last month" />;
 
     case "revenue_chart":
       return <RevenueWidget widget={widget} ctx={ctx} onConfig={onConfig} />;
@@ -158,7 +159,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
                       <span className="w-12 text-sm font-semibold tabular">#{o.number}</span>
                       <span className="min-w-0 flex-1"><span className="block truncate text-sm">{o.customer_name ?? o.table_label ?? `${o.items} item${o.items === 1 ? "" : "s"}`}</span><SourceBadge source={o.source} simulated={o.is_simulated} /></span>
                       <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
-                      <span className="w-14 text-right text-xs text-ink-3 tabular">{formatDistanceToNowStrict(new Date(o.created_at))}</span>
+                      <span className="w-14 text-right text-xs text-ink-3 tabular"><RelativeTime date={o.created_at} /></span>
                     </Link>
                   </li>
                 ))}
@@ -223,7 +224,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
                   <li key={a.id} className="relative flex gap-3 pl-4">
                     <span className={cn("absolute left-0 top-1.5 size-[7px] rounded-full ring-2 ring-surface", a.action.startsWith("order") ? "bg-info" : a.action.startsWith("expense") ? "bg-accent" : a.action.startsWith("stock") ? "bg-warn" : "bg-ink-3")} aria-hidden />
                     <span className="min-w-0 flex-1 text-sm leading-5">{a.summary}</span>
-                    <span className="shrink-0 text-xs text-ink-3">{formatDistanceToNowStrict(new Date(a.created_at), { addSuffix: false })}</span>
+                    <span className="shrink-0 text-xs text-ink-3"><RelativeTime date={a.created_at} /></span>
                   </li>
                 ))}
               </ol>
@@ -262,7 +263,7 @@ export function WidgetContent({ widget, ctx, onConfig }: { widget: WidgetInstanc
             {data.shifts.length ? (
               <ul>
                 {data.shifts.map((s) => {
-                  const now = Date.now(), live = new Date(s.starts_at).getTime() <= now && new Date(s.ends_at).getTime() > now;
+                  const live = s.live;
                   return (
                     <li key={s.id} className="flex items-center gap-3 border-t border-line py-2 first:border-0">
                       <span className="min-w-0 flex-1"><span className="block truncate text-sm">{s.employee}</span><span className="block text-xs text-ink-3">{s.position ?? "Shift"}</span></span>

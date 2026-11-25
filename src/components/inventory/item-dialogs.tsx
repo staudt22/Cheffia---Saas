@@ -1,7 +1,7 @@
 "use client";
 
+import { RelativeTime } from "@/components/ui/relative-time";
 import { useState, useTransition } from "react";
-import { formatDistanceToNowStrict } from "date-fns";
 import { ClipboardCheck, PackageMinus, PackagePlus, Pencil, Trash, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, SheetContent } from "@/components/ui/dialog";
@@ -61,7 +61,7 @@ export function ItemSheet({ item, movements, status, suppliers, currency, locale
             {movements.slice(0, 30).map((m) => (
               <li key={m.id} className="flex items-center gap-3 py-2 text-sm">
                 <span className="min-w-0 flex-1"><span className="block">{MOVEMENT_LABEL[m.type] ?? m.type}</span><span className="block truncate text-xs text-ink-3">{m.reason ?? ""}</span></span>
-                <span className="text-xs text-ink-3">{formatDistanceToNowStrict(new Date(m.created_at), { addSuffix: true })}</span>
+                <span className="text-xs text-ink-3"><RelativeTime date={m.created_at} suffix /></span>
                 <span className={cn("w-20 text-right font-medium tabular", m.quantity_delta > 0 ? "text-good" : "")}>{m.quantity_delta > 0 ? "+" : ""}{formatNumber(m.quantity_delta, locale, 3)}</span>
               </li>
             ))}

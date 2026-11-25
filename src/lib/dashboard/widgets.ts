@@ -57,8 +57,8 @@ export const DASHBOARD_PRESETS = {
     description: "Money, orders and alerts — the full picture.",
     widgets: [
       w("kpi_revenue"), w("kpi_expenses"), w("kpi_profit"), w("kpi_orders"),
-      w("revenue_chart", "lg", { chart: "area" }), w("expense_breakdown", "md"),
-      w("popular_products"), w("alerts"), w("recent_activity"), w("ai_insights"),
+      w("revenue_chart", "xl", { chart: "area" }), w("expense_breakdown", "md"),
+      w("popular_products"), w("alerts"), w("recent_activity"), w("ai_insights"), w("recent_transactions"),
     ],
   },
   operations: {
@@ -66,7 +66,7 @@ export const DASHBOARD_PRESETS = {
     description: "Live orders, stock and the team on shift.",
     widgets: [
       w("kpi_orders"), w("kpi_aov"), w("kpi_today_revenue"), w("kpi_week_revenue"),
-      w("order_activity", "lg"), w("inventory_alerts"), w("upcoming_shifts"), w("popular_products"), w("recent_activity"),
+      w("order_activity", "md"), w("inventory_alerts"), w("popular_products"), w("upcoming_shifts"), w("recent_activity"), w("alerts"),
     ],
   },
   finance: {

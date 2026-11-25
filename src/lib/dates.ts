@@ -102,3 +102,8 @@ export function formatTime(value: string | Date, locale = "en-US", timeZone?: st
 export function minutesSince(value: string) {
   return Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 60000));
 }
+
+/** ISO timestamp for `hours` ago (server-side helper). */
+export function isoHoursAgo(hours: number) {
+  return new Date(Date.now() - hours * 3600_000).toISOString();
+}

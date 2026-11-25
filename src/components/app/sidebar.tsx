@@ -45,6 +45,8 @@ export function NavLinks({ permissions, collapsed, onNavigate }: { permissions: 
 export function Sidebar({ restaurant, memberships, permissions }: { restaurant: ShellRestaurant; memberships: ShellMembership[]; permissions: PermissionMap }) {
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
+    // Client-only preference; read after mount to keep hydration consistent.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     try { setCollapsed(localStorage.getItem("forkly.sidebar") === "collapsed"); } catch {}
   }, []);
   function toggle() {
