@@ -1,0 +1,133 @@
+{
+  "id": "um-milhao",
+  "title": "E se todo brasileiro ganhasse R$ 1 milhão amanhã?",
+  "format": "piloto-60s",
+  "language": "pt-BR",
+  "defaults": { "pause": 0.2, "shotPadStart": 0.2, "shotPadEnd": 0.35 },
+  "tail": 1.2,
+  "shots": [
+    {
+      "id": "s01", "beat": "HOOK", "scene": "bedroom", "transition": "cut", "ambience": "birds", "music": "mystery",
+      "padStart": 0.9,
+      "lines": [
+        { "id": "l01", "speaker": "narrador", "text": "Você acorda numa terça-feira qualquer com o celular vibrando sem parar." }
+      ],
+      "sfx": [
+        { "name": "phone_buzz", "at": 0.1, "gain": 2 },
+        { "name": "phone_buzz", "at": "l01+1.3", "gain": 0 },
+        { "name": "phone_buzz", "at": "l01.end-0.6", "gain": 0 },
+        { "name": "whoosh", "at": "end-0.25", "gain": -2 }
+      ]
+    },
+    {
+      "id": "s02", "beat": "HOOK", "scene": "phone-ui", "transition": "whip", "ambience": "room",
+      "lines": [
+        { "id": "l02", "speaker": "narrador", "text": "Uma notificação do banco. Pix recebido.", "pauseAfter": 0.35 },
+        { "id": "l03", "speaker": "narrador", "text": "Um milhão de reais." }
+      ],
+      "sfx": [
+        { "name": "notification", "at": "l02+0.9", "gain": 0 },
+        { "name": "riser", "at": "l03-1.4", "gain": -6 },
+        { "name": "kaching", "at": "l03.end-0.3", "gain": 2 },
+        { "name": "sparkle", "at": "l03.end-0.2", "gain": -4 }
+      ]
+    },
+    {
+      "id": "s03", "beat": "PREMISSA", "scene": "bedroom", "transition": "flash", "ambience": "room", "music": "happy",
+      "lines": [
+        { "id": "l04", "speaker": "narrador", "text": "Não é golpe. Não é erro do sistema." }
+      ],
+      "sfx": [
+        { "name": "boing", "at": 0.15, "gain": -2 },
+        { "name": "boing", "at": 0.95, "gain": -4 },
+        { "name": "boing", "at": 1.75, "gain": -4 },
+        { "name": "cheer", "at": 0.3, "gain": -10 }
+      ]
+    },
+    {
+      "id": "s04", "beat": "PREMISSA", "scene": "city", "transition": "whip", "ambience": "city",
+      "lines": [
+        { "id": "l05", "speaker": "narrador", "text": "Durante a madrugada, cada brasileiro, do recém-nascido ao bisavô, recebeu exatamente a mesma coisa." }
+      ],
+      "sfx": [
+        { "name": "notification", "at": "l05+0.3", "gain": -6, "pan": -0.5 },
+        { "name": "notification", "at": "l05+1.1", "gain": -8, "pan": 0.4 },
+        { "name": "notification", "at": "l05+1.8", "gain": -8, "pan": -0.2 },
+        { "name": "notification", "at": "l05+2.6", "gain": -9, "pan": 0.6 },
+        { "name": "crowd", "at": "l05+2.0", "gain": -12, "args": { "d": 3.0, "intensity": 0.8 } }
+      ]
+    },
+    {
+      "id": "s05", "beat": "PRIMEIRA FASE", "scene": "street", "transition": "wipe", "ambience": "street",
+      "lines": [
+        { "id": "l06", "speaker": "narrador", "text": "Você sai na rua pra contar pra alguém. Mas a rua inteira já sabe.", "pauseAfter": 0.25 },
+        { "id": "l07", "speaker": "neide", "text": "Ô, meu filho! Já tô vendo passagem pra Paris!" }
+      ],
+      "sfx": [
+        { "name": "gate", "at": 0.0, "gain": -3 },
+        { "name": "footsteps", "at": 0.9, "gain": -8, "args": { "d": 2.4, "rate": 2.2 } },
+        { "name": "pop", "at": "l07", "gain": -4 }
+      ]
+    },
+    {
+      "id": "s06", "beat": "ESCALADA", "scene": "street-busstop", "transition": "whip", "ambience": "street",
+      "lines": [
+        { "id": "l08", "speaker": "narrador", "text": "No ponto de ônibus, ninguém. Nem passageiro, nem ônibus.", "pauseAfter": 0.3 },
+        { "id": "l09", "speaker": "narrador", "text": "O motorista também ficou milionário. Por que ele trabalharia hoje?" }
+      ],
+      "sfx": [
+        { "name": "tick", "at": 0.4, "gain": -6 },
+        { "name": "tick", "at": 1.4, "gain": -6 },
+        { "name": "tick", "at": 2.4, "gain": -6 },
+        { "name": "footsteps", "at": "l09-0.2", "gain": -10, "args": { "d": 3.0, "rate": 1.8 } },
+        { "name": "swish", "at": "l09+1.2", "gain": -6 }
+      ]
+    },
+    {
+      "id": "s07", "beat": "CONSEQUÊNCIA", "scene": "bakery", "transition": "whip", "ambience": "bakery", "music": "tense",
+      "lines": [
+        { "id": "l10", "speaker": "narrador", "text": "Aí você entra na padaria pra comemorar com um pãozinho quente.", "pauseAfter": 0.25 },
+        { "id": "l11", "speaker": "valdir", "text": "O pão francês hoje tá novecentos reais, chefe." }
+      ],
+      "sfx": [
+        { "name": "footsteps", "at": 0.2, "gain": -9, "args": { "d": 1.6, "rate": 2.2 } },
+        { "name": "slide_up", "at": "l11+0.9", "gain": -4 },
+        { "name": "slide_up", "at": "l11+1.4", "gain": -3 },
+        { "name": "impact", "at": "l11.end-0.4", "gain": 0 },
+        { "name": "record_scratch", "at": "l11.end-0.35", "gain": -6 }
+      ]
+    },
+    {
+      "id": "s08", "beat": "PROBLEMA CENTRAL", "scene": "graphic", "transition": "zoom", "ambience": null, "music": "curious",
+      "lines": [
+        { "id": "l12", "speaker": "narrador", "text": "Porque, quando todo mundo tem um milhão, ninguém tem um milhão.", "pauseAfter": 0.3 },
+        { "id": "l13", "speaker": "narrador", "text": "Apareceram do nada mais de duzentos e treze trilhões de reais. Quase dezessete vezes tudo o que o Brasil produziu no ano passado inteiro.", "pauseAfter": 0.3 },
+        { "id": "l14", "speaker": "narrador", "text": "Só que a quantidade de pão continua a mesma. Isso tem nome: inflação." }
+      ],
+      "sfx": [
+        { "name": "whoosh", "at": "l13", "gain": -4 },
+        { "name": "coin", "at": "l13+0.5", "gain": -6 },
+        { "name": "coin", "at": "l13+0.8", "gain": -8 },
+        { "name": "pop", "at": "l13+4.6", "gain": -4 },
+        { "name": "slide_up", "at": "l13+5.2", "gain": -6 },
+        { "name": "pop", "at": "l14+0.2", "gain": -4 },
+        { "name": "boom", "at": "l14.end-0.7", "gain": -2 }
+      ]
+    },
+    {
+      "id": "s09", "beat": "ÚLTIMA SURPRESA", "scene": "street-sunset", "transition": "dip", "ambience": "street", "music": "outro",
+      "lines": [
+        { "id": "l15", "speaker": "narrador", "text": "Você volta pra casa com um pão de novecentos reais na mão.", "pauseAfter": 0.3 },
+        { "id": "l16", "speaker": "narrador", "text": "E o celular vibra de novo.", "pauseAfter": 0.5 },
+        { "id": "l17", "speaker": "narrador", "text": "Mais um milhão. E, pela primeira vez na vida, você fica com medo de ficar rico." }
+      ],
+      "padEnd": 1.4,
+      "sfx": [
+        { "name": "footsteps", "at": 0.1, "gain": -10, "args": { "d": 2.6, "rate": 1.8 } },
+        { "name": "phone_buzz", "at": "l16+0.4", "gain": 0 },
+        { "name": "notification", "at": "l17", "gain": -2 },
+        { "name": "slide_down", "at": "l17.end-0.6", "gain": -6 }
+      ]
+    }
+  ]
+}

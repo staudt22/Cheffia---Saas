@@ -1,0 +1,14 @@
+{
+  "id": "__SLUG__",
+  "title": "__TITLE__",
+  "language": "pt-BR",
+  "defaults": { "pause": 0.2, "shotPadStart": 0.2, "shotPadEnd": 0.35 },
+  "tail": 1.0,
+  "shots": [
+    {
+      "id": "s01", "beat": "HOOK", "scene": "street", "transition": "cut", "ambience": "street", "music": "mystery",
+      "lines": [{ "id": "l01", "speaker": "narrador", "text": "Você acorda e percebe que alguma coisa está errada." }],
+      "sfx": [{ "name": "whoosh", "at": "end-0.25" }]
+    }
+  ]
+}

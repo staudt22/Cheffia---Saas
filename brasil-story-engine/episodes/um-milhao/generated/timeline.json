@@ -1,0 +1,406 @@
+{
+ "episode": "um-milhao",
+ "fps": 30,
+ "duration": 73.267,
+ "shots": [
+  {
+   "id": "s01",
+   "start": 0.0,
+   "end": 5.3667,
+   "transition": "cut"
+  },
+  {
+   "id": "s02",
+   "start": 5.3667,
+   "end": 10.2,
+   "transition": "whip"
+  },
+  {
+   "id": "s03",
+   "start": 10.2,
+   "end": 12.7667,
+   "transition": "flash"
+  },
+  {
+   "id": "s04",
+   "start": 12.7667,
+   "end": 19.1333,
+   "transition": "whip"
+  },
+  {
+   "id": "s05",
+   "start": 19.1333,
+   "end": 27.5,
+   "transition": "wipe"
+  },
+  {
+   "id": "s06",
+   "start": 27.5,
+   "end": 35.7667,
+   "transition": "whip"
+  },
+  {
+   "id": "s07",
+   "start": 35.7667,
+   "end": 43.1333,
+   "transition": "whip"
+  },
+  {
+   "id": "s08",
+   "start": 43.1333,
+   "end": 59.8,
+   "transition": "zoom"
+  },
+  {
+   "id": "s09",
+   "start": 59.8,
+   "end": 72.0667,
+   "transition": "dip"
+  }
+ ],
+ "lines": [
+  {
+   "id": "l01",
+   "shot": "s01",
+   "speaker": "narrador",
+   "text": "Você acorda numa terça-feira qualquer com o celular vibrando sem parar.",
+   "start": 0.9,
+   "end": 5.002
+  },
+  {
+   "id": "l02",
+   "shot": "s02",
+   "speaker": "narrador",
+   "text": "Uma notificação do banco. Pix recebido.",
+   "start": 5.567,
+   "end": 8.084
+  },
+  {
+   "id": "l03",
+   "shot": "s02",
+   "speaker": "narrador",
+   "text": "Um milhão de reais.",
+   "start": 8.434,
+   "end": 9.85
+  },
+  {
+   "id": "l04",
+   "shot": "s03",
+   "speaker": "narrador",
+   "text": "Não é golpe. Não é erro do sistema.",
+   "start": 10.4,
+   "end": 12.427
+  },
+  {
+   "id": "l05",
+   "shot": "s04",
+   "speaker": "narrador",
+   "text": "Durante a madrugada, cada brasileiro, do recém-nascido ao bisavô, recebeu exatamente a mesma coisa.",
+   "start": 12.967,
+   "end": 18.791
+  },
+  {
+   "id": "l06",
+   "shot": "s05",
+   "speaker": "narrador",
+   "text": "Você sai na rua pra contar pra alguém. Mas a rua inteira já sabe.",
+   "start": 19.333,
+   "end": 23.216
+  },
+  {
+   "id": "l07",
+   "shot": "s05",
+   "speaker": "neide",
+   "text": "Ô, meu filho! Já tô vendo passagem pra Paris!",
+   "start": 23.466,
+   "end": 27.143
+  },
+  {
+   "id": "l08",
+   "shot": "s06",
+   "speaker": "narrador",
+   "text": "No ponto de ônibus, ninguém. Nem passageiro, nem ônibus.",
+   "start": 27.7,
+   "end": 31.135
+  },
+  {
+   "id": "l09",
+   "shot": "s06",
+   "speaker": "narrador",
+   "text": "O motorista também ficou milionário. Por que ele trabalharia hoje?",
+   "start": 31.435,
+   "end": 35.402
+  },
+  {
+   "id": "l10",
+   "shot": "s07",
+   "speaker": "narrador",
+   "text": "Aí você entra na padaria pra comemorar com um pãozinho quente.",
+   "start": 35.967,
+   "end": 39.679
+  },
+  {
+   "id": "l11",
+   "shot": "s07",
+   "speaker": "valdir",
+   "text": "O pão francês hoje tá novecentos reais, chefe.",
+   "start": 39.929,
+   "end": 42.792
+  },
+  {
+   "id": "l12",
+   "shot": "s08",
+   "speaker": "narrador",
+   "text": "Porque, quando todo mundo tem um milhão, ninguém tem um milhão.",
+   "start": 43.333,
+   "end": 46.73
+  },
+  {
+   "id": "l13",
+   "shot": "s08",
+   "speaker": "narrador",
+   "text": "Apareceram do nada mais de duzentos e treze trilhões de reais. Quase dezessete vezes tudo o que o Brasil produziu no ano passado inteiro.",
+   "start": 47.03,
+   "end": 55.037
+  },
+  {
+   "id": "l14",
+   "shot": "s08",
+   "speaker": "narrador",
+   "text": "Só que a quantidade de pão continua a mesma. Isso tem nome: inflação.",
+   "start": 55.337,
+   "end": 59.454
+  },
+  {
+   "id": "l15",
+   "shot": "s09",
+   "speaker": "narrador",
+   "text": "Você volta pra casa com um pão de novecentos reais na mão.",
+   "start": 60.0,
+   "end": 63.541
+  },
+  {
+   "id": "l16",
+   "shot": "s09",
+   "speaker": "narrador",
+   "text": "E o celular vibra de novo.",
+   "start": 63.841,
+   "end": 65.633
+  },
+  {
+   "id": "l17",
+   "shot": "s09",
+   "speaker": "narrador",
+   "text": "Mais um milhão. E, pela primeira vez na vida, você fica com medo de ficar rico.",
+   "start": 66.133,
+   "end": 70.677
+  }
+ ],
+ "sfx": [
+  {
+   "name": "phone_buzz",
+   "at": 0.1,
+   "shot": "s01"
+  },
+  {
+   "name": "phone_buzz",
+   "at": 2.2,
+   "shot": "s01"
+  },
+  {
+   "name": "phone_buzz",
+   "at": 4.402,
+   "shot": "s01"
+  },
+  {
+   "name": "whoosh",
+   "at": 5.117,
+   "shot": "s01"
+  },
+  {
+   "name": "notification",
+   "at": 6.467,
+   "shot": "s02"
+  },
+  {
+   "name": "riser",
+   "at": 7.034,
+   "shot": "s02"
+  },
+  {
+   "name": "kaching",
+   "at": 9.55,
+   "shot": "s02"
+  },
+  {
+   "name": "sparkle",
+   "at": 9.65,
+   "shot": "s02"
+  },
+  {
+   "name": "boing",
+   "at": 10.35,
+   "shot": "s03"
+  },
+  {
+   "name": "boing",
+   "at": 11.15,
+   "shot": "s03"
+  },
+  {
+   "name": "boing",
+   "at": 11.95,
+   "shot": "s03"
+  },
+  {
+   "name": "cheer",
+   "at": 10.5,
+   "shot": "s03"
+  },
+  {
+   "name": "notification",
+   "at": 13.267,
+   "shot": "s04"
+  },
+  {
+   "name": "notification",
+   "at": 14.067,
+   "shot": "s04"
+  },
+  {
+   "name": "notification",
+   "at": 14.767,
+   "shot": "s04"
+  },
+  {
+   "name": "notification",
+   "at": 15.567,
+   "shot": "s04"
+  },
+  {
+   "name": "crowd",
+   "at": 14.967,
+   "shot": "s04"
+  },
+  {
+   "name": "gate",
+   "at": 19.133,
+   "shot": "s05"
+  },
+  {
+   "name": "footsteps",
+   "at": 20.033,
+   "shot": "s05"
+  },
+  {
+   "name": "pop",
+   "at": 23.466,
+   "shot": "s05"
+  },
+  {
+   "name": "tick",
+   "at": 27.9,
+   "shot": "s06"
+  },
+  {
+   "name": "tick",
+   "at": 28.9,
+   "shot": "s06"
+  },
+  {
+   "name": "tick",
+   "at": 29.9,
+   "shot": "s06"
+  },
+  {
+   "name": "footsteps",
+   "at": 31.235,
+   "shot": "s06"
+  },
+  {
+   "name": "swish",
+   "at": 32.635,
+   "shot": "s06"
+  },
+  {
+   "name": "footsteps",
+   "at": 35.967,
+   "shot": "s07"
+  },
+  {
+   "name": "slide_up",
+   "at": 40.829,
+   "shot": "s07"
+  },
+  {
+   "name": "slide_up",
+   "at": 41.329,
+   "shot": "s07"
+  },
+  {
+   "name": "impact",
+   "at": 42.392,
+   "shot": "s07"
+  },
+  {
+   "name": "record_scratch",
+   "at": 42.442,
+   "shot": "s07"
+  },
+  {
+   "name": "whoosh",
+   "at": 47.03,
+   "shot": "s08"
+  },
+  {
+   "name": "coin",
+   "at": 47.53,
+   "shot": "s08"
+  },
+  {
+   "name": "coin",
+   "at": 47.83,
+   "shot": "s08"
+  },
+  {
+   "name": "pop",
+   "at": 51.63,
+   "shot": "s08"
+  },
+  {
+   "name": "slide_up",
+   "at": 52.23,
+   "shot": "s08"
+  },
+  {
+   "name": "pop",
+   "at": 55.537,
+   "shot": "s08"
+  },
+  {
+   "name": "boom",
+   "at": 58.754,
+   "shot": "s08"
+  },
+  {
+   "name": "footsteps",
+   "at": 59.9,
+   "shot": "s09"
+  },
+  {
+   "name": "phone_buzz",
+   "at": 64.241,
+   "shot": "s09"
+  },
+  {
+   "name": "notification",
+   "at": 66.133,
+   "shot": "s09"
+  },
+  {
+   "name": "slide_down",
+   "at": 70.077,
+   "shot": "s09"
+  }
+ ]
+}

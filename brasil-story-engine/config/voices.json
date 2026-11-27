@@ -1,0 +1,20 @@
+{
+  "_doc": "Mapa personagem → voz. engine: kokoro (local, padrão) | elevenlabs | openai | azure. voice no kokoro aceita mistura: 'pm_alex*0.7+pm_santa*0.3'. pitch em semitons, speed multiplicador. Vozes pt-BR do Kokoro: pf_dora (fem), pm_alex (masc), pm_santa (masc grave).",
+  "default": "narrador",
+  "voices": {
+    "narrador": { "engine": "kokoro", "voice": "pm_alex", "speed": 1.03, "pitch": 0 },
+    "narradora": { "engine": "kokoro", "voice": "pf_dora", "speed": 1.0, "pitch": 0 },
+    "voce": { "engine": "kokoro", "voice": "pm_alex*0.8+pm_santa*0.2", "speed": 1.05, "pitch": 1 },
+    "bia": { "engine": "kokoro", "voice": "pf_dora", "speed": 1.06, "pitch": 1 },
+    "neide": { "engine": "kokoro", "voice": "pf_dora", "speed": 0.96, "pitch": -1.5 },
+    "valdir": { "engine": "kokoro", "voice": "pm_santa", "speed": 0.95, "pitch": -1.5 },
+    "theo": { "engine": "kokoro", "voice": "pf_dora*0.6+pm_alex*0.4", "speed": 1.1, "pitch": 4 },
+    "rafa": { "engine": "kokoro", "voice": "pm_santa*0.6+pm_alex*0.4", "speed": 1.0, "pitch": -0.5 },
+    "reporter": { "engine": "kokoro", "voice": "pf_dora", "speed": 1.08, "pitch": 0.5 }
+  },
+  "providers": {
+    "elevenlabs": { "env": "ELEVENLABS_API_KEY", "model": "eleven_multilingual_v2" },
+    "openai": { "env": "OPENAI_API_KEY", "model": "gpt-4o-mini-tts" },
+    "azure": { "env": "AZURE_SPEECH_KEY", "region_env": "AZURE_SPEECH_REGION" }
+  }
+}

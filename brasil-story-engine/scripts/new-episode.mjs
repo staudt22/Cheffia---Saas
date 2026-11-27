@@ -1,0 +1,22 @@
+// Cria a estrutura de um episódio novo e o registra.  Uso: npm run new-episode -- <slug> "Título"
+import fs from "node:fs";
+import path from "node:path";
+const [slug, title = "Novo episódio"] = process.argv.slice(2);
+if (!slug || !/^[a-z0-9-]+$/.test(slug)) throw new Error("slug inválido (use a-z, 0-9 e -)");
+const dir = path.resolve("episodes", slug);
+if (fs.existsSync(dir)) throw new Error(`episódio ${slug} já existe`);
+fs.mkdirSync(path.join(dir, "generated"), { recursive: true });
+fs.mkdirSync(path.join(dir, "audio_in"), { recursive: true });
+const ident = slug.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase()).replace(/^[0-9]/, (d) => "e" + d);
+const tpl = (f) => fs.readFileSync(path.resolve("scripts/templates", f), "utf8").replaceAll("__SLUG__", slug).replaceAll("__TITLE__", title);
+fs.writeFileSync(path.join(dir, "script.json"), tpl("script.json"));
+fs.writeFileSync(path.join(dir, "shots.tsx"), tpl("shots.tsx"));
+fs.writeFileSync(path.join(dir, "index.tsx"), tpl("index.tsx"));
+fs.writeFileSync(path.join(dir, "meta.json"), tpl("meta.json"));
+fs.writeFileSync(path.join(dir, "generated", "timeline.json"), JSON.stringify({ episode: slug, fps: 30, duration: 3, shots: [{ id: "s01", start: 0, end: 3 }], lines: [], sfx: [] }, null, 1));
+fs.writeFileSync(path.join(dir, "audio_in", "LEIA-ME.txt"), "Coloque aqui o áudio do usuário (opcional):\n- narration.wav|mp3  → um arquivo só (cortado automaticamente por silêncio)\n- <idDaFala>.wav     → uma fala específica (ex.: l03.wav)\nSem arquivos aqui, todas as vozes são geradas por TTS.\n");
+const idx = path.resolve("episodes/index.ts");
+let s = fs.readFileSync(idx, "utf8");
+s = s.replace("// @imports", `import ${ident} from "./${slug}";\n// @imports`).replace("  // @episodes", `  ${ident},\n  // @episodes`);
+fs.writeFileSync(idx, s);
+console.log(`✔ episódio criado em episodes/${slug}\n  1) escreva script.json (roteiro)  2) npm run audio -- ${slug}  3) escreva shots.tsx  4) npm run storyboard -- ${slug}  5) npm run render -- ${slug}`);

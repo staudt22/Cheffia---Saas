@@ -1,0 +1,13 @@
+node_modules/
+tts_models/
+.cache/
+out/
+storyboards/*/*.jpg
+!storyboards/*/storyboard.jpg
+public/episodes/*/mix.wav
+episodes/*/generated/stems/
+episodes/*/audio_in/*.wav
+episodes/*/audio_in/*.mp3
+episodes/*/audio_in/lines/
+*.decoded.wav
+.DS_Store
